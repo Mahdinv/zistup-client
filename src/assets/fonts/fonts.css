@@ -1,0 +1,86 @@
+@font-face {
+  font-family: "Peyda";
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url("PeydaWeb-Black.woff2") format("opentype");
+}
+
+@font-face {
+  font-family: "Peyda";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("PeydaWeb-ExtraBold.woff2") format("opentype");
+}
+
+@font-face {
+  font-family: "Peyda";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("PeydaWeb-Bold.woff2") format("opentype");
+}
+
+@font-face {
+  font-family: "Peyda";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("PeydaWeb-SemiBold.woff2") format("opentype");
+}
+
+@font-face {
+  font-family: "Peyda";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("PeydaWeb-Medium.woff2") format("opentype");
+}
+
+@font-face {
+  font-family: "Peyda";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("PeydaWeb-Regular.woff2") format("opentype");
+}
+
+@font-face {
+  font-family: "Peyda";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("peydaWeb-light.woff2") format("opentype");
+}
+
+@font-face {
+  font-family: "Peyda";
+  font-style: normal;
+  font-weight: 200;
+  font-display: swap;
+  src: url("peydaWeb-extralight.woff2") format("opentype");
+}
+
+@font-face {
+  font-family: "Peyda";
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+  src: url("PeydaWeb-Thin.woff2") format("opentype");
+}
+
+@font-face {
+  font-family: "YekanBakh";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("YekanBakh-VF-BOG66RzO.woff2") format("opentype");
+}
+
+@font-face {
+  font-family: "RokhFaNum";
+  src: url("RokhFaNum-ExtraBold-xrRIlBY2.otf") format("opentype");
+  font-weight: 800;
+  font-style: normal;
+}

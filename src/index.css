@@ -1,0 +1,165 @@
+@import "tailwindcss";
+@import "./assets/fonts/fonts.css";
+
+@theme {
+  /* Size Variables */
+  --size-xxs: 0.5rem;
+  --size-xs: 0.625rem;
+  --size-sm: 0.75rem;
+  --size-md: 0.875rem;
+  --size-lg: 1rem;
+  --size-xl: 1.125rem;
+  --size-2xl: 1.25rem;
+
+  /* Fonts */
+  --font-peyda: "Peyda", ui-sans-serif, system-ui, sans-serif;
+  --font-yekan: "YekanBakh", ui-sans-serif, system-ui, sans-serif;
+  --font-rokh: "RokhFaNum", ui-sans-serif, system-ui, sans-serif;
+
+  /* Breakpoints */
+  --breakpoint-compact: 320px;
+  --breakpoint-mobile: 375px;
+  --breakpoint-mobile-lg: 460px;
+  --breakpoint-fold: 600px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-laptop: 1024px;
+  --breakpoint-desktop: 1280px;
+
+  /* Font Sizes */
+  --text-xxs: var(--size-xxs);
+  --text-xxs--line-height: 1.2;
+
+  --text-xs: var(--size-xs);
+  --text-xs--line-height: 1.5;
+
+  --text-sm: var(--size-sm);
+  --text-sm--line-height: 1.4;
+
+  --text-base: var(--size-md);
+  --text-base--line-height: 1.4;
+
+  --text-lg: var(--size-lg);
+  --text-lg--line-height: 1.4;
+
+  --text-xl: var(--size-xl);
+  --text-xl--line-height: 1.8;
+
+  --text-2xl: var(--size-2xl);
+  --text-2xl--line-height: 1.8;
+
+  --text-3xl: 1.375rem;
+  --text-3xl--line-height: 1.8;
+
+  --text-4xl: 1.5rem;
+  --text-4xl--line-height: 1.8;
+
+  --text-5xl: 1.625rem;
+  --text-5xl--line-height: 1.8;
+
+  --text-6xl: 1.875rem;
+  --text-6xl--line-height: 1.8;
+
+  --text-7xl: 2rem;
+  --text-7xl--line-height: 1.8;
+
+  --text-8xl: 2.25rem;
+  --text-8xl--line-height: 1;
+
+  /* Radius */
+  --radius-xxs: var(--size-xxs);
+  --radius-xs: var(--size-xs);
+  --radius-sm: var(--size-sm);
+  --radius-md: var(--size-md);
+  --radius-lg: var(--size-lg);
+  --radius-xl: var(--size-xl);
+  --radius-2xl: var(--size-2xl);
+
+  /* Colors */
+  --color-white: #fcfcfc;
+  --color-blue-100: #f4fafd;
+  --color-blue-200: #eef8fb;
+  --color-blue-300: #dbf0f8;
+  --color-blue-400: #75d5f6;
+  --color-blue-500: #7ebbd0;
+  --color-blue-600: #70a6b9;
+  --color-blue-700: #699cad;
+  --color-blue-800: #547d8b;
+  --color-blue-900: #3f5e68;
+  --color-darker-blue-100: #314951;
+  --color-darker-blue-200: #21262d;
+  --color-darker-blue-300: #1b1a20;
+  --color-darker-blue-400: #0d0e12;
+
+  --color-green-100: #eafcf2;
+  --color-green-200: #dffbec;
+  --color-green-300: #bef7d7;
+  --color-green-400: #2ce57f;
+  --color-green-500: #28ce72;
+  --color-green-600: #23b766;
+  --color-green-700: #21ac5f;
+  --color-green-800: #1a894c;
+  --color-green-900: #146739;
+  --color-green-950: #0f502c;
+  --color-darker-green-100: #006626;
+  --color-darker-green-200: #004331;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 9999px;
+  transition: background-color 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+  box-shadow: 0 0 0 1000px transparent inset !important;
+  -webkit-text-fill-color: inherit !important;
+  transition: background-color 9999s ease-in-out 0s !important;
+}
+
+html,
+body {
+  @apply font-peyda m-0 h-dvh w-full overflow-hidden bg-[#EDECEA] p-0;
+}
+
+.btn {
+  @apply font-peyda font-bold text-xl rounded-2xl;
+}
+
+.btn.btn-primary {
+  @apply bg-green-400 
+         text-black
+         compact:active:border-green-700
+         compact:active:bg-green-700
+         laptop:hover:border-green-700 
+         laptop:hover:bg-green-700 
+           laptop:disabled:hover:shadow-none
+         disabled:bg-[#BFBFBF] 
+         disabled:text-darker-green-200;
+}
+
+.btn.btn-outline {
+  @apply bg-transparent 
+       text-green-400 
+         border-2 
+       border-green-400 
+       compact:active:border-green-700
+       compact:active:text-green-700 
+       laptop:hover:border-green-700 
+       laptop:hover:text-green-700 
+         laptop:disabled:hover:shadow-none
+       disabled:border-[#BFBFBF] 
+       disabled:text-[#BFBFBF];
+}
