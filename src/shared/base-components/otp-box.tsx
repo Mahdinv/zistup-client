@@ -1,12 +1,18 @@
-import { useRef, useState, type ChangeEvent, type KeyboardEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type KeyboardEvent,
+} from "react";
 
 const OtpBox = () => {
   const [values, setValues] = useState<string[]>(["", "", "", ""]);
   const inputsRef = useRef<HTMLInputElement[]>([]);
 
-  // useEffect(() => {
-  //     inputsRef.current[0].focus();
-  // }, []);
+  useEffect(() => {
+    inputsRef.current[0].focus();
+  }, []);
 
   const onChangeInput = (
     event: ChangeEvent<HTMLInputElement>,
