@@ -1,0 +1,39 @@
+import { memo, useEffect, useState } from "react";
+import { formatTime } from "../utils/formatTime";
+
+type TimerProps = {
+  initialTime: number | null;
+  onFinish: () => void;
+};
+
+const Timer = memo(({ initialTime, onFinish }: TimerProps) => {
+  const [timeLeft, setTimeLeft] = useState(initialTime || 0);
+
+  useEffect(() => {
+    if (timeLeft <= 0) return;
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [timeLeft]);
+
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      onFinish();
+    }
+  }, [timeLeft, onFinish]);
+
+  return (
+    <>
+      {timeLeft > 0 ? (
+        <label className="flex items-center gap-1 text-xs font-peyda font-medium text-blue-500 self-center">
+          <span className="w-6">{formatTime(timeLeft)}</span>
+          <span>تا ارسال مجدد</span>
+        </label>
+      ) : null}
+    </>
+  );
+});
+
+export default Timer;
