@@ -3,6 +3,9 @@ import AuthLayout from "../layouts/auth-layout";
 import { lazy } from "react";
 
 const Login = lazy(() => import("../features/authentication/pages/login"));
+const DemographicInformation = lazy(
+  () => import("../features/authentication/pages/demographic-information"),
+);
 
 const router = createBrowserRouter([
   {
@@ -13,7 +16,15 @@ const router = createBrowserRouter([
       {
         path: "login",
         element: <Login />,
-        handle: { firstLineTitle: "ورود", secondLineTitle: "به زیست‌آپ" },
+        handle: { firstLineTitle: "ورود", secondLineTitle: "زیـــــست‌آپ" },
+      },
+      {
+        path: "demographic-information",
+        element: <DemographicInformation />,
+        handle: {
+          firstLineTitle: "اطلاعــــــــــات",
+          secondLineTitle: "پایه",
+        },
       },
     ],
   },
