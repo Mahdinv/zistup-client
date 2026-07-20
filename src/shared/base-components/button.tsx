@@ -31,7 +31,7 @@ const Button = ({
     <>
       <button
         type={type}
-        className={`${classes} compact:text-xs mobile:text-base fold:text-lg desktop:text-xl duration-300 compact:py-1.5 desktop:py-1 px-4 outline-none select-none`}
+        className={`w-full ${classes} compact:text-xs mobile:text-base fold:text-lg desktop:text-xl duration-300 compact:py-1.5 desktop:py-1 px-4 outline-none select-none`}
         onClick={onClick}
         disabled={disable}
         name={name}

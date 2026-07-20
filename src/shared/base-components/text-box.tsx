@@ -1,7 +1,7 @@
 import type { InputHTMLAttributes, ReactNode } from "react";
 
 type TextBoxProps = {
-  inlineLable?: boolean;
+  inlineLabel?: boolean;
   label?: string;
   subLabel?: string;
   icon?: ReactNode;
@@ -11,7 +11,7 @@ type TextBoxProps = {
 } & InputHTMLAttributes<HTMLInputElement>;
 
 const TextBox = ({
-  inlineLable,
+  inlineLabel,
   label,
   subLabel,
   icon,
@@ -23,11 +23,11 @@ const TextBox = ({
   return (
     <div className="w-full flex flex-col justify-center items-center gap-1.5">
       <div
-        className={`flex ${inlineLable ? "flex-row" : "flex-col gap-1"} items-center w-full select-none`}
+        className={`flex ${inlineLabel ? "flex-row" : "flex-col gap-1"} items-center w-full select-none`}
       >
         {label && (
           <div
-            className={`flex w-full ${inlineLable && "flex-1 flex-col items-center justify-start mb-0!"} flex-row mb-1`}
+            className={`flex w-full ${inlineLabel && "flex-1 flex-col items-center justify-start mb-0!"} flex-row ${subLabel ? "mb-1" : "mb-0"}`}
           >
             <div className="flex flex-col justify-center items-center">
               <label
@@ -42,7 +42,7 @@ const TextBox = ({
                 </small>
               )}
             </div>
-            {error && !inlineLable && (
+            {error && !inlineLabel && (
               <small className="text-red-500 text-xs font-peyda self-end mr-auto ml-1">
                 {error}
               </small>
@@ -50,7 +50,7 @@ const TextBox = ({
           </div>
         )}
         <div
-          className={`${classes} ${inlineLable && "flex-2"} bg-darker-blue-400 h-12 desktop:h-14 flex flex-row w-full items-center justify-between rounded-2xl border border-darker-blue-100 group focus-within:border-blue-900`}
+          className={`${classes} ${inlineLabel && "flex-2"} bg-darker-blue-400 h-12 desktop:h-14 flex flex-row w-full items-center justify-between rounded-2xl border border-darker-blue-100 group focus-within:border-blue-900`}
         >
           {icon && (
             <span className="px-1 pr-3 text-xl desktop:text-2xl text-text-input">
@@ -71,7 +71,7 @@ const TextBox = ({
           </small>
         )}
       </div>
-      {inlineLable && error && (
+      {inlineLabel && error && (
         <small className="text-red-500 self-end text-xs font-peyda ml-2">
           {error}
         </small>

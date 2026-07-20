@@ -44,7 +44,7 @@ const MainContainer = ({
         times: [0, 0.45, 1],
         ease: "easeInOut",
       }}
-      className="w-full min-w-0 h-full bg-darker-blue-200 rounded-tr-2xl rounded-tl-2xl flex flex-row justify-start items-stretch py-7 overflow-x-hidden overflow-y-auto scrollbar-gutter-stable"
+      className="w-full min-w-0 h-full bg-darker-blue-200 text-white rounded-tr-2xl rounded-tl-2xl flex flex-row justify-start items-stretch py-7 overflow-x-hidden overflow-y-auto scrollbar-gutter-stable"
     >
       {children}
     </motion.div>
