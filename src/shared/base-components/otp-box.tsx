@@ -85,8 +85,8 @@ const OtpBox = () => {
             }}
             className="
                 w-full
-              bg-[#1B1A20] 
-                text-blue-800
+              bg-darker-blue-400
+              text-blue-800
                 text-xl
                 rounded-2xl
                 border
