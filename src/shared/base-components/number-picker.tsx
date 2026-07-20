@@ -44,11 +44,9 @@ export default function NumberPicker({
 }: NumberPickerProps) {
   const values = useMemo(() => {
     const result: number[] = [];
-
     for (let current = min; current <= max; current += step) {
       result.push(Number(current.toFixed(10)));
     }
-
     return result;
   }, [min, max, step]);
 
@@ -62,26 +60,13 @@ export default function NumberPicker({
   );
 
   const initialIndex = valueToIndex(value);
-
-  /*
-   * activeIndex فقط برای نمایش زنده رابط کاربری است.
-   * value همچنان مقدار کنترل‌شده والد باقی می‌ماند.
-   */
   const [activeIndex, setActiveIndex] = useState<number>(initialIndex);
-
-  /*
-   * جلوگیری از stale شدن callback داخل Keen Slider
-   */
   const onChangeEndRef = useRef(onChangeEnd);
 
   useEffect(() => {
     onChangeEndRef.current = onChangeEnd;
   }, [onChangeEnd]);
 
-  /*
-   * اگر min یا step تغییر کند، callbackهای Keen
-   * آخرین مقادیر را در اختیار خواهند داشت.
-   */
   const rangeRef = useRef({
     min,
     step,
@@ -96,29 +81,14 @@ export default function NumberPicker({
 
   const [sliderRef, sliderInstanceRef] = useKeenSlider<HTMLDivElement>({
     initial: initialIndex,
-
-    /*
-     * برای Number Picker حالت snap مناسب‌تر است.
-     */
     mode: "snap",
-
     rubberband: false,
-
-    /*
-     * کاهش حساسیت حرکت اسلایدر
-     */
     dragSpeed: 0.85,
-
-    /*
-     * کمک به روان‌تر شدن رندر تعداد زیاد آیتم
-     */
     renderMode: "performance",
-
     defaultAnimation: {
       duration: 280,
       easing: easeOutCubic,
     },
-
     slides: {
       perView: "auto",
       origin: "center",
@@ -131,18 +101,12 @@ export default function NumberPicker({
       setActiveIndex(selectedIndex);
     },
 
-    /*
-     * استایل عدد وسط هنگام حرکت به‌روز می‌شود.
-     */
     slideChanged(instance) {
       const selectedIndex = instance.track.details?.rel ?? 0;
 
       setActiveIndex(selectedIndex);
     },
 
-    /*
-     * فقط پس از پایان حرکت، مقدار نهایی به والد ارسال می‌شود.
-     */
     animationEnded(instance) {
       const selectedIndex = instance.track.details?.rel ?? 0;
 
@@ -156,9 +120,6 @@ export default function NumberPicker({
     },
   });
 
-  /*
-   * اگر value از بیرون تغییر کند، Picker با آن هماهنگ می‌شود.
-   */
   useEffect(() => {
     const instance = sliderInstanceRef.current;
 
