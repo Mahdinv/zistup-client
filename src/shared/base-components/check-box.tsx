@@ -1,26 +1,26 @@
 import type { ReactNode } from "react";
 
-type RadioProps = {
+type CheckBoxProps = {
   inlineLabel?: boolean;
   label?: string;
   subLabel?: string;
   gridClasses: string;
   options: { title: string; value: string | number; icon?: ReactNode }[];
-  value: string | number | undefined;
+  values: (string | number)[];
   error?: string;
-  onChange: (value: string | number | undefined) => void;
+  onChange: (value: (string | number)[]) => void;
 };
 
-const Radio = ({
+const CheckBox = ({
   inlineLabel,
   label,
   subLabel,
   gridClasses,
   options,
-  value,
+  values = [],
   error,
   onChange,
-}: RadioProps) => {
+}: CheckBoxProps) => {
   return (
     <div className="w-full flex flex-col justify-start items-center gap-1.5">
       <div
@@ -40,11 +40,17 @@ const Radio = ({
         )}
         <div className={`${inlineLabel && "flex-2"} grid ${gridClasses}`}>
           {options.map((option) => {
-            const selected = value === option.value;
+            const selected = values.includes(option.value);
             return (
               <div
                 key={option.value}
-                onClick={() => onChange(option.value)}
+                onClick={() => {
+                  const finalValues = selected
+                    ? values.filter((v) => v !== option.value)
+                    : [...values, option.value];
+
+                  onChange(finalValues);
+                }}
                 className={`w-full flex flex-row justify-center items-center gap-1 duration-300 transition-all rounded-xl compact:py-2.5 mobile:py-3 mobile-lg:py-3.5 cursor-pointer ${
                   selected
                     ? "border border-blue-400 ring-1 ring-inset ring-blue-400 bg-[#3C3946] text-blue-400"
@@ -69,4 +75,4 @@ const Radio = ({
   );
 };
 
-export default Radio;
+export default CheckBox;

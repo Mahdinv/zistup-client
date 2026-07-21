@@ -18,6 +18,7 @@ type RulerBoxProps = {
   value: number;
   label?: string;
   subLabel?: string;
+  error?: string;
   onChange?: (value: number) => void;
   onChangeEnd?: (value: number) => void;
 };
@@ -46,6 +47,7 @@ export default function RulerBox({
   value,
   label,
   subLabel,
+  error,
   onChange,
   onChangeEnd,
 }: RulerBoxProps) {
@@ -267,49 +269,50 @@ export default function RulerBox({
   return (
     <div
       dir="rtl"
-      className="
+      className="w-full min-w-0 max-w-none flex flex-col justify-center items-center gap-1.5"
+    >
+      <div
+        className="
         w-full
-        min-w-0
-        max-w-none
         self-stretch
         font-rokh
       "
-    >
-      <div className="mb-1 text-right text-white">
-        <span
-          className="
+      >
+        <div className="mb-1 text-right text-white">
+          <span
+            className="
             text-xl
             font-yekan
             font-extrabold
           "
-        >
-          {label}
-        </span>
+          >
+            {label}
+          </span>
 
-        <span
-          className="
+          <span
+            className="
             mr-1
             text-sm
             font-normal
             font-peyda
             text-white
           "
-        >
-          {subLabel}
-        </span>
-      </div>
+          >
+            {subLabel}
+          </span>
+        </div>
 
-      <div
-        dir="ltr"
-        role="spinbutton"
-        tabIndex={0}
-        aria-label={`${label} بر حسب ${subLabel}`}
-        aria-valuemin={min}
-        aria-valuemax={safeMax}
-        aria-valuenow={selectedValue}
-        aria-valuetext={`${selectedValue} ${subLabel}`}
-        onKeyDown={handleKeyDown}
-        className="
+        <div
+          dir="ltr"
+          role="spinbutton"
+          tabIndex={0}
+          aria-label={`${label} بر حسب ${subLabel}`}
+          aria-valuemin={min}
+          aria-valuemax={safeMax}
+          aria-valuenow={selectedValue}
+          aria-valuetext={`${selectedValue} ${subLabel}`}
+          onKeyDown={handleKeyDown}
+          className="
           relative
           h-23.5
           w-full
@@ -325,10 +328,10 @@ export default function RulerBox({
           focus-visible:ring-2
           focus-visible:ring-[#68d4ff]/60
         "
-      >
-        <output
-          aria-live="polite"
-          className="
+        >
+          <output
+            aria-live="polite"
+            className="
             pointer-events-none
             absolute
             inset-x-0
@@ -340,12 +343,12 @@ export default function RulerBox({
             leading-none
             text-blue-400
           "
-        >
-          {persianNumberFormatter.format(selectedValue)}
-        </output>
+          >
+            {persianNumberFormatter.format(selectedValue)}
+          </output>
 
-        <div
-          className="
+          <div
+            className="
             group
             absolute
             inset-x-0
@@ -354,10 +357,10 @@ export default function RulerBox({
             w-full
             min-w-0
           "
-        >
-          <div
-            ref={sliderRef}
-            className="
+          >
+            <div
+              ref={sliderRef}
+              className="
               keen-slider
               h-full
               w-full
@@ -368,30 +371,30 @@ export default function RulerBox({
               will-change-transform
               active:cursor-grabbing
             "
-          >
-            {values.map((item, index) => {
-              const major = isMajorTick(item);
+            >
+              {values.map((item, index) => {
+                const major = isMajorTick(item);
 
-              return (
-                <button
-                  key={item}
-                  type="button"
-                  tabIndex={-1}
-                  draggable={false}
-                  aria-label={`${item} ${subLabel}`}
-                  onClick={() => {
-                    handleTickClick(index);
-                  }}
-                  style={{
-                    flex: `0 0 ${TICK_WIDTH}px`,
-                    width: TICK_WIDTH,
-                    minWidth: TICK_WIDTH,
-                    maxWidth: TICK_WIDTH,
-                    height: 48,
-                    position: "relative",
-                    overflow: "visible",
-                  }}
-                  className="
+                return (
+                  <button
+                    key={item}
+                    type="button"
+                    tabIndex={-1}
+                    draggable={false}
+                    aria-label={`${item} ${subLabel}`}
+                    onClick={() => {
+                      handleTickClick(index);
+                    }}
+                    style={{
+                      flex: `0 0 ${TICK_WIDTH}px`,
+                      width: TICK_WIDTH,
+                      minWidth: TICK_WIDTH,
+                      maxWidth: TICK_WIDTH,
+                      height: 48,
+                      position: "relative",
+                      overflow: "visible",
+                    }}
+                    className="
                     keen-slider__slide
                     shrink-0
                     cursor-grab
@@ -403,10 +406,10 @@ export default function RulerBox({
                     active:cursor-grabbing
                     [WebkitTapHighlightColor:transparent]
                   "
-                >
-                  <span
-                    aria-hidden="true"
-                    className={`
+                  >
+                    <span
+                      aria-hidden="true"
+                      className={`
                       pointer-events-none
                       absolute
                       bottom-4
@@ -421,12 +424,12 @@ export default function RulerBox({
                       ease-out
                       ${major ? "h-6" : "h-4"}
                     `}
-                  />
+                    />
 
-                  {major && (
-                    <span
-                      aria-hidden="true"
-                      className="
+                    {major && (
+                      <span
+                        aria-hidden="true"
+                        className="
                         pointer-events-none
                         absolute
                         bottom-0
@@ -440,18 +443,18 @@ export default function RulerBox({
                         font-normal
                         text-white/45
                       "
-                    >
-                      {persianNumberFormatter.format(item)}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
+                      >
+                        {persianNumberFormatter.format(item)}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
 
-          <div
-            aria-hidden="true"
-            className={`
+            <div
+              aria-hidden="true"
+              className={`
               pointer-events-none
               absolute
               bottom-4
@@ -479,9 +482,15 @@ export default function RulerBox({
                   `
               }
             `}
-          />
+            />
+          </div>
         </div>
       </div>
+      {error && (
+        <small className="text-red-500 self-end text-xs font-peyda ml-2">
+          {error}
+        </small>
+      )}
     </div>
   );
 }
