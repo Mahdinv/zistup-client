@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import AuthLayout from "../layouts/auth-layout";
 import { lazy } from "react";
+import ChoosePlan from "../features/authentication/pages/choose-plan";
 
 const Login = lazy(() => import("../features/authentication/pages/login"));
 const DemographicInformation = lazy(
@@ -24,6 +25,14 @@ const router = createBrowserRouter([
         handle: {
           firstLineTitle: "اطلاعــــــــــات",
           secondLineTitle: "پایه",
+        },
+      },
+      {
+        path: "choose-plan",
+        element: <ChoosePlan />,
+        handle: {
+          firstLineTitle: "مسیر پیشرفتت",
+          secondLineTitle: "رو انتخاب کن",
         },
       },
     ],
