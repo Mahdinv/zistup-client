@@ -72,7 +72,7 @@ const DemographicInformation = () => {
       name: "",
       sex: undefined,
       weight: 70,
-      height: 100,
+      height: 150,
       age: 0,
       mainGoal: "",
       focus: [],
@@ -213,7 +213,7 @@ const DemographicInformation = () => {
             />
           </div>
           <Button
-            classes="btn btn-primary"
+            classes="btn btn-primary-green"
             title="مرحله بعد"
             onClick={onNextStepHandler}
           />
@@ -274,7 +274,7 @@ const DemographicInformation = () => {
           <div className="w-full h-full flex flex-col justify-end">
             <Button
               type="submit"
-              classes="btn btn-primary"
+              classes="btn btn-primary-green"
               title="ثبت اطلاعات"
             />
           </div>

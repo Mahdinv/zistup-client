@@ -76,7 +76,7 @@ const LoginForm = ({ onNextStep }: { onNextStep: () => void }) => {
       <div className="w-full h-full flex flex-col gap-2 justify-end text-white">
         <Button
           type="submit"
-          classes="w-full btn btn-primary"
+          classes="w-full btn btn-primary-green"
           title="دریافت کد"
         />
         <Button

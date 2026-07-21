@@ -17,7 +17,7 @@ const VerifyOtpForm = ({ onLastStep }: { onLastStep: () => void }) => {
         <Timer initialTime={120} onFinish={() => {}} />
       </div>
       <Button
-        classes="w-full btn btn-primary"
+        classes="w-full btn btn-primary-green"
         title="تایید"
         onClick={onLastStep}
       />
