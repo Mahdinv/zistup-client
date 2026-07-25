@@ -1,14 +1,5 @@
 import { useEffect, useState } from "react";
-import MainContainer from "../components/main-container";
-import { AnimatePresence, easeInOut, motion } from "framer-motion";
-import TextBox from "../../../shared/base-components/text-box";
-import Radio from "../../../shared/base-components/radio";
-import { LiaFemaleSolid, LiaMaleSolid } from "react-icons/lia";
-import Button from "../../../shared/base-components/button";
-import NumberPicker from "../../../shared/base-components/number-picker";
-import RulerBox from "../../../shared/base-components/ruler-box";
 import { useOutletContext } from "react-router-dom";
-import type { AuthOutletContext } from "../../../layouts/auth-layout";
 import {
   Controller,
   useForm,
@@ -16,11 +7,23 @@ import {
   type SubmitHandler,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+
+import { LiaFemaleSolid, LiaMaleSolid } from "react-icons/lia";
+
+import MainContainer from "../components/main-container";
+import TextBox from "../../../shared/base-components/text-box";
+import Radio from "../../../shared/base-components/radio";
+import Button from "../../../shared/base-components/button";
+import NumberPicker from "../../../shared/base-components/number-picker";
+import RulerBox from "../../../shared/base-components/ruler-box";
+import CheckBox from "../../../shared/base-components/check-box";
+
+import type { AuthOutletContext } from "../../../layouts/auth-layout";
+
 import {
   DemographicInformationSchema,
   type DemographicInformation,
 } from "../schemas/demographic-information.schema";
-import CheckBox from "../../../shared/base-components/check-box";
 
 const genderOptions = [
   {
@@ -36,16 +39,37 @@ const genderOptions = [
 ];
 
 const mainGoalOptions = [
-  { title: "کاهش وزن", value: "weight-loss" },
-  { title: "حفظ وزن", value: "weight-maintenance" },
-  { title: "افزایش وزن", value: "weight-gain" },
+  {
+    title: "کاهش وزن",
+    value: "weight-loss",
+  },
+  {
+    title: "حفظ وزن",
+    value: "weight-maintenance",
+  },
+  {
+    title: "افزایش وزن",
+    value: "weight-gain",
+  },
 ];
 
 const focusOptions = [
-  { title: "عضله سازی", value: "muscle-building" },
-  { title: "تغذیه سالم", value: "healthy-eating" },
-  { title: "محیط زیست", value: "environment" },
-  { title: "سایر...", value: "others" },
+  {
+    title: "عضله سازی",
+    value: "muscle-building",
+  },
+  {
+    title: "تغذیه سالم",
+    value: "healthy-eating",
+  },
+  {
+    title: "محیط زیست",
+    value: "environment",
+  },
+  {
+    title: "سایر...",
+    value: "others",
+  },
 ];
 
 const stepOneFields: FieldPath<DemographicInformation>[] = [
@@ -58,6 +82,7 @@ const stepOneFields: FieldPath<DemographicInformation>[] = [
 
 const DemographicInformation = () => {
   const { setBackHandler } = useOutletContext<AuthOutletContext>();
+
   const [step, setStep] = useState<1 | 2>(1);
 
   const {
@@ -68,6 +93,7 @@ const DemographicInformation = () => {
     formState: { errors },
   } = useForm<DemographicInformation>({
     resolver: zodResolver(DemographicInformationSchema),
+
     defaultValues: {
       name: "",
       sex: undefined,
@@ -80,71 +106,60 @@ const DemographicInformation = () => {
   });
 
   useEffect(() => {
-    if (step === 2) {
-      setBackHandler(() => {
-        setStep(1);
-      });
-    }
+    setBackHandler(
+      step === 2
+        ? () => {
+            setStep(1);
+          }
+        : null,
+    );
 
     return () => {
       setBackHandler(null);
     };
   }, [step, setBackHandler]);
 
-  const onNextStepHandler = async () => {
-    const isStepOneValid = await trigger(stepOneFields, {
+  const handleNextStep = async () => {
+    const isValid = await trigger(stepOneFields, {
       shouldFocus: true,
     });
-    if (!isStepOneValid) return;
+
+    if (!isValid) {
+      return;
+    }
 
     setStep(2);
   };
 
-  const onDemographicInformationFormHandler: SubmitHandler<
-    DemographicInformation
-  > = () => {};
+  const handleFormSubmit: SubmitHandler<DemographicInformation> = (data) => {
+    console.log(data);
+  };
 
   return (
-    <MainContainer isFirstStep={step === 1} isLastStep={step === 2}>
-      <AnimatePresence mode="wait" initial={false}>
-        {step === 1 ? (
-          <motion.div
-            key="step-1"
-            initial={{ x: 24, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: 24, opacity: 0 }}
-            transition={{ duration: 0.4, ease: easeInOut }}
-            className="flex
-                    h-full
-                    w-full
-                    min-w-0
-                    max-w-full
-                    flex-1
-                    flex-col
-                    items-start
-                    justify-start
-                    gap-4
-                    overflow-x-clip
-                    compact:px-4
-                    mobile-lg:px-6
-                    py-7
-                    will-change-[transform,opacity]"
-          >
-            <div
-              className="flex 
-                          w-full 
-                          min-w-0 
-                          max-w-none 
-                          flex-col 
-                          items-center 
-                          justify-start 
-                          gap-2.5
-                          overflow-x-hidden 
-                          overflow-y-auto 
-                          scrollbar-none 
-                          [-ms-overflow-style:none] 
-                          [&::-webkit-scrollbar]:hidden"
-            >
+    <MainContainer
+      stepKey={step}
+      isFirstStep={step === 1}
+      isLastStep={step === 2}
+      scrollMode="child"
+    >
+      <form
+        className="flex h-full min-h-0 w-full flex-col"
+        onSubmit={handleSubmit(handleFormSubmit)}
+      >
+        <div
+          className="
+            min-h-0
+            w-full
+            flex-1
+            overflow-x-hidden
+            overflow-y-auto
+            scrollbar-none
+            [-ms-overflow-style:none]
+            [&::-webkit-scrollbar]:hidden
+          "
+        >
+          {step === 1 ? (
+            <div className="flex w-full flex-col items-center gap-2.5">
               <TextBox
                 inlineLabel
                 label="نام و نشان"
@@ -152,6 +167,7 @@ const DemographicInformation = () => {
                 {...register("name")}
                 error={errors.name?.message}
               />
+
               <Controller
                 name="sex"
                 control={control}
@@ -167,6 +183,7 @@ const DemographicInformation = () => {
                   />
                 )}
               />
+
               <Controller
                 name="weight"
                 control={control}
@@ -182,13 +199,14 @@ const DemographicInformation = () => {
                   />
                 )}
               />
+
               <Controller
                 name="height"
                 control={control}
                 render={({ field }) => (
                   <RulerBox
                     label="قد"
-                    subLabel="(سانتی متر)"
+                    subLabel="(سانتی‌متر)"
                     min={100}
                     max={220}
                     step={1}
@@ -199,6 +217,7 @@ const DemographicInformation = () => {
                   />
                 )}
               />
+
               <Controller
                 name="age"
                 control={control}
@@ -214,76 +233,59 @@ const DemographicInformation = () => {
                 )}
               />
             </div>
-            <Button
-              classes="btn btn-primary-green mt-auto!"
-              title="مرحله بعد"
-              onClick={onNextStepHandler}
-            />
-          </motion.div>
-        ) : (
-          <motion.form
-            key="step-2"
-            initial={{ x: -24, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: -24, opacity: 0 }}
-            transition={{ duration: 0.4, ease: easeInOut }}
-            className="flex
-                    h-full
-                    w-full
-                    min-w-0
-                    max-w-full
-                    flex-1
-                    flex-col
-                    items-start
-                    justify-start
-                    gap-6
-                    overflow-x-clip
-                    compact:px-4
-                    mobile-lg:px-6
-                    py-7
-                    will-change-[transform,opacity]"
-            onSubmit={handleSubmit(onDemographicInformationFormHandler)}
-          >
-            <Controller
-              name="mainGoal"
-              control={control}
-              render={({ field }) => (
-                <Radio
-                  label="هدف اصلی تو چیه؟"
-                  subLabel="(فقط یک انتخاب)"
-                  gridClasses="grid-cols-3 gap-1"
-                  options={mainGoalOptions}
-                  value={field.value}
-                  onChange={field.onChange}
-                  error={errors.mainGoal?.message}
-                />
-              )}
-            />
+          ) : (
+            <div className="flex w-full flex-col gap-4">
+              <Controller
+                name="mainGoal"
+                control={control}
+                render={({ field }) => (
+                  <Radio
+                    label="هدف اصلی تو چیه؟"
+                    subLabel="(فقط یک انتخاب)"
+                    gridClasses="grid-cols-3 gap-1"
+                    options={mainGoalOptions}
+                    value={field.value}
+                    onChange={field.onChange}
+                    error={errors.mainGoal?.message}
+                  />
+                )}
+              />
 
-            <Controller
-              name="focus"
-              control={control}
-              render={({ field }) => (
-                <CheckBox
-                  label="دوست داری روی چیا بیشتر تمرکز کنیم؟"
-                  gridClasses="grid-cols-3 gap-1"
-                  options={focusOptions}
-                  values={field.value}
-                  onChange={field.onChange}
-                  error={errors.focus?.message}
-                />
-              )}
-            />
-            <div className="w-full h-full flex flex-col justify-end">
-              <Button
-                type="submit"
-                classes="btn btn-primary-green"
-                title="ثبت اطلاعات"
+              <Controller
+                name="focus"
+                control={control}
+                render={({ field }) => (
+                  <CheckBox
+                    label="دوست داری روی چیا بیشتر تمرکز کنیم؟"
+                    gridClasses="grid-cols-3 gap-1"
+                    options={focusOptions}
+                    values={field.value}
+                    onChange={field.onChange}
+                    error={errors.focus?.message}
+                  />
+                )}
               />
             </div>
-          </motion.form>
-        )}
-      </AnimatePresence>
+          )}
+        </div>
+
+        <div className="w-full shrink-0 pt-4">
+          {step === 1 ? (
+            <Button
+              type="button"
+              classes="btn btn-primary-green w-full"
+              title="مرحله بعد"
+              onClick={handleNextStep}
+            />
+          ) : (
+            <Button
+              type="submit"
+              classes="btn btn-primary-green w-full"
+              title="ثبت اطلاعات"
+            />
+          )}
+        </div>
+      </form>
     </MainContainer>
   );
 };

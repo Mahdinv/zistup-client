@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
-import { AnimatePresence } from "framer-motion";
-import MainContainer from "../components/main-container";
 import { useOutletContext } from "react-router-dom";
-import type { AuthOutletContext } from "../../../layouts/auth-layout";
+
+import MainContainer from "../components/main-container";
 import LoginForm from "../components/login-form";
 import VerifyOtpForm from "../components/verify-otp-form";
 
+import type { AuthOutletContext } from "../../../layouts/auth-layout";
+
 const Login = () => {
   const { setBackHandler } = useOutletContext<AuthOutletContext>();
+
   const [step, setStep] = useState<1 | 2>(1);
 
   useEffect(() => {
@@ -15,6 +17,8 @@ const Login = () => {
       setBackHandler(() => {
         setStep(1);
       });
+    } else {
+      setBackHandler(null);
     }
 
     return () => {
@@ -23,14 +27,17 @@ const Login = () => {
   }, [step, setBackHandler]);
 
   return (
-    <MainContainer isFirstStep={step === 1} isLastStep={step === 2}>
-      <AnimatePresence mode="wait" initial={false}>
-        {step === 1 ? (
-          <LoginForm key="step-1" onNextStep={() => setStep(2)} />
-        ) : (
-          <VerifyOtpForm key="step-2" onLastStep={() => setStep(1)} />
-        )}
-      </AnimatePresence>
+    <MainContainer
+      stepKey={step}
+      isFirstStep={step === 1}
+      isLastStep={step === 2}
+      scrollMode="container"
+    >
+      {step === 1 ? (
+        <LoginForm onNextStep={() => setStep(2)} />
+      ) : (
+        <VerifyOtpForm onLastStep={() => setStep(1)} />
+      )}
     </MainContainer>
   );
 };

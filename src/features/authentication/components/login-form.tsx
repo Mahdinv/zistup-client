@@ -1,6 +1,6 @@
 import { FaCaretDown } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
-import { AnimatePresence, easeInOut, motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import TextBox from "../../../shared/base-components/text-box";
 import { useState } from "react";
 import Button from "../../../shared/base-components/button";
@@ -24,12 +24,8 @@ const LoginForm = ({ onNextStep }: { onNextStep: () => void }) => {
   };
 
   return (
-    <motion.form
-      initial={{ x: 24, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      exit={{ x: 24, opacity: 0 }}
-      transition={{ duration: 0.4, ease: easeInOut }}
-      className="flex-1 compact:px-4 mobile-lg:px-6 py-7 h-full flex flex-col justify-start items-start gap-7 will-change-[transform,opacity]"
+    <form
+      className="flex w-full min-h-0 flex-1 flex-col items-start gap-4"
       onSubmit={handleSubmit(onLoginFormHandler)}
     >
       <TextBox
@@ -39,30 +35,50 @@ const LoginForm = ({ onNextStep }: { onNextStep: () => void }) => {
         {...register("mobile")}
         error={errors.mobile?.message}
       />
-      <div className="w-full h-auto flex flex-col items-center justify-start gap-4">
-        <div
-          className="flex w-full flex-row justify-start items-center gap-1 cursor-pointer select-none"
+
+      <div className="flex w-full shrink-0 flex-col items-center gap-4">
+        <button
+          type="button"
+          className="flex w-full cursor-pointer select-none items-center justify-start gap-1"
           onClick={() => setInviteCode((prev) => !prev)}
         >
-          <label className="font-yekan text-base font-extrabold text-white underline cursor-pointer">
+          <span className="font-yekan text-base font-extrabold text-white underline">
             کد دعوت داری؟
-          </label>
-          <motion.div
+          </span>
+
+          <motion.span
             initial={{ rotate: 0 }}
             animate={{ rotate: inviteCode ? 180 : 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
+            transition={{
+              duration: 0.3,
+              ease: "easeInOut",
+            }}
           >
-            <FaCaretDown className="self-start text-white text-xl" />
-          </motion.div>
-        </div>
+            <FaCaretDown className="text-xl text-white" />
+          </motion.span>
+        </button>
+
         <AnimatePresence initial={false}>
           {inviteCode && (
             <motion.div
-              initial={{ y: -20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -20, opacity: 0 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="w-full"
+              key="invite-code"
+              initial={{
+                y: -20,
+                opacity: 0,
+              }}
+              animate={{
+                y: 0,
+                opacity: 1,
+              }}
+              exit={{
+                y: -20,
+                opacity: 0,
+              }}
+              transition={{
+                duration: 0.3,
+                ease: "easeInOut",
+              }}
+              className="w-full shrink-0"
             >
               <TextBox
                 placeHolder="مثال: 45Hgw88is"
@@ -73,21 +89,24 @@ const LoginForm = ({ onNextStep }: { onNextStep: () => void }) => {
           )}
         </AnimatePresence>
       </div>
-      <div className="w-full h-full flex flex-col gap-2 justify-end text-white">
+
+      <div className="mt-auto flex w-full shrink-0 flex-col gap-2 pt-4 text-white">
         <Button
           type="submit"
           classes="w-full btn btn-primary-green"
           title="دریافت کد"
         />
+
         <Button
-          classes="btn btn-outline"
+          type="button"
+          classes="w-full btn btn-outline"
           title="ورود با حساب گوگل"
           icon={<FcGoogle />}
           iconClasses="text-4xl"
           itemsGap={10}
         />
       </div>
-    </motion.form>
+    </form>
   );
 };
 

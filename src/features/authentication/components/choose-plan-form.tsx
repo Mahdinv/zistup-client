@@ -14,12 +14,21 @@ import { useNavigate } from "react-router-dom";
 const ChoosePlanForm = () => {
   const navigate = useNavigate();
   return (
-    <>
+    <section className="flex min-h-full w-full flex-col gap-2">
       <h2 className="shrink-0 font-yekan text-lg font-extrabold">
         دو راه پیش روی شماست...
       </h2>
-      <div className="w-full flex-1 flex flex-col justify-start items-center gap-2">
-        <div className="flex-1 w-full bg-green-950 border border-green-400 rounded-sm px-3 py-4 flex flex-col justify-between items-center gap-2">
+
+      <div
+        className="
+          grid
+          w-full
+          flex-1
+          grid-rows-[repeat(2,minmax(auto,1fr))]
+          gap-2
+        "
+      >
+        <article className="flex w-full flex-col items-center justify-between gap-2 rounded-sm border border-green-400 bg-green-950 px-3 py-4">
           <div className="flex w-full flex-row justify-between items-center">
             <h3 className="font-peyda compact:text-base mobile:text-lg font-bold text-nowrap">
               رژیم هوشمند زیست‌آپ
@@ -63,8 +72,9 @@ const ChoosePlanForm = () => {
             title="شروع این مسیر"
             icon={<PiCaretLeftBold />}
           />
-        </div>
-        <div className="flex-1 w-full bg-darker-blue-100 border border-blue-400 rounded-sm px-3 py-4 flex flex-col justify-between items-center gap-2">
+        </article>
+
+        <article className="flex w-full flex-col items-center justify-between gap-2 rounded-sm border border-blue-400 bg-darker-blue-100 px-3 py-4">
           <div className="flex w-full flex-row justify-between items-center">
             <h3 className="font-peyda compact:text-base mobile:text-lg font-bold text-nowrap">
               رژیم‌های مرسوم
@@ -100,9 +110,9 @@ const ChoosePlanForm = () => {
             icon={<PiCaretLeftBold />}
             onClick={() => navigate("conventional-global-diets")}
           />
-        </div>
+        </article>
       </div>
-    </>
+    </section>
   );
 };
 
