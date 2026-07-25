@@ -1,38 +1,46 @@
-import { useOutletContext } from "react-router-dom";
-import type { AuthOutletContext } from "../../../layouts/auth-layout";
-import { useEffect, useState } from "react";
-import { AnimatePresence } from "framer-motion";
+import { useLocation, useMatches, useOutlet } from "react-router-dom";
+import { AnimatePresence, easeInOut, motion } from "framer-motion";
 import MainContainer from "../components/main-container";
-import ChoosePlanForm from "../components/choose-plan-form";
-import ConventionalGlobalDiets from "../components/conventional-global-diets";
-import ConventionalGlobalDietDetails from "../components/conventional-global-diet-details";
+import { hasStepSetting } from "../types/auth-route-handle";
 
 const ChoosePlan = () => {
-  const { setBackHandler } = useOutletContext<AuthOutletContext>();
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const matches = useMatches();
+  const location = useLocation();
+  const outlet = useOutlet();
+  const currentStepHandle = [...matches]
+    .reverse()
+    .map((match) => match.handle)
+    .find(hasStepSetting);
 
-  useEffect(() => {
-    if (step === 2) {
-      setBackHandler(() => {
-        setStep(1);
-      });
-    }
-
-    return () => {
-      setBackHandler(null);
-    };
-  }, [step, setBackHandler]);
+  const step = currentStepHandle?.step ?? 1;
 
   return (
     <MainContainer isFirstStep={step === 1} isLastStep={step === 3}>
       <AnimatePresence mode="wait" initial={false}>
-        {step === 1 ? (
-          <ChoosePlanForm key="step-1" />
-        ) : step === 2 ? (
-          <ConventionalGlobalDiets key="step-2" />
-        ) : (
-          <ConventionalGlobalDietDetails key="step-3" />
-        )}
+        <motion.div
+          key={location.pathname}
+          initial={{ x: 24, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          exit={{ x: 24, opacity: 0 }}
+          transition={{ duration: 0.4, ease: easeInOut }}
+          className="flex
+                            min-h-full
+                            w-full
+                            min-w-0
+                            max-w-full
+                            flex-1
+                            flex-col
+                            justify-start
+                            items-start
+                            gap-2
+                            overflow-x-clip
+                            compact:px-4
+                            mobile-lg:px-6
+                            py-7
+                            will-change-[transform,opacity]"
+        >
+          {outlet}
+        </motion.div>
       </AnimatePresence>
     </MainContainer>
   );

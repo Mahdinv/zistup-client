@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import MainContainer from "../components/main-container";
-import { easeInOut, motion } from "framer-motion";
+import { AnimatePresence, easeInOut, motion } from "framer-motion";
 import TextBox from "../../../shared/base-components/text-box";
 import Radio from "../../../shared/base-components/radio";
 import { LiaFemaleSolid, LiaMaleSolid } from "react-icons/lia";
@@ -106,14 +106,15 @@ const DemographicInformation = () => {
 
   return (
     <MainContainer isFirstStep={step === 1} isLastStep={step === 2}>
-      {step === 1 ? (
-        <motion.div
-          key="step-1"
-          initial={{ x: 24, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          exit={{ x: 24, opacity: 0 }}
-          transition={{ duration: 0.4, ease: easeInOut }}
-          className="flex
+      <AnimatePresence mode="wait" initial={false}>
+        {step === 1 ? (
+          <motion.div
+            key="step-1"
+            initial={{ x: 24, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: 24, opacity: 0 }}
+            transition={{ duration: 0.4, ease: easeInOut }}
+            className="flex
                     h-full
                     w-full
                     min-w-0
@@ -121,15 +122,16 @@ const DemographicInformation = () => {
                     flex-1
                     flex-col
                     items-start
-                    justify-between
+                    justify-start
                     gap-4
                     overflow-x-clip
                     compact:px-4
                     mobile-lg:px-6
+                    py-7
                     will-change-[transform,opacity]"
-        >
-          <div
-            className="flex 
+          >
+            <div
+              className="flex 
                           w-full 
                           min-w-0 
                           max-w-none 
@@ -142,90 +144,90 @@ const DemographicInformation = () => {
                           scrollbar-none 
                           [-ms-overflow-style:none] 
                           [&::-webkit-scrollbar]:hidden"
-          >
-            <TextBox
-              inlineLabel
-              label="نام و نشان"
-              placeHolder="مثال: پارسا متینی"
-              {...register("name")}
-              error={errors.name?.message}
+            >
+              <TextBox
+                inlineLabel
+                label="نام و نشان"
+                placeHolder="مثال: پارسا متینی"
+                {...register("name")}
+                error={errors.name?.message}
+              />
+              <Controller
+                name="sex"
+                control={control}
+                render={({ field }) => (
+                  <Radio
+                    inlineLabel
+                    label="جنسیت"
+                    gridClasses="grid-cols-2 gap-1"
+                    options={genderOptions}
+                    value={field.value}
+                    onChange={field.onChange}
+                    error={errors.sex?.message}
+                  />
+                )}
+              />
+              <Controller
+                name="weight"
+                control={control}
+                render={({ field }) => (
+                  <NumberPicker
+                    label="وزن"
+                    subLabel="(کیلوگرم)"
+                    min={0}
+                    max={200}
+                    value={field.value}
+                    onChangeEnd={field.onChange}
+                    error={errors.weight?.message}
+                  />
+                )}
+              />
+              <Controller
+                name="height"
+                control={control}
+                render={({ field }) => (
+                  <RulerBox
+                    label="قد"
+                    subLabel="(سانتی متر)"
+                    min={100}
+                    max={220}
+                    step={1}
+                    majorStep={5}
+                    value={field.value}
+                    onChangeEnd={field.onChange}
+                    error={errors.height?.message}
+                  />
+                )}
+              />
+              <Controller
+                name="age"
+                control={control}
+                render={({ field }) => (
+                  <NumberPicker
+                    label="سن"
+                    min={0}
+                    max={100}
+                    value={field.value}
+                    onChangeEnd={field.onChange}
+                    error={errors.age?.message}
+                  />
+                )}
+              />
+            </div>
+            <Button
+              classes="btn btn-primary-green mt-auto!"
+              title="مرحله بعد"
+              onClick={onNextStepHandler}
             />
-            <Controller
-              name="sex"
-              control={control}
-              render={({ field }) => (
-                <Radio
-                  inlineLabel
-                  label="جنسیت"
-                  gridClasses="grid-cols-2 gap-1"
-                  options={genderOptions}
-                  value={field.value}
-                  onChange={field.onChange}
-                  error={errors.sex?.message}
-                />
-              )}
-            />
-            <Controller
-              name="weight"
-              control={control}
-              render={({ field }) => (
-                <NumberPicker
-                  label="وزن"
-                  subLabel="(کیلوگرم)"
-                  min={0}
-                  max={200}
-                  value={field.value}
-                  onChangeEnd={field.onChange}
-                  error={errors.weight?.message}
-                />
-              )}
-            />
-            <Controller
-              name="height"
-              control={control}
-              render={({ field }) => (
-                <RulerBox
-                  label="قد"
-                  subLabel="(سانتی متر)"
-                  min={100}
-                  max={220}
-                  step={1}
-                  majorStep={5}
-                  value={field.value}
-                  onChangeEnd={field.onChange}
-                  error={errors.height?.message}
-                />
-              )}
-            />
-            <Controller
-              name="age"
-              control={control}
-              render={({ field }) => (
-                <NumberPicker
-                  label="سن"
-                  min={0}
-                  max={100}
-                  value={field.value}
-                  onChangeEnd={field.onChange}
-                  error={errors.age?.message}
-                />
-              )}
-            />
-          </div>
-          <Button
-            classes="btn btn-primary-green"
-            title="مرحله بعد"
-            onClick={onNextStepHandler}
-          />
-        </motion.div>
-      ) : (
-        <motion.form
-          key="step-2"
-          initial={{ x: -24, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          exit={{ x: -24, opacity: 0 }}
-          transition={{ duration: 0.4, ease: easeInOut }}
-          className="flex
+          </motion.div>
+        ) : (
+          <motion.form
+            key="step-2"
+            initial={{ x: -24, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: -24, opacity: 0 }}
+            transition={{ duration: 0.4, ease: easeInOut }}
+            className="flex
                     h-full
                     w-full
                     min-w-0
@@ -238,48 +240,50 @@ const DemographicInformation = () => {
                     overflow-x-clip
                     compact:px-4
                     mobile-lg:px-6
+                    py-7
                     will-change-[transform,opacity]"
-          onSubmit={handleSubmit(onDemographicInformationFormHandler)}
-        >
-          <Controller
-            name="mainGoal"
-            control={control}
-            render={({ field }) => (
-              <Radio
-                label="هدف اصلی تو چیه؟"
-                subLabel="(فقط یک انتخاب)"
-                gridClasses="grid-cols-3 gap-1"
-                options={mainGoalOptions}
-                value={field.value}
-                onChange={field.onChange}
-                error={errors.mainGoal?.message}
-              />
-            )}
-          />
-
-          <Controller
-            name="focus"
-            control={control}
-            render={({ field }) => (
-              <CheckBox
-                label="دوست داری روی چیا بیشتر تمرکز کنیم؟"
-                gridClasses="grid-cols-3 gap-1"
-                options={focusOptions}
-                values={field.value}
-                onChange={field.onChange}
-                error={errors.focus?.message}
-              />
-            )}
-          />
-          <div className="w-full h-full flex flex-col justify-end">
-            <Button
-              type="submit"
-              classes="btn btn-primary-green"
-              title="ثبت اطلاعات"
+            onSubmit={handleSubmit(onDemographicInformationFormHandler)}
+          >
+            <Controller
+              name="mainGoal"
+              control={control}
+              render={({ field }) => (
+                <Radio
+                  label="هدف اصلی تو چیه؟"
+                  subLabel="(فقط یک انتخاب)"
+                  gridClasses="grid-cols-3 gap-1"
+                  options={mainGoalOptions}
+                  value={field.value}
+                  onChange={field.onChange}
+                  error={errors.mainGoal?.message}
+                />
+              )}
             />
-          </div>
-        </motion.form>
-      )}
+
+            <Controller
+              name="focus"
+              control={control}
+              render={({ field }) => (
+                <CheckBox
+                  label="دوست داری روی چیا بیشتر تمرکز کنیم؟"
+                  gridClasses="grid-cols-3 gap-1"
+                  options={focusOptions}
+                  values={field.value}
+                  onChange={field.onChange}
+                  error={errors.focus?.message}
+                />
+              )}
+            />
+            <div className="w-full h-full flex flex-col justify-end">
+              <Button
+                type="submit"
+                classes="btn btn-primary-green"
+                title="ثبت اطلاعات"
+              />
+            </div>
+          </motion.form>
+        )}
+      </AnimatePresence>
     </MainContainer>
   );
 };

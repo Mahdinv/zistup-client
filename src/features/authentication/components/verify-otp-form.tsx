@@ -10,7 +10,7 @@ const VerifyOtpForm = ({ onLastStep }: { onLastStep: () => void }) => {
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: -24, opacity: 0 }}
       transition={{ duration: 0.4, ease: easeInOut }}
-      className="flex-1 compact:px-4 mobile-lg:px-6 h-full flex flex-col justify-between items-start gap-7 will-change-[transform,opacity]"
+      className="flex-1 compact:px-4 mobile-lg:px-6 py-7 h-full flex flex-col justify-between items-start gap-7 will-change-[transform,opacity]"
     >
       <div className="w-full flex flex-col items-center gap-6">
         <OtpBox />

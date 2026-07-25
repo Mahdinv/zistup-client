@@ -29,7 +29,7 @@ const LoginForm = ({ onNextStep }: { onNextStep: () => void }) => {
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: 24, opacity: 0 }}
       transition={{ duration: 0.4, ease: easeInOut }}
-      className="flex-1 compact:px-4 mobile-lg:px-6 h-full flex flex-col justify-start items-start gap-7 will-change-[transform,opacity]"
+      className="flex-1 compact:px-4 mobile-lg:px-6 py-7 h-full flex flex-col justify-start items-start gap-7 will-change-[transform,opacity]"
       onSubmit={handleSubmit(onLoginFormHandler)}
     >
       <TextBox

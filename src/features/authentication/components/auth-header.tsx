@@ -1,5 +1,6 @@
+import { AnimatePresence, motion } from "framer-motion";
+
 import { PiCaretRight } from "react-icons/pi";
-import { easeInOut, motion } from "framer-motion";
 
 type AuthHeaderProps = {
   firstLineTitle: string;
@@ -16,47 +17,105 @@ const AuthHeader = ({
   imageName,
   onBack,
 }: AuthHeaderProps) => {
+  const titleKey = [firstLineTitle, secondLineTitle, subTitle]
+    .filter(Boolean)
+    .join("-");
+
   return (
-    <div className="w-full h-[clamp(160px,27dvh,300px)] shrink-0 compact:px-4 mobile-lg:px-6 relative flex flex-col justify-around bg-blue-300 select-none">
-      <motion.div
-        initial={{ visibility: "hidden", opacity: 1 }}
-        animate={{
-          visibility: onBack ? "visible" : "hidden",
-          opacity: onBack ? 1 : 0,
-        }}
-        transition={{ duration: 0.3, ease: easeInOut }}
-        className={`self-start text-blue-600 border border-blue-600 rounded-sm p-1.5 cursor-pointer`}
-        onClick={onBack}
-      >
-        <PiCaretRight className="text-xl" />
-      </motion.div>
-      <div className="space-y-1.5">
-        <h1 className="font-yekan text-8xl font-extrabold">{firstLineTitle}</h1>
-        <h1 className="font-yekan text-8xl font-extrabold">
-          {secondLineTitle}
-          {subTitle && (
-            <span className="text-lg font-extrabold mr-1">{subTitle}</span>
+    <header className="relative flex h-[clamp(160px,27dvh,300px)] w-full shrink-0 select-none flex-col justify-around bg-blue-300 compact:px-4 mobile-lg:px-6">
+      <div className="h-9 self-start">
+        <AnimatePresence initial={false}>
+          {onBack && (
+            <motion.button
+              key="auth-back-button"
+              type="button"
+              aria-label="بازگشت به مرحله قبل"
+              onClick={onBack}
+              initial={{
+                opacity: 0,
+                scale: 0.9,
+              }}
+              animate={{
+                opacity: 1,
+                scale: 1,
+              }}
+              exit={{
+                opacity: 0,
+                scale: 0.9,
+              }}
+              whileTap={{
+                scale: 0.92,
+              }}
+              transition={{
+                duration: 0.2,
+                ease: "easeInOut",
+              }}
+              className="rounded-sm border border-blue-600 p-1.5 text-blue-600 outline-none transition-colors hover:bg-blue-600/10 focus-visible:ring-2 focus-visible:ring-blue-600"
+            >
+              <PiCaretRight className="text-xl" aria-hidden="true" />
+            </motion.button>
           )}
-        </h1>
+        </AnimatePresence>
       </div>
+
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={titleKey}
+          initial={{
+            opacity: 0,
+            y: 8,
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+          }}
+          exit={{
+            opacity: 0,
+            y: -8,
+          }}
+          transition={{
+            duration: 0.2,
+            ease: "easeInOut",
+          }}
+          className="space-y-1.5 text-right"
+        >
+          <h1 className="font-yekan text-8xl font-extrabold">
+            <span className="block">{firstLineTitle}</span>
+
+            {secondLineTitle && (
+              <span className="block">{secondLineTitle}</span>
+            )}
+          </h1>
+
+          {subTitle && (
+            <p className="font-yekan text-lg font-extrabold">{subTitle}</p>
+          )}
+        </motion.div>
+      </AnimatePresence>
+
       {imageName && (
-        <img
+        <motion.img
+          key={imageName}
           src={`/images/choose-plan/${imageName}`}
-          className="compact:top-2/5 
-                     mobile-lg:top-1/2 
-                     compact:left-[4%] fold:left-[8%] 
-                     compact:w-[50%] 
-                     mobile:w-[50%] 
-                     mobile-lg:w-[45%] 
-                     fold:w-[35%] 
-                     tablet:w-[45%]
-                     desktop:w-2/5 
-                     pointer-events-none absolute h-auto -translate-y-1/2"
-          alt="alt-name"
+          alt=""
+          aria-hidden="true"
           loading="lazy"
+          initial={{
+            opacity: 0,
+            scale: 0.95,
+          }}
+          animate={{
+            opacity: 1,
+            scale: 1,
+          }}
+          transition={{
+            duration: 0.25,
+            ease: "easeOut",
+          }}
+          className="pointer-events-none absolute h-auto -translate-y-1/2 compact:left-[4%] compact:top-2/5 compact:w-[50%] mobile:w-[50%] mobile-lg:top-1/2 mobile-lg:w-[45%] fold:left-[8%] fold:w-[35%] tablet:w-[45%] desktop:w-2/5"
         />
       )}
-    </div>
+    </header>
   );
 };
 

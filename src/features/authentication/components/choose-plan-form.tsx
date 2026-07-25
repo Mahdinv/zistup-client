@@ -1,4 +1,3 @@
-import { easeInOut, motion } from "framer-motion";
 import {
   PiAlarmFill,
   PiCaretLeftBold,
@@ -10,29 +9,12 @@ import {
   PiWallet,
 } from "react-icons/pi";
 import Button from "../../../shared/base-components/button";
+import { useNavigate } from "react-router-dom";
 
 const ChoosePlanForm = () => {
+  const navigate = useNavigate();
   return (
-    <motion.div
-      initial={{ x: 24, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      exit={{ x: 24, opacity: 0 }}
-      transition={{ duration: 0.4, ease: easeInOut }}
-      className="flex
-                    min-h-full
-                    w-full
-                    min-w-0
-                    max-w-full
-                    flex-1
-                    flex-col
-                    items-start
-                    gap-2
-                    overflow-x-clip
-                    compact:px-4
-                    mobile-lg:px-6
-                    py-7
-                    will-change-[transform,opacity]"
-    >
+    <>
       <h2 className="shrink-0 font-yekan text-lg font-extrabold">
         دو راه پیش روی شماست...
       </h2>
@@ -116,10 +98,11 @@ const ChoosePlanForm = () => {
             classes="btn btn-primary-blue text-sm! font-semibold! py-1!"
             title="مشاهده رژیم‌های آماده"
             icon={<PiCaretLeftBold />}
+            onClick={() => navigate("conventional-global-diets")}
           />
         </div>
       </div>
-    </motion.div>
+    </>
   );
 };
 
