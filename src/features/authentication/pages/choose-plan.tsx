@@ -20,7 +20,7 @@ const ChoosePlan = () => {
       stepKey={location.pathname}
       isFirstStep={step === 1}
       isLastStep={step === 3}
-      scrollMode="container"
+      scrollMode="child"
     >
       {outlet}
     </MainContainer>
