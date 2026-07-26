@@ -100,8 +100,44 @@
   --color-green-800: #1a894c;
   --color-green-900: #146739;
   --color-green-950: #0f502c;
-  --color-darker-green-100: #006626;
-  --color-darker-green-200: #004331;
+  --color-darker-green-100: #004331;
+  --color-darker-green-200: #00181f;
+
+  --color-yellow-50: #fffdf0;
+  --color-yellow-75: #fff7c0;
+  --color-yellow-100: #fff3a6;
+  --color-yellow-200: #ffee80;
+  --color-yellow-300: #ffeb66;
+  --color-yellow-400: #b3a547;
+  --color-yellow-500: #9c8f3e;
+
+  --color-red-50: #ffefef;
+  --color-red-75: #ffbcbc;
+  --color-red-100: #ffa0a0;
+  --color-red-200: #ff7878;
+  --color-red-300: #ff5c5c;
+  --color-red-400: #d23a3a;
+  --color-red-500: #7b1717;
+
+  --color-gray-50: #fcfcfc;
+  --color-gray-75: #f8f8f8;
+  --color-gray-100: #e2e2e2;
+  --color-gray-200: #d6d6d6;
+  --color-gray-300: #c4c4c4;
+  --color-gray-400: #b8b8b8;
+  --color-gray-500: #8f99a0;
+  --color-gray-600: #818181;
+  --color-gray-700: #707070;
+
+  --color-orange-50: #ffe8d5;
+  --color-orange-75: #ffcfa3;
+  --color-orange-100: #ffbc7d;
+  --color-orange-200: #ff9f45;
+  --color-orange-300: #ff8b1f;
+  --color-orange-400: #b36116;
+  --color-orange-500: #9c5513;
+
+  --color-dark: #292f37;
 }
 
 ::-webkit-scrollbar {
@@ -131,7 +167,7 @@ input:-webkit-autofill {
 
 html,
 body {
-  @apply font-peyda m-0 h-dvh w-full overflow-hidden bg-[#EDECEA] p-0;
+  @apply font-peyda m-0 h-dvh w-full overflow-hidden bg-[#EDECEA] p-0 select-none;
 }
 
 .btn {
@@ -147,16 +183,16 @@ body {
          laptop:hover:bg-green-700 
            laptop:disabled:hover:shadow-none
          disabled:bg-[#BFBFBF] 
-         disabled:text-darker-green-200;
+         disabled:text-darker-green-100;
 }
 
 .btn.btn-primary-blue {
   @apply bg-blue-400 
          text-black
-         compact:active:border-blue-700
-         compact:active:bg-blue-700
-         laptop:hover:border-blue-700 
-         laptop:hover:bg-blue-700 
+         compact:active:border-blue-500
+         compact:active:bg-blue-500
+         laptop:hover:border-blue-500 
+         laptop:hover:bg-blue-500 
            laptop:disabled:hover:shadow-none
          disabled:bg-[#666565] 
          disabled:text-darker-blue-200;
