@@ -1,8 +1,9 @@
-import type { ReactNode } from "react";
-import { AnimatePresence, easeInOut, motion } from "framer-motion";
+import { useState, type ReactNode } from "react";
+
+import { AnimatePresence, motion } from "framer-motion";
 
 type MainContainerProps = {
-  stepKey: string | number;
+  stepKey: number;
   isFirstStep: boolean;
   isLastStep: boolean;
   scrollMode?: "container" | "child";
@@ -16,6 +17,25 @@ const MainContainer = ({
   scrollMode = "container",
   children,
 }: MainContainerProps) => {
+  const [steps, setSteps] = useState({
+    previous: stepKey,
+    current: stepKey,
+  });
+
+  if (steps.current !== stepKey) {
+    setSteps({
+      previous: steps.current,
+      current: stepKey,
+    });
+  }
+
+  const direction =
+    steps.current === steps.previous
+      ? 0
+      : steps.current > steps.previous
+        ? 1
+        : -1;
+
   const getBorderRadius = () => {
     if (isFirstStep) {
       return {
@@ -45,16 +65,17 @@ const MainContainer = ({
 
   return (
     <motion.div
-      initial={{
-        borderTopRightRadius: 20,
-        borderTopLeftRadius: 0,
-      }}
+      initial={false}
       animate={getBorderRadius()}
-      transition={{
-        duration: 0.7,
-        times: [0, 0.45, 1],
-        ease: "easeInOut",
-      }}
+      transition={
+        direction === 0
+          ? { duration: 0 }
+          : {
+              duration: 0.7,
+              times: [0, 0.45, 1],
+              ease: "easeInOut",
+            }
+      }
       className="
         relative
         h-full
@@ -76,37 +97,45 @@ const MainContainer = ({
           ${parentScrollClass}
         `}
       >
-        <AnimatePresence mode="wait" initial={false}>
+        <AnimatePresence mode="wait" initial={false} custom={direction}>
           <motion.div
             key={stepKey}
-            initial={{
-              x: isFirstStep ? 24 : -24,
-              opacity: 0,
+            custom={direction}
+            variants={{
+              enter: (direction: number) => ({
+                x: direction > 0 ? 32 : direction < 0 ? -32 : 0,
+                opacity: direction === 0 ? 1 : 0,
+              }),
+
+              center: {
+                x: 0,
+                opacity: 1,
+              },
+
+              exit: (direction: number) => ({
+                x: direction > 0 ? -32 : 32,
+                opacity: 0,
+              }),
             }}
-            animate={{
-              x: 0,
-              opacity: 1,
-            }}
-            exit={{
-              x: isFirstStep ? 24 : -24,
-              opacity: 0,
-            }}
+            initial="enter"
+            animate="center"
+            exit="exit"
             transition={{
-              duration: 0.4,
-              ease: easeInOut,
+              duration: 0.35,
+              ease: [0.22, 1, 0.36, 1],
             }}
             className={`
-              flex
-              w-full
-              min-w-0
-              flex-col
-              pt-7
-              compact:px-4
-              mobile-lg:px-6
-              pb-[calc(1.75rem+env(safe-area-inset-bottom))]
-              will-change-[transform,opacity]
-              ${contentHeightClass}
-            `}
+      flex
+      w-full
+      min-w-0
+      flex-col
+      pt-7
+      compact:px-4
+      mobile-lg:px-6
+      pb-[calc(1.75rem+env(safe-area-inset-bottom))]
+      will-change-[transform,opacity]
+      ${contentHeightClass}
+    `}
           >
             {children}
           </motion.div>

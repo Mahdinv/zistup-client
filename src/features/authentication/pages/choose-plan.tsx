@@ -1,11 +1,10 @@
-import { useLocation, useMatches, useOutlet } from "react-router-dom";
+import { useMatches, useOutlet } from "react-router-dom";
 
 import MainContainer from "../components/main-container";
 import { hasStepSetting } from "../types/auth-route-handle";
 
 const ChoosePlan = () => {
   const matches = useMatches();
-  const location = useLocation();
   const outlet = useOutlet();
 
   const currentStepHandle = [...matches]
@@ -17,7 +16,7 @@ const ChoosePlan = () => {
 
   return (
     <MainContainer
-      stepKey={location.pathname}
+      stepKey={step}
       isFirstStep={step === 1}
       isLastStep={step === 3}
       scrollMode="child"
