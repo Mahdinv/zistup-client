@@ -1,21 +1,32 @@
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-
 import MainContainer from "../components/main-container";
 import LoginForm from "../components/login-form";
 import VerifyOtpForm from "../components/verify-otp-form";
-
 import type { AuthOutletContext } from "../../../layouts/auth-layout";
+import type { AuthIdentifierDTO } from "../models/send-code.types";
+
+type AuthFlow =
+  | {
+      step: 1;
+    }
+  | {
+      step: 2;
+      identifier: AuthIdentifierDTO;
+      refCode?: string;
+    };
 
 const Login = () => {
   const { setBackHandler } = useOutletContext<AuthOutletContext>();
 
-  const [step, setStep] = useState<1 | 2>(1);
+  const [authFlow, setAuthFlow] = useState<AuthFlow>({
+    step: 1,
+  });
 
   useEffect(() => {
-    if (step === 2) {
+    if (authFlow.step === 2) {
       setBackHandler(() => {
-        setStep(1);
+        setAuthFlow({ step: 1 });
       });
     } else {
       setBackHandler(null);
@@ -24,19 +35,30 @@ const Login = () => {
     return () => {
       setBackHandler(null);
     };
-  }, [step, setBackHandler]);
+  }, [authFlow.step, setBackHandler]);
 
   return (
     <MainContainer
-      stepKey={step}
-      isFirstStep={step === 1}
-      isLastStep={step === 2}
+      stepKey={authFlow.step}
+      isFirstStep={authFlow.step === 1}
+      isLastStep={authFlow.step === 2}
       scrollMode="container"
     >
-      {step === 1 ? (
-        <LoginForm onNextStep={() => setStep(2)} />
+      {authFlow.step === 1 ? (
+        <LoginForm
+          onSuccess={(identifier, refCode) => {
+            setAuthFlow({
+              step: 2,
+              identifier,
+              refCode,
+            });
+          }}
+        />
       ) : (
-        <VerifyOtpForm onLastStep={() => setStep(1)} />
+        <VerifyOtpForm
+          identifier={authFlow.identifier}
+          refCode={authFlow.refCode}
+        />
       )}
     </MainContainer>
   );

@@ -7,8 +7,18 @@ import Button from "../../../shared/base-components/button";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginSchema, type Login } from "../schemas/login.schema";
+import { useMutation } from "@tanstack/react-query";
+import { sendCode } from "../services/auth.service";
+import { mapLoginFormToIdentifierDto } from "../models/send-code.mapper";
+import { normalizeApiError } from "../../../shared/api";
+import { toast } from "sonner";
+import type { AuthIdentifierDTO } from "../models/send-code.types";
 
-const LoginForm = ({ onNextStep }: { onNextStep: () => void }) => {
+const LoginForm = ({
+  onSuccess,
+}: {
+  onSuccess: (identifier: AuthIdentifierDTO, refCode?: string) => void;
+}) => {
   const [inviteCode, setInviteCode] = useState(false);
   const {
     register,
@@ -18,9 +28,31 @@ const LoginForm = ({ onNextStep }: { onNextStep: () => void }) => {
     resolver: zodResolver(LoginSchema),
   });
 
+  const { mutate, isPending } = useMutation({
+    mutationFn: ({
+      identifier,
+    }: {
+      identifier: AuthIdentifierDTO;
+      refCode?: string;
+    }) => {
+      return sendCode(identifier);
+    },
+    onSuccess: (_, variables) => {
+      toast.success("کد امنیتی برای شما ارسال شد");
+      onSuccess(variables.identifier, variables.refCode);
+    },
+    onError: (error) => {
+      const apiError = normalizeApiError(error);
+      toast.error(apiError.message);
+    },
+  });
+
   const onLoginFormHandler: SubmitHandler<Login> = (data) => {
-    console.log(data);
-    onNextStep();
+    const identifier = mapLoginFormToIdentifierDto(data.identifier);
+    mutate({
+      identifier,
+      refCode: data.invitationCode?.trim() || undefined,
+    });
   };
 
   return (
@@ -32,8 +64,8 @@ const LoginForm = ({ onNextStep }: { onNextStep: () => void }) => {
         label="شماره موبایل یا ایمیل"
         subLabel="برای ورود، شماره تماست رو وارد کن"
         placeHolder="مثال: 09333593301"
-        {...register("mobile")}
-        error={errors.mobile?.message}
+        {...register("identifier")}
+        error={errors.identifier?.message}
       />
 
       <div className="flex w-full shrink-0 flex-col items-center gap-4">
@@ -95,6 +127,7 @@ const LoginForm = ({ onNextStep }: { onNextStep: () => void }) => {
           type="submit"
           classes="w-full btn btn-primary-green"
           title="دریافت کد"
+          disable={isPending}
         />
 
         <Button

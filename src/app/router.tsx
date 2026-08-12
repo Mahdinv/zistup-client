@@ -5,6 +5,7 @@ import ChoosePlan from "../features/authentication/pages/choose-plan";
 import type { AuthRouteHandle } from "../features/authentication/types/auth-route-handle";
 import ConventionalGlobalDiets from "../features/authentication/components/conventional-global-diets";
 import ChoosePlanForm from "../features/authentication/components/choose-plan-form";
+import ConventionalGlobalDietDetails from "../features/authentication/components/conventional-global-diet-details";
 
 const Login = lazy(() => import("../features/authentication/pages/login"));
 const DemographicInformation = lazy(
@@ -62,6 +63,14 @@ const router = createBrowserRouter([
                 backTo: "/auth/choose-plan",
               },
               step: 2,
+            } satisfies AuthRouteHandle,
+          },
+          {
+            path: "conventional-global-diets/:dietId",
+            element: <ConventionalGlobalDietDetails />,
+            handle: {
+              // authHeader is not write here. Because we have routeState in this path
+              step: 3,
             } satisfies AuthRouteHandle,
           },
         ],

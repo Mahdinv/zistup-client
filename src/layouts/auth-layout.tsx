@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { Outlet, useMatches, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useMatches, useNavigate } from "react-router-dom";
 
 import AuthHeader from "../features/authentication/components/auth-header";
 
@@ -7,6 +7,7 @@ import {
   DEFAULT_AUTH_HEADER,
   hasAuthHeaderSetting,
 } from "../features/authentication/types/auth-route-handle";
+import type { AuthNavigationState } from "../features/authentication/types/auth-navigation-state";
 
 export type AuthOutletContext = {
   setBackHandler: (handler: (() => void) | null) => void;
@@ -15,6 +16,7 @@ export type AuthOutletContext = {
 const AuthLayout = () => {
   const matches = useMatches();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [backHandlerState, setBackHandlerState] = useState<(() => void) | null>(
     null,
@@ -25,21 +27,27 @@ const AuthLayout = () => {
     .map((match) => match.handle)
     .find(hasAuthHeaderSetting);
 
-  const headerSetting = closestHandle?.authHeader;
+  const handleHeaderSetting = closestHandle?.authHeader;
 
-  const showHeader = headerSetting !== false;
+  const navigationState = location.state as AuthNavigationState | null;
+
+  const dynamicHeader = navigationState?.authHeader;
+
+  const finalHeaderSetting = dynamicHeader ?? handleHeaderSetting;
+
+  const showHeader = finalHeaderSetting !== false;
 
   const header =
-    typeof headerSetting === "object" ? headerSetting : DEFAULT_AUTH_HEADER;
+    typeof finalHeaderSetting === "object"
+      ? finalHeaderSetting
+      : DEFAULT_AUTH_HEADER;
 
   const setBackHandler = useCallback((handler: (() => void) | null) => {
     setBackHandlerState(() => handler);
   }, []);
 
-  const backTo = header.backTo;
-
-  const handleBack: (() => void) | undefined = backTo
-    ? () => navigate(backTo)
+  const handleBack: (() => void) | undefined = header.backTo
+    ? () => navigate(header.backTo!)
     : (backHandlerState ?? undefined);
 
   return (
@@ -56,11 +64,9 @@ const AuthLayout = () => {
 
       <main className="min-h-0 w-full flex-1 overflow-x-hidden">
         <Outlet
-          context={
-            {
-              setBackHandler,
-            } satisfies AuthOutletContext
-          }
+          context={{
+            setBackHandler,
+          }}
         />
       </main>
     </div>

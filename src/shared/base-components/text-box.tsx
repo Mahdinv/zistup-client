@@ -27,24 +27,17 @@ const TextBox = ({
       >
         {label && (
           <div
-            className={`flex w-full ${inlineLabel && "flex-1 flex-col items-center justify-start mb-0!"} flex-row ${subLabel ? "mb-1" : "mb-0"}`}
+            className={`w-full flex flex-col justify-center items-center ${inlineLabel && "flex-1"} ${subLabel ? "mb-1" : "mb-0"}`}
           >
-            <div className="flex flex-col justify-center items-center">
-              <label
-                htmlFor={props.name}
-                className="shrink-0 text-xl font-yekan font-extrabold self-start text-white"
-              >
-                {label}
-              </label>
-              {subLabel && (
-                <small className="font-peyda text-xs font-medium self-start text-blue-500">
-                  {subLabel}
-                </small>
-              )}
-            </div>
-            {error && !inlineLabel && (
-              <small className="text-red-500 text-xs font-peyda self-end mr-auto ml-1">
-                {error}
+            <label
+              htmlFor={props.name}
+              className="shrink-0 text-xl font-yekan font-extrabold self-start text-white"
+            >
+              {label}
+            </label>
+            {subLabel && (
+              <small className="font-peyda text-xs font-medium self-start text-blue-500">
+                {subLabel}
               </small>
             )}
           </div>
@@ -65,13 +58,8 @@ const TextBox = ({
             {...props}
           />
         </div>
-        {!label && error && (
-          <small className="text-red-500 self-start text-xs font-peyda mr-2 mt-1">
-            {error}
-          </small>
-        )}
       </div>
-      {inlineLabel && error && (
+      {error && (
         <small className="text-red-500 self-end text-xs font-peyda ml-2">
           {error}
         </small>

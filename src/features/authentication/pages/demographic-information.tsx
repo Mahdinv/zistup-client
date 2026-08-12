@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import {
   Controller,
   useForm,
@@ -24,16 +24,22 @@ import {
   DemographicInformationSchema,
   type DemographicInformation,
 } from "../schemas/demographic-information.schema";
+import { BirthDatePicker } from "../../../shared/base-components/date-picker";
+import { useMutation } from "@tanstack/react-query";
+import { addDemographicInformation } from "../services/user.service";
+import ScrollFade from "../../../shared/base-components/scroll-fade";
+import { normalizeApiError } from "../../../shared/api";
+import { toast } from "sonner";
 
 const genderOptions = [
   {
     title: "آقا",
-    value: 1,
+    value: "male",
     icon: <LiaMaleSolid className="text-2xl" strokeWidth={0.8} />,
   },
   {
     title: "خانم",
-    value: 2,
+    value: "female",
     icon: <LiaFemaleSolid className="text-2xl" strokeWidth={0.8} />,
   },
 ];
@@ -77,13 +83,13 @@ const stepOneFields: FieldPath<DemographicInformation>[] = [
   "sex",
   "weight",
   "height",
-  "age",
+  "birthDate",
 ];
 
 const DemographicInformation = () => {
   const { setBackHandler } = useOutletContext<AuthOutletContext>();
-
   const [step, setStep] = useState<1 | 2>(1);
+  const navigate = useNavigate();
 
   const {
     register,
@@ -99,9 +105,21 @@ const DemographicInformation = () => {
       sex: undefined,
       weight: 70,
       height: 150,
-      age: 0,
+      birthDate: "",
       mainGoal: "",
       focus: [],
+    },
+  });
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: addDemographicInformation,
+    onSuccess: () => {
+      toast.success("اطلاعات پایه با موفقیت تکمیل شد");
+      navigate("/auth/choose-plan");
+    },
+    onError: (error) => {
+      const apiError = normalizeApiError(error);
+      toast.error(apiError.message);
     },
   });
 
@@ -132,7 +150,7 @@ const DemographicInformation = () => {
   };
 
   const handleFormSubmit: SubmitHandler<DemographicInformation> = (data) => {
-    console.log(data);
+    mutate(data);
   };
 
   return (
@@ -146,8 +164,9 @@ const DemographicInformation = () => {
         className="flex h-full min-h-0 w-full flex-col"
         onSubmit={handleSubmit(handleFormSubmit)}
       >
-        <div
-          className="
+        <ScrollFade>
+          <div
+            className="
             min-h-0
             w-full
             flex-1
@@ -157,118 +176,119 @@ const DemographicInformation = () => {
             [-ms-overflow-style:none]
             [&::-webkit-scrollbar]:hidden
           "
-        >
-          {step === 1 ? (
-            <div className="flex w-full flex-col items-center gap-2.5">
-              <TextBox
-                inlineLabel
-                label="نام و نشان"
-                placeHolder="مثال: پارسا متینی"
-                {...register("name")}
-                error={errors.name?.message}
-              />
+          >
+            {step === 1 ? (
+              <div className="flex w-full flex-col items-center gap-2.5">
+                <TextBox
+                  inlineLabel
+                  label="نام و نشان"
+                  placeHolder="مثال: پارسا متینی"
+                  {...register("name")}
+                  error={errors.name?.message}
+                />
 
-              <Controller
-                name="sex"
-                control={control}
-                render={({ field }) => (
-                  <Radio
-                    inlineLabel
-                    label="جنسیت"
-                    gridClasses="grid-cols-2 gap-1"
-                    options={genderOptions}
-                    value={field.value}
-                    onChange={field.onChange}
-                    error={errors.sex?.message}
-                  />
-                )}
-              />
+                <Controller
+                  name="sex"
+                  control={control}
+                  render={({ field }) => (
+                    <Radio
+                      inlineLabel
+                      label="جنسیت"
+                      gridClasses="grid-cols-2 gap-1"
+                      options={genderOptions}
+                      value={field.value}
+                      onChange={field.onChange}
+                      error={errors.sex?.message}
+                    />
+                  )}
+                />
 
-              <Controller
-                name="weight"
-                control={control}
-                render={({ field }) => (
-                  <NumberPicker
-                    label="وزن"
-                    subLabel="(کیلوگرم)"
-                    min={0}
-                    max={200}
-                    value={field.value}
-                    onChangeEnd={field.onChange}
-                    error={errors.weight?.message}
-                  />
-                )}
-              />
+                <Controller
+                  name="weight"
+                  control={control}
+                  render={({ field }) => (
+                    <NumberPicker
+                      label="وزن"
+                      subLabel="(کیلوگرم)"
+                      min={0}
+                      max={200}
+                      value={field.value}
+                      onChangeEnd={field.onChange}
+                      error={errors.weight?.message}
+                    />
+                  )}
+                />
 
-              <Controller
-                name="height"
-                control={control}
-                render={({ field }) => (
-                  <RulerBox
-                    label="قد"
-                    subLabel="(سانتی‌متر)"
-                    min={100}
-                    max={220}
-                    step={1}
-                    majorStep={5}
-                    value={field.value}
-                    onChangeEnd={field.onChange}
-                    error={errors.height?.message}
-                  />
-                )}
-              />
+                <Controller
+                  name="height"
+                  control={control}
+                  render={({ field }) => (
+                    <RulerBox
+                      label="قد"
+                      subLabel="(سانتی‌متر)"
+                      min={100}
+                      max={220}
+                      step={1}
+                      majorStep={5}
+                      value={field.value}
+                      onChangeEnd={field.onChange}
+                      error={errors.height?.message}
+                    />
+                  )}
+                />
 
-              <Controller
-                name="age"
-                control={control}
-                render={({ field }) => (
-                  <NumberPicker
-                    label="سن"
-                    min={0}
-                    max={100}
-                    value={field.value}
-                    onChangeEnd={field.onChange}
-                    error={errors.age?.message}
-                  />
-                )}
-              />
-            </div>
-          ) : (
-            <div className="flex w-full flex-col gap-4">
-              <Controller
-                name="mainGoal"
-                control={control}
-                render={({ field }) => (
-                  <Radio
-                    label="هدف اصلی تو چیه؟"
-                    subLabel="(فقط یک انتخاب)"
-                    gridClasses="grid-cols-3 gap-1"
-                    options={mainGoalOptions}
-                    value={field.value}
-                    onChange={field.onChange}
-                    error={errors.mainGoal?.message}
-                  />
-                )}
-              />
+                <Controller
+                  name="birthDate"
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <BirthDatePicker
+                      ref={field.ref}
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      disabled={isPending}
+                      error={fieldState.error?.message}
+                      label="تاریخ تولد"
+                    />
+                  )}
+                />
+              </div>
+            ) : (
+              <div className="flex w-full flex-col gap-4">
+                <Controller
+                  name="mainGoal"
+                  control={control}
+                  render={({ field }) => (
+                    <Radio
+                      label="هدف اصلی تو چیه؟"
+                      subLabel="(فقط یک انتخاب)"
+                      gridClasses="grid-cols-3 gap-1"
+                      options={mainGoalOptions}
+                      value={field.value}
+                      onChange={field.onChange}
+                      error={errors.mainGoal?.message}
+                    />
+                  )}
+                />
 
-              <Controller
-                name="focus"
-                control={control}
-                render={({ field }) => (
-                  <CheckBox
-                    label="دوست داری روی چیا بیشتر تمرکز کنیم؟"
-                    gridClasses="grid-cols-3 gap-1"
-                    options={focusOptions}
-                    values={field.value}
-                    onChange={field.onChange}
-                    error={errors.focus?.message}
-                  />
-                )}
-              />
-            </div>
-          )}
-        </div>
-
+                <Controller
+                  name="focus"
+                  control={control}
+                  render={({ field }) => (
+                    <CheckBox
+                      label="دوست داری روی چیا بیشتر تمرکز کنیم؟"
+                      gridClasses="grid-cols-3 gap-1"
+                      options={focusOptions}
+                      values={field.value}
+                      onChange={field.onChange}
+                      error={errors.focus?.message}
+                    />
+                  )}
+                />
+              </div>
+            )}
+          </div>
+        </ScrollFade>
         <div className="w-full shrink-0 pt-4">
           {step === 1 ? (
             <Button

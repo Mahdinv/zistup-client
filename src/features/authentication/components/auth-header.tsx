@@ -79,24 +79,25 @@ const AuthHeader = ({
           }}
           className="space-y-1.5 text-right"
         >
-          <h1 className="font-yekan text-8xl font-extrabold">
+          <h1 className="font-yekan text-8xl font-extrabold space-y-1">
             <span className="block">{firstLineTitle}</span>
 
             {secondLineTitle && (
-              <span className="block">{secondLineTitle}</span>
+              <span className="block">
+                {secondLineTitle}
+                {subTitle && (
+                  <span className="text-4xl mr-1">({subTitle})</span>
+                )}
+              </span>
             )}
           </h1>
-
-          {subTitle && (
-            <p className="font-yekan text-lg font-extrabold">{subTitle}</p>
-          )}
         </motion.div>
       </AnimatePresence>
 
       {imageName && (
         <motion.img
           key={imageName}
-          src={`/images/choose-plan/${imageName}`}
+          src={imageName}
           alt=""
           aria-hidden="true"
           loading="lazy"
