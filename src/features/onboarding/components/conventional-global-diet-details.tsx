@@ -49,7 +49,10 @@ const ConventionalGlobalDietDetails = () => {
 
   if (!diet) {
     return (
-      <Navigate to="/auth/choose-plan/conventional-global-diets" replace />
+      <Navigate
+        to="/onboarding/choose-plan/conventional-global-diets"
+        replace
+      />
     );
   }
 

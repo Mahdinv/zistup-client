@@ -114,7 +114,7 @@ const BasicInformationPage = () => {
     mutationFn: addBasicInformation,
     onSuccess: () => {
       toast.success("اطلاعات پایه با موفقیت تکمیل شد");
-      navigate("/auth/choose-plan");
+      navigate("/onboarding/choose-plan");
     },
     onError: (error) => {
       const apiError = normalizeApiError(error);

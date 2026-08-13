@@ -38,7 +38,7 @@ const ConventionalGlobalDiets = () => {
                   secondLineTitle: diet.title,
                   subTitle: diet.subTitle,
                   imageName: diet.image,
-                  backTo: "/auth/choose-plan/conventional-global-diets",
+                  backTo: "/onboarding/choose-plan/conventional-global-diets",
                 },
               };
               return <DietOption key={diet.id} routeState={routeState} />;

@@ -59,7 +59,7 @@ const router = createBrowserRouter([
               accountFlowHeader: {
                 firstLineTitle: "رژیم های",
                 secondLineTitle: "مرسوم جهانی",
-                backTo: "/auth/choose-plan",
+                backTo: "/onboarding/choose-plan",
               },
               step: 2,
             } satisfies AccountFlowRouteHandle,
