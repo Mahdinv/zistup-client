@@ -26,7 +26,7 @@ import {
   jalaliToGregorian,
   toPersianNumber,
   type JalaliDate,
-} from "../utils/birth-date.utils";
+} from "../lib/birth-date.utils";
 
 const cn = (...classes: Array<string | false | null | undefined>): string => {
   return classes.filter(Boolean).join(" ");
@@ -88,7 +88,7 @@ const WheelOption = memo(function WheelOption({
         "keen-slider__slide",
         "relative flex min-w-0",
         "items-center justify-center",
-        "!overflow-visible",
+        "overflow-visible!",
 
         active ? "z-20" : "z-0",
 
@@ -105,7 +105,7 @@ const WheelOption = memo(function WheelOption({
         <span
           dir="rtl"
           className={cn(
-            "inline-flex h-[32px]",
+            "inline-flex h-8",
             "items-center justify-center",
 
             "overflow-visible",
@@ -116,7 +116,7 @@ const WheelOption = memo(function WheelOption({
             "transition-[transform,opacity]",
             "duration-150 ease-out",
 
-            "[transform-origin:center_center]",
+            "origin-[center_center]",
 
             isNumber
               ? [
@@ -799,12 +799,12 @@ export const BirthDatePicker = forwardRef<HTMLDivElement, BirthDatePickerProps>(
           className={cn(
             "relative isolate grid",
 
-            "h-[62px] w-full",
+            "h-15.5 w-full",
 
             "grid-cols-[0.9fr_1.3fr_1.1fr]",
 
             "overflow-hidden",
-            "rounded-[20px]",
+            "rounded-2xl",
 
             "border border-[#303641]",
             "bg-[#191A20]",
@@ -818,7 +818,7 @@ export const BirthDatePicker = forwardRef<HTMLDivElement, BirthDatePickerProps>(
 
             "focus-within:border-[#566170]",
             "focus-within:ring-[3px]",
-            "focus-within:ring-white/[0.04]",
+            "focus-within:ring-white/4",
 
             error && "border-red-500 focus-within:border-red-500",
 

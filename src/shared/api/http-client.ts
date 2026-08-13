@@ -2,7 +2,7 @@ import axios, { isAxiosError } from "axios";
 
 import { ApiError, normalizeApiError } from "./api-error";
 
-import { isApiFailureResponse } from "./api-response.types";
+import { isApiFailureResponse } from "./api-error-response";
 
 import { tokenStorage } from "./token-storage";
 

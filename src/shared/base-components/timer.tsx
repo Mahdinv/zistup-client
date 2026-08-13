@@ -1,5 +1,5 @@
 import { memo, useEffect, useState } from "react";
-import { formatTime } from "../utils/formatTime";
+import { formatTime } from "../lib/format-time";
 
 type TimerProps = {
   initialTime: number | null;

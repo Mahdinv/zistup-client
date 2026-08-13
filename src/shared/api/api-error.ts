@@ -1,6 +1,6 @@
 import axios, { isAxiosError } from "axios";
 
-import { isApiFailureResponse } from "./api-response.types";
+import { isApiFailureResponse } from "./api-error-response";
 
 export type ApiErrorType =
   "api" | "network" | "timeout" | "cancelled" | "unknown";

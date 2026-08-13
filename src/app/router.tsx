@@ -1,77 +1,76 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import AuthLayout from "../layouts/auth-layout";
 import { lazy } from "react";
-import ChoosePlan from "../features/authentication/pages/choose-plan";
-import type { AuthRouteHandle } from "../features/authentication/types/auth-route-handle";
-import ConventionalGlobalDiets from "../features/authentication/components/conventional-global-diets";
-import ChoosePlanForm from "../features/authentication/components/choose-plan-form";
-import ConventionalGlobalDietDetails from "../features/authentication/components/conventional-global-diet-details";
+import ChoosePlan from "../features/onboarding/pages/choose-plan-page";
+import ConventionalGlobalDiets from "../features/onboarding/components/conventional-global-diets";
+import ChoosePlanForm from "../features/onboarding/components/choose-plan-form";
+import ConventionalGlobalDietDetails from "../features/onboarding/components/conventional-global-diet-details";
+import AccountFlowLayout from "./layouts/account-flow/account-flow-layout";
+import type { AccountFlowRouteHandle } from "./layouts/account-flow/account-flow.types";
 
-const Login = lazy(() => import("../features/authentication/pages/login"));
-const DemographicInformation = lazy(
-  () => import("../features/authentication/pages/demographic-information"),
+const LoginPage = lazy(() => import("@/features/auth/pages/login-page"));
+const BasicInformationPage = lazy(
+  () => import("../features/onboarding/pages/basic-information-page"),
 );
 
 const router = createBrowserRouter([
   {
-    path: "/auth",
-    element: <AuthLayout />,
+    element: <AccountFlowLayout />,
     children: [
       { index: true, element: <Navigate to="login" replace /> },
       {
-        path: "login",
-        element: <Login />,
+        path: "/auth/login",
+        element: <LoginPage />,
         handle: {
-          authHeader: {
+          accountFlowHeader: {
             firstLineTitle: "ورود",
             secondLineTitle: "زیـــــست‌آپ",
           },
-        } satisfies AuthRouteHandle,
+        } satisfies AccountFlowRouteHandle,
       },
       {
-        path: "demographic-information",
-        element: <DemographicInformation />,
+        path: "/onboarding/basic-information",
+        element: <BasicInformationPage />,
         handle: {
-          authHeader: {
+          accountFlowHeader: {
             firstLineTitle: "اطلاعــــــــــات",
             secondLineTitle: "پایه",
           },
-        } satisfies AuthRouteHandle,
+        } satisfies AccountFlowRouteHandle,
       },
       {
-        path: "choose-plan",
+        path: "/onboarding/choose-plan",
         element: <ChoosePlan />,
         children: [
           {
             index: true,
             element: <ChoosePlanForm />,
             handle: {
-              authHeader: {
+              accountFlowHeader: {
                 firstLineTitle: "مسیر پیشرفتت",
                 secondLineTitle: "رو انتخاب کن",
               },
               step: 1,
-            } satisfies AuthRouteHandle,
+            } satisfies AccountFlowRouteHandle,
           },
           {
             path: "conventional-global-diets",
             element: <ConventionalGlobalDiets />,
             handle: {
-              authHeader: {
+              accountFlowHeader: {
                 firstLineTitle: "رژیم های",
                 secondLineTitle: "مرسوم جهانی",
                 backTo: "/auth/choose-plan",
               },
               step: 2,
-            } satisfies AuthRouteHandle,
+            } satisfies AccountFlowRouteHandle,
           },
           {
             path: "conventional-global-diets/:dietId",
             element: <ConventionalGlobalDietDetails />,
             handle: {
-              // authHeader is not write here. Because we have routeState in this path
+              // accountFlowHeader is not write here. Because we have routeState in this path
               step: 3,
-            } satisfies AuthRouteHandle,
+            } satisfies AccountFlowRouteHandle,
           },
         ],
       },
