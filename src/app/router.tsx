@@ -1,29 +1,50 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { lazy } from "react";
-import ChoosePlan from "../features/onboarding/pages/choose-plan-page";
-import ConventionalGlobalDiets from "../features/onboarding/components/conventional-global-diets";
-import ChoosePlanForm from "../features/onboarding/components/choose-plan-form";
-import ConventionalGlobalDietDetails from "../features/onboarding/components/conventional-global-diet-details";
 import AccountFlowLayout from "./layouts/account-flow/account-flow-layout";
 import type { AccountFlowRouteHandle } from "./layouts/account-flow/account-flow.types";
-import GameWorkflowPage from "@/features/game-workflow/pages/game-workflow-page";
 import type { PlaygroundFlowRouteHandle } from "./layouts/playground-flow/playground-flow-types";
-import DemographicInformationPage from "@/features/game-workflow/pages/demographic-information-page";
-import TablematePage from "@/features/game-workflow/pages/tablemate-page";
+import PlaygroundFlowLayout from "./layouts/playground-flow/playground-flow-layout";
+import ChoosePlan from "@/features/onboarding/pages/choose-plan-page";
 
+/* Auth */
 const LoginPage = lazy(() => import("@/features/auth/pages/login-page"));
+
+/* Onboarding */
 const BasicInformationPage = lazy(
-  () => import("../features/onboarding/pages/basic-information-page"),
+  () => import("@/features/onboarding/pages/basic-information-page"),
 );
-const PlaygroundFlowLayout = lazy(
-  () => import("@/app/layouts/playground-flow/playground-flow-layout"),
+
+const ChoosePlanForm = lazy(
+  () => import("@/features/onboarding/components/choose-plan-form"),
+);
+
+const ConventionalGlobalDiets = lazy(
+  () => import("@/features/onboarding/components/conventional-global-diets"),
+);
+
+const ConventionalGlobalDietDetails = lazy(
+  () =>
+    import("@/features/onboarding/components/conventional-global-diet-details"),
+);
+
+/* Game workflow */
+const GameWorkflowPage = lazy(
+  () => import("@/features/game-workflow/pages/game-workflow-page"),
+);
+
+const DemographicInformationPage = lazy(
+  () => import("@/features/game-workflow/pages/demographic-information-page"),
+);
+
+const TablematePage = lazy(
+  () => import("@/features/game-workflow/pages/tablemate-page"),
 );
 
 const router = createBrowserRouter([
   {
     element: <AccountFlowLayout />,
     children: [
-      { index: true, element: <Navigate to="login" replace /> },
+      { index: true, element: <Navigate to="/auth/login" replace /> },
       {
         path: "/auth/login",
         element: <LoginPage />,
@@ -103,7 +124,7 @@ const router = createBrowserRouter([
             subTitle: "جوابشون رو بدی،یه رژیم بهتر و دقیق‌تربرای تو می‌چینیم",
             backTo: "/game-workflow",
           },
-        },
+        } satisfies PlaygroundFlowRouteHandle,
       },
       {
         path: "tablemates",
@@ -114,7 +135,7 @@ const router = createBrowserRouter([
             subTitle: "افرادی که با  آنها غذا میخورید رو مشخص کنید. اختیاری",
             backTo: "/game-workflow",
           },
-        },
+        } satisfies PlaygroundFlowRouteHandle,
       },
     ],
   },

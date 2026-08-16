@@ -31,7 +31,9 @@ const GameWorkflowPage = () => {
 
   return (
     <ScrollFade>
-      <PlaygroundFlowContainer>
+      <PlaygroundFlowContainer
+      // stepKey={step}
+      >
         <ol className="w-full flex flex-col justify-start items-center gap-3">
           <li className="w-full h-auto flex flex-row justify-center items-stretch">
             <div className="relative flex-2/12 flex flex-row justify-center">

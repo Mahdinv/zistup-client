@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 type AccountFlowContainerProps = {
   stepKey: number;
@@ -10,6 +10,11 @@ type AccountFlowContainerProps = {
   children: ReactNode;
 };
 
+type StepState = {
+  previous: number;
+  current: number;
+};
+
 const AccountFlowContainer = ({
   stepKey,
   isFirstStep,
@@ -17,22 +22,24 @@ const AccountFlowContainer = ({
   scrollMode = "container",
   children,
 }: AccountFlowContainerProps) => {
-  const [steps, setSteps] = useState({
+  const shouldReduceMotion = useReducedMotion();
+
+  const [stepState, setStepState] = useState<StepState>(() => ({
     previous: stepKey,
     current: stepKey,
-  });
+  }));
 
-  if (steps.current !== stepKey) {
-    setSteps({
-      previous: steps.current,
+  if (stepState.current !== stepKey) {
+    setStepState({
+      previous: stepState.current,
       current: stepKey,
     });
   }
 
   const direction =
-    steps.current === steps.previous
+    stepState.current === stepState.previous
       ? 0
-      : steps.current > steps.previous
+      : stepState.current > stepState.previous
         ? 1
         : -1;
 
@@ -63,13 +70,17 @@ const AccountFlowContainer = ({
   const contentHeightClass =
     scrollMode === "container" ? "min-h-full" : "h-full min-h-0";
 
+  const distance = shouldReduceMotion ? 0 : 32;
+
   return (
     <motion.div
       initial={false}
       animate={getBorderRadius()}
       transition={
-        direction === 0
-          ? { duration: 0 }
+        shouldReduceMotion || direction === 0
+          ? {
+              duration: 0,
+            }
           : {
               duration: 0.7,
               times: [0, 0.45, 1],
@@ -97,14 +108,22 @@ const AccountFlowContainer = ({
           ${parentScrollClass}
         `}
       >
-        <AnimatePresence mode="wait" initial={false} custom={direction}>
+        <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={stepKey}
             custom={direction}
             variants={{
-              enter: (direction: number) => ({
-                x: direction > 0 ? 32 : direction < 0 ? -32 : 0,
-                opacity: direction === 0 ? 1 : 0,
+              enter: (currentDirection: number) => ({
+                x:
+                  currentDirection > 0
+                    ? distance
+                    : currentDirection < 0
+                      ? -distance
+                      : shouldReduceMotion
+                        ? 0
+                        : 22,
+
+                opacity: 0,
               }),
 
               center: {
@@ -112,8 +131,16 @@ const AccountFlowContainer = ({
                 opacity: 1,
               },
 
-              exit: (direction: number) => ({
-                x: direction > 0 ? -32 : 32,
+              exit: (currentDirection: number) => ({
+                x:
+                  currentDirection > 0
+                    ? -distance
+                    : currentDirection < 0
+                      ? distance
+                      : shouldReduceMotion
+                        ? 0
+                        : -22,
+
                 opacity: 0,
               }),
             }}
@@ -121,21 +148,21 @@ const AccountFlowContainer = ({
             animate="center"
             exit="exit"
             transition={{
-              duration: 0.35,
+              duration: shouldReduceMotion ? 0.12 : 0.32,
+
               ease: [0.22, 1, 0.36, 1],
             }}
             className={`
-      flex
-      w-full
-      min-w-0
-      flex-col
-      pt-7
-      compact:px-4
-      mobile-lg:px-6
-      pb-[calc(1.75rem+env(safe-area-inset-bottom))]
-      will-change-[transform,opacity]
-      ${contentHeightClass}
-    `}
+              flex
+              w-full
+              min-w-0
+              flex-col
+              pt-7
+              compact:px-4
+              mobile-lg:px-6
+              pb-[calc(1.75rem+env(safe-area-inset-bottom))]
+              ${contentHeightClass}
+            `}
           >
             {children}
           </motion.div>

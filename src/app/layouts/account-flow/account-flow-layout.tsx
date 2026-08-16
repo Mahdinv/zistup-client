@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { Suspense, useCallback, useState } from "react";
 import { Outlet, useLocation, useMatches, useNavigate } from "react-router-dom";
 import AccountFlowHeader from "./account-flow-header";
 import type { AccountFlowNavigationState } from "./account-flow.types";
@@ -6,6 +6,7 @@ import {
   DEFAULT_ACCOUNT_FLOW_HEADER,
   hasAccountFlowHeaderSetting,
 } from "./account-flow-route";
+import AppLoader from "@/shared/base-components/app-loader";
 
 const AccountFlowLayout = () => {
   const matches = useMatches();
@@ -57,11 +58,15 @@ const AccountFlowLayout = () => {
       )}
 
       <main className="min-h-0 w-full flex-1 overflow-x-hidden">
-        <Outlet
-          context={{
-            setBackHandler,
-          }}
-        />
+        <Suspense
+          fallback={<AppLoader theme="dark" label="در حال آماده‌سازی..." />}
+        >
+          <Outlet
+            context={{
+              setBackHandler,
+            }}
+          />
+        </Suspense>
       </main>
     </div>
   );

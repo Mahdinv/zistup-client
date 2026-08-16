@@ -1,12 +1,12 @@
+import type { AccountFlowNavigationState } from "@/app/layouts/account-flow/account-flow.types";
 import { PiCaretLeftBold } from "react-icons/pi";
-import type { Diet } from "../../authentication/models/diet.types";
 import { Link } from "react-router-dom";
-import type { AuthNavigationState } from "../types/auth-navigation-state";
+import type { Diet } from "../api/diet.types";
 
 const DietOption = ({
   routeState,
 }: {
-  routeState: AuthNavigationState<Diet>;
+  routeState: AccountFlowNavigationState<Diet>;
 }) => {
   const charNumToSlice =
     routeState.data!.title === "مدیترانه ای"

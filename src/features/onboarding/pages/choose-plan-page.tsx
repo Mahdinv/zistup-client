@@ -1,5 +1,7 @@
 import AccountFlowContainer from "@/app/layouts/account-flow/account-flow-container";
 import { hasStepSetting } from "@/app/layouts/account-flow/account-flow-route";
+import AppLoader from "@/shared/base-components/app-loader";
+import { Suspense } from "react";
 import { useMatches, useOutlet } from "react-router-dom";
 
 const ChoosePlan = () => {
@@ -20,7 +22,9 @@ const ChoosePlan = () => {
       isLastStep={step === 3}
       scrollMode="child"
     >
-      {outlet}
+      <Suspense fallback={<AppLoader label="در حال آماده‌سازی مرحله..." />}>
+        {outlet}
+      </Suspense>
     </AccountFlowContainer>
   );
 };

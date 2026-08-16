@@ -194,6 +194,7 @@ const BasicInformationPage = () => {
                       inlineLabel
                       label="جنسیت"
                       gridClasses="grid-cols-2 gap-1"
+                      variant="blue"
                       options={genderOptions}
                       value={field.value}
                       onChange={field.onChange}
@@ -262,6 +263,7 @@ const BasicInformationPage = () => {
                       label="هدف اصلی تو چیه؟"
                       subLabel="(فقط یک انتخاب)"
                       gridClasses="grid-cols-3 gap-1"
+                      variant="blue"
                       options={mainGoalOptions}
                       value={field.value}
                       onChange={field.onChange}
