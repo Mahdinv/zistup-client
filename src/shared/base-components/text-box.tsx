@@ -5,6 +5,7 @@ type TextBoxProps = {
   label?: string;
   subLabel?: string;
   icon?: ReactNode;
+  labelClasses?: string;
   classes?: string;
   placeHolder: string;
   error?: string;
@@ -15,6 +16,7 @@ const TextBox = ({
   label,
   subLabel,
   icon,
+  labelClasses,
   classes,
   placeHolder,
   error,
@@ -31,7 +33,7 @@ const TextBox = ({
           >
             <label
               htmlFor={props.name}
-              className="shrink-0 text-xl font-yekan font-extrabold self-start text-white"
+              className={`${labelClasses} shrink-0 text-xl font-yekan font-extrabold self-start text-white`}
             >
               {label}
             </label>
@@ -43,7 +45,7 @@ const TextBox = ({
           </div>
         )}
         <div
-          className={`${classes} ${inlineLabel && "flex-2"} bg-darker-blue-400 h-12 desktop:h-14 flex flex-row w-full items-center justify-between rounded-2xl border border-darker-blue-100 group focus-within:border-blue-900`}
+          className={`${classes} ${inlineLabel && "flex-2"} bg-darker-blue-400 text-blue-900 h-12 desktop:h-14 flex flex-row w-full items-center justify-between rounded-2xl border border-darker-blue-100 group focus-within:border-blue-900`}
         >
           {icon && (
             <span className="px-1 pr-3 text-xl desktop:text-2xl text-text-input">
@@ -54,7 +56,7 @@ const TextBox = ({
             id={props.name}
             type="text"
             placeholder={placeHolder}
-            className="flex-1 w-full h-full px-4 bg-transparent text-blue-900 rounded-xl font-medium font-peyda outline-none text-sm"
+            className="flex-1 w-full h-full px-4 bg-transparent rounded-xl font-medium font-peyda outline-none text-sm"
             {...props}
           />
         </div>

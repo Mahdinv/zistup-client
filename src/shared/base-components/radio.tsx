@@ -4,23 +4,41 @@ type RadioProps = {
   inlineLabel?: boolean;
   label?: string;
   subLabel?: string;
+  labelClasses?: string;
   gridClasses: string;
+  variant: "green" | "blue";
   options: { title: string; value: string | number; icon?: ReactNode }[];
   value: string | number | undefined;
   error?: string;
   onChange: (value: string | number | undefined) => void;
 };
 
+const variantStyles = {
+  blue: {
+    selected:
+      "border border-blue-400 ring-1 ring-inset ring-blue-400 bg-[#3C3946] text-blue-400",
+    unselected: "border border-blue-900 bg-darker-blue-400 text-blue-500",
+  },
+  green: {
+    selected: "border border-green-900 bg-green-950 text-green-100",
+    unselected: "border border-green-950 bg-darker-blue-400 text-green-500",
+  },
+};
+
 const Radio = ({
   inlineLabel,
   label,
   subLabel,
+  labelClasses,
   gridClasses,
+  variant = "blue",
   options,
   value,
   error,
   onChange,
 }: RadioProps) => {
+  const style = variantStyles[variant];
+
   return (
     <div className="w-full flex flex-col justify-start items-center gap-1.5">
       <div
@@ -28,7 +46,7 @@ const Radio = ({
       >
         {label && (
           <label
-            className={`${inlineLabel && "flex-1 self-center!"} w-full text-xl font-yekan font-extrabold self-start text-white`}
+            className={`${labelClasses} ${inlineLabel && "flex-1 self-center!"} w-full text-xl font-yekan font-extrabold self-start text-white`}
           >
             {label}
             {subLabel && (
@@ -45,11 +63,7 @@ const Radio = ({
               <div
                 key={option.value}
                 onClick={() => onChange(option.value)}
-                className={`w-full flex flex-row justify-center items-center gap-1 duration-300 transition-all rounded-xl compact:py-2.5 mobile:py-3 mobile-lg:py-3.5 cursor-pointer ${
-                  selected
-                    ? "border border-blue-400 ring-1 ring-inset ring-blue-400 bg-[#3C3946] text-blue-400"
-                    : "border border-blue-900 bg-darker-blue-400 text-blue-500"
-                }`}
+                className={`w-full flex flex-row justify-center items-center gap-1 duration-300 transition-all rounded-xl compact:py-2.5 mobile:py-3 mobile-lg:py-3.5 cursor-pointer ${selected ? style.selected : style.unselected}`}
               >
                 {option.icon && option.icon}
                 <label className="text-base font-medium font-peyda mt-auto">
