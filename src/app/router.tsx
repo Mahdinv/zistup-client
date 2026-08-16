@@ -6,10 +6,17 @@ import ChoosePlanForm from "../features/onboarding/components/choose-plan-form";
 import ConventionalGlobalDietDetails from "../features/onboarding/components/conventional-global-diet-details";
 import AccountFlowLayout from "./layouts/account-flow/account-flow-layout";
 import type { AccountFlowRouteHandle } from "./layouts/account-flow/account-flow.types";
+import GameWorkflowPage from "@/features/game-workflow/pages/game-workflow-page";
+import type { PlaygroundFlowRouteHandle } from "./layouts/playground-flow/playground-flow-types";
+import DemographicInformationPage from "@/features/game-workflow/pages/demographic-information-page";
+import TablematePage from "@/features/game-workflow/pages/tablemate-page";
 
 const LoginPage = lazy(() => import("@/features/auth/pages/login-page"));
 const BasicInformationPage = lazy(
   () => import("../features/onboarding/pages/basic-information-page"),
+);
+const PlaygroundFlowLayout = lazy(
+  () => import("@/app/layouts/playground-flow/playground-flow-layout"),
 );
 
 const router = createBrowserRouter([
@@ -73,6 +80,41 @@ const router = createBrowserRouter([
             } satisfies AccountFlowRouteHandle,
           },
         ],
+      },
+    ],
+  },
+  {
+    path: "/game-workflow",
+    element: <PlaygroundFlowLayout />,
+    handle: {
+      header: {
+        title: "سفر تو از همین‌جا شروع می‌شه",
+        backTo: "/onboarding/choose-plan",
+      },
+    } satisfies PlaygroundFlowRouteHandle,
+    children: [
+      { index: true, element: <GameWorkflowPage /> },
+      {
+        path: "demographic-informations",
+        element: <DemographicInformationPage />,
+        handle: {
+          header: {
+            title: "چند سؤال کوتاه برای شروع",
+            subTitle: "جوابشون رو بدی،یه رژیم بهتر و دقیق‌تربرای تو می‌چینیم",
+            backTo: "/game-workflow",
+          },
+        },
+      },
+      {
+        path: "tablemates",
+        element: <TablematePage />,
+        handle: {
+          header: {
+            title: "یک یا چند همسفره مشخص کن",
+            subTitle: "افرادی که با  آنها غذا میخورید رو مشخص کنید. اختیاری",
+            backTo: "/game-workflow",
+          },
+        },
       },
     ],
   },
