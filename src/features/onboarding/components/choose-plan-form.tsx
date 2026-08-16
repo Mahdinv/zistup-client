@@ -73,6 +73,9 @@ const ChoosePlanForm = () => {
               classes="btn btn-primary-green text-sm! font-semibold! py-1!"
               title="شروع این مسیر"
               icon={<PiCaretLeftBold />}
+              onClick={() => {
+                navigate("/game-workflow");
+              }}
             />
           </article>
 
