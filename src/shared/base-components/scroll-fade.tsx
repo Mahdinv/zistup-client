@@ -31,7 +31,6 @@ const ScrollFade = ({
     const maxScrollTop = scrollHeight - clientHeight;
 
     setHasContentAbove(scrollTop > 2);
-
     setHasContentBelow(maxScrollTop > 2 && scrollTop < maxScrollTop - 2);
   }, []);
 
@@ -42,9 +41,7 @@ const ScrollFade = ({
 
     updateFadeVisibility();
 
-    const resizeObserver = new ResizeObserver(() => {
-      updateFadeVisibility();
-    });
+    const resizeObserver = new ResizeObserver(updateFadeVisibility);
 
     resizeObserver.observe(element);
 
@@ -54,66 +51,46 @@ const ScrollFade = ({
   }, [updateFadeVisibility]);
 
   return (
-    <div className="relative min-h-0 flex-1 overflow-hidden">
+    <div className="relative h-full min-h-0 w-full overflow-hidden">
       <div
         ref={scrollRef}
         onScroll={updateFadeVisibility}
         className={`
-          h-full
-          overflow-y-auto
-          scrollbar-none
-          [&::-webkit-scrollbar]:hidden
-          ${className}
-        `}
+        h-full
+        overflow-y-auto
+        scrollbar-none
+        [&::-webkit-scrollbar]:hidden
+        ${className}
+      `}
       >
         {children}
       </div>
 
-      {/* گرادیان ظریف بالا */}
       <div
         aria-hidden="true"
         className={`
-          pointer-events-none
-          absolute
-          top-0
-          left-1/2
-          z-20
-          h-3
-          w-screen
-          -translate-x-1/2
-          bg-linear-to-b
-          from-darker-blue-200
-          via-darker-blue-200/35
-          to-transparent
-          transition-opacity
-          duration-150
-          ease-out
-          ${hasContentAbove ? "opacity-100" : "opacity-0"}
-        `}
+        pointer-events-none absolute inset-x-0 top-0 z-20 h-3
+        bg-linear-to-b
+        from-darker-blue-200
+        via-darker-blue-200/35
+        to-transparent
+        transition-opacity duration-150 ease-out
+        ${hasContentAbove ? "opacity-100" : "opacity-0"}
+      `}
       />
 
-      {/* گرادیان ظریف پایین */}
       {showBottomFade && (
         <div
           aria-hidden="true"
           className={`
-            pointer-events-none
-            absolute
-            bottom-0
-            left-1/2
-            z-20
-            h-2.5
-            w-screen
-            -translate-x-1/2
-            bg-linear-to-t
-            from-darker-blue-200
-            via-darker-blue-200/30
-            to-transparent
-            transition-opacity
-            duration-150
-            ease-out
-            ${hasContentBelow ? "opacity-100" : "opacity-0"}
-          `}
+          pointer-events-none absolute inset-x-0 bottom-0 z-20 h-2.5
+          bg-linear-to-t
+          from-darker-blue-200
+          via-darker-blue-200/30
+          to-transparent
+          transition-opacity duration-150 ease-out
+          ${hasContentBelow ? "opacity-100" : "opacity-0"}
+        `}
         />
       )}
     </div>

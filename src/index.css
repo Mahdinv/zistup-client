@@ -198,7 +198,7 @@ body {
          disabled:text-darker-blue-200;
 }
 
-.btn.btn-outline {
+.btn.btn-outline-green {
   @apply bg-transparent 
        text-green-400 
          border-2 
@@ -207,6 +207,20 @@ body {
        compact:active:text-green-700 
        laptop:hover:border-green-700 
        laptop:hover:text-green-700 
+         laptop:disabled:hover:shadow-none
+       disabled:border-[#BFBFBF] 
+       disabled:text-[#BFBFBF];
+}
+
+.btn.btn-outline-blue {
+  @apply bg-transparent 
+       text-blue-400 
+         border-2 
+       border-blue-400 
+       compact:active:border-blue-500
+       compact:active:text-blue-500 
+       laptop:hover:border-blue-500 
+       laptop:hover:text-blue-500 
          laptop:disabled:hover:shadow-none
        disabled:border-[#BFBFBF] 
        disabled:text-[#BFBFBF];
