@@ -1,14 +1,24 @@
 import PlaygroundFlowContainer from "@/app/layouts/playground-flow/playground-flow-container";
 import ScrollFade from "@/shared/base-components/scroll-fade";
-import TextBox from "@/shared/base-components/text-box";
 import { PiCity, PiForkKnife, PiPersonSimpleRun } from "react-icons/pi";
 import QuestionCard from "../components/question-card";
 import Button from "@/shared/base-components/button";
 import NumberCounter from "@/shared/base-components/number-counter";
 import { useState } from "react";
+import ComboBox from "@/shared/base-components/combo-box";
+import { iranProvinceCities } from "@/shared/lib/iran-province-cities";
+
+const provinces = iranProvinceCities.map(({ province }) => ({
+  value: province,
+  label: province,
+}));
 
 const DemographicInformationPage = () => {
   const [value, setValue] = useState(5);
+  // const cities = iranProvinceCities
+  //   .find((ipc) => ipc.province === "خراسان رضوی")
+  //   ?.cities.map((city) => ({ value: city, label: city })) ?? [];
+
   return (
     <PlaygroundFlowContainer>
       <div className="w-full h-full flex flex-col justify-between items-center gap-2">
@@ -37,10 +47,18 @@ const DemographicInformationPage = () => {
               icon={<PiCity className="text-green-600 text-5xl" />}
               title="کجا زندگی میکنی؟"
             >
-              <TextBox
-                classes="border-green-950! text-green-950!"
-                placeHolder="مثال: تهران"
-              />
+              <div className="w-full flex flex-row justify-center items-center gap-4">
+                <ComboBox
+                  placeholder="استان"
+                  options={provinces}
+                  onChange={() => {}}
+                />
+                <ComboBox
+                  placeholder="استان"
+                  options={provinces}
+                  onChange={() => {}}
+                />
+              </div>
             </QuestionCard>
             <QuestionCard
               icon={<PiForkKnife className="text-green-600 text-5xl" />}
