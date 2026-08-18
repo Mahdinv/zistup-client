@@ -1,12 +1,15 @@
-import { PiTrophyFill } from "react-icons/pi";
+import { PiLockSimple, PiTrophyFill } from "react-icons/pi";
 import type { RoadMapStep } from "../api/road-map.types";
 import Button from "@/shared/base-components/button";
+import { useNavigate } from "react-router-dom";
 
 type RoadMapProps = {
   step: RoadMapStep;
 };
 
 const RoadMap = ({ step }: RoadMapProps) => {
+  const navigate = useNavigate();
+
   return (
     <li className="w-full h-auto flex flex-row justify-center items-stretch">
       <div className="relative flex-2/12 flex flex-row justify-center">
@@ -54,6 +57,9 @@ const RoadMap = ({ step }: RoadMapProps) => {
             >
               {step.status === "completed" ? "تکمیل شد" : "ناتمام"}
             </small>
+            <PiLockSimple
+              className={`${step.status === "locked" ? "block" : "hidden"} text-lg text-blue-900`}
+            />
           </div>
           <h2
             className={`${step.status === "current" || step.status === "locked" ? "text-white" : "text-gray-400"} text-lg font-peyda font-medium`}
@@ -65,6 +71,7 @@ const RoadMap = ({ step }: RoadMapProps) => {
           <Button
             classes="btn btn-primary-green text-sm! py-1! rounded-sm! font-bold!"
             title="شروع این مرحله"
+            onClick={() => navigate(`/game-workflow${step.link}`)}
           />
         )}
       </div>

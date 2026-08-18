@@ -4,8 +4,9 @@ export type RoadMap = {
 };
 
 export type RoadMapStep = {
-  step: number;
   key: string;
+  link: string;
+  step: number;
   title: string;
   subtitle: string;
   status: string;
