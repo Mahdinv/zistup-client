@@ -42,9 +42,6 @@ const OtpBox = ({
   ) => {
     const enteredValue = getDigits(event.currentTarget.value);
 
-    /*
-     * برای autofill مرورگر یا وارد شدن چند رقم هم‌زمان
-     */
     if (enteredValue.length > 1) {
       const otp = enteredValue.slice(0, length);
 
@@ -59,9 +56,6 @@ const OtpBox = ({
       return;
     }
 
-    /*
-     * پاک کردن رقم فعلی و ارقام بعد از آن
-     */
     if (!enteredValue) {
       onChange(value.slice(0, index));
       return;
