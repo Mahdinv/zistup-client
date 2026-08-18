@@ -73,7 +73,6 @@ const WheelOption = memo(function WheelOption({
   onSelect,
 }: WheelOptionProps) {
   const isNumber = variant === "number";
-
   const scale = active ? 1 : isNumber ? 0.84 : 0.94;
 
   return (
@@ -89,9 +88,7 @@ const WheelOption = memo(function WheelOption({
         "relative flex min-w-0",
         "items-center justify-center",
         "overflow-visible!",
-
         active ? "z-20" : "z-0",
-
         disabled ? "cursor-not-allowed" : "cursor-grab active:cursor-grabbing",
       )}
     >
@@ -107,11 +104,9 @@ const WheelOption = memo(function WheelOption({
           className={cn(
             "inline-flex h-8",
             "items-center justify-center",
-
             "overflow-visible",
             "whitespace-nowrap",
             "text-center",
-
             "will-change-[transform,opacity]",
             "transition-[transform,opacity]",
             "duration-150 ease-out",
@@ -127,71 +122,42 @@ const WheelOption = memo(function WheelOption({
                 ].join(" ")
               : [
                   "font-peyda",
-
-                  /*
-                   * مقدار ماه از 16px به 18px تغییر کرده است.
-                   */
                   "text-[18px]",
-
                   active ? "font-medium" : "font-normal",
-
                   "leading-none",
                 ].join(" "),
           )}
           style={{
-            /*
-             * این جابه‌جایی برای تمام آیتم‌ها یکسان است؛
-             * بنابراین ترتیب و تراز عمودی به‌هم نمی‌ریزد.
-             */
             transform: `translateY(2px) scale(${scale})`,
-
             opacity: active ? 1 : 0.72,
           }}
         >
-          {/*
-            متن‌ها روی یک Grid مشترک قرار گرفته‌اند تا
-            لایه گرادیان هیچ تأثیری روی اندازه یا موقعیت نداشته باشد.
-          */}
           <span className="grid place-items-center">
-            {/* متن اصلی */}
             <span
               className={cn(
                 "col-start-1 row-start-1",
                 "inline-flex items-center justify-center",
-
                 active ? "text-white" : isNumber ? "text-white" : "text-white",
               )}
             >
               {item.label}
             </span>
 
-            {/*
-              گرادیان فقط برای اعداد انتخاب‌نشده
-              یعنی ستون روز و سال نمایش داده می‌شود.
-
-              بالا: #1B1A2000
-              پایین: #1B1A20
-            */}
             {!active && isNumber && (
               <span
                 aria-hidden="true"
                 className={cn(
                   "pointer-events-none",
                   "col-start-1 row-start-1",
-
                   "inline-flex",
                   "items-center justify-center",
-
                   "text-transparent",
                 )}
                 style={{
                   backgroundImage:
                     "linear-gradient(180deg, #1B1A2000 0%, #1B1A20 100%)",
-
                   backgroundClip: "text",
-
                   WebkitBackgroundClip: "text",
-
                   WebkitTextFillColor: "transparent",
                 }}
               >
@@ -219,11 +185,8 @@ const WheelColumn = memo(function WheelColumn({
   const itemsRef = useRef(items);
   const valueRef = useRef(value);
   const onChangeRef = useRef(onChange);
-
   const wasDraggedRef = useRef(false);
-
   const settleTimeoutRef = useRef<number | null>(null);
-
   const resetDragTimeoutRef = useRef<number | null>(null);
 
   itemsRef.current = items;
@@ -234,21 +197,11 @@ const WheelColumn = memo(function WheelColumn({
     0,
     items.findIndex((item) => item.value === value),
   );
-
   const selectedIndexRef = useRef(selectedIndex);
-
   selectedIndexRef.current = selectedIndex;
-
   const initialIndexRef = useRef(selectedIndex);
-
-  /*
-   * فقط ظاهر گزینه فعال را مدیریت می‌کند.
-   * تغییر این state باعث اجرای onChange فرم نمی‌شود.
-   */
   const [activeIndex, setActiveIndex] = useState(selectedIndex);
-
   const activeIndexRef = useRef(activeIndex);
-
   activeIndexRef.current = activeIndex;
 
   const clearSettleTimeout = useCallback((): void => {
@@ -261,9 +214,6 @@ const WheelColumn = memo(function WheelColumn({
     settleTimeoutRef.current = null;
   }, []);
 
-  /*
-   * مقدار فقط بعد از توقف کامل Slider ثبت می‌شود.
-   */
   const commitSettledValue = useCallback((slider: KeenSliderInstance): void => {
     if (slider.animator.active) {
       return;
@@ -314,27 +264,18 @@ const WheelColumn = memo(function WheelColumn({
   const sliderOptions = useMemo(
     () => ({
       vertical: true,
-
       loop: canLoop,
-
       mode: "snap" as const,
-
       drag: !disabled,
-
       dragSpeed: 0.72,
-
       rubberband: false,
-
       renderMode: "precision" as const,
-
       initial: initialIndexRef.current,
-
       slides: {
         perView: 3,
         origin: "center" as const,
         spacing: 0,
       },
-
       ...(canLoop
         ? {}
         : {
@@ -344,7 +285,6 @@ const WheelColumn = memo(function WheelColumn({
               align: false,
             },
           }),
-
       defaultAnimation: {
         duration: 280,
         easing: easeOutCubic,
@@ -357,27 +297,18 @@ const WheelColumn = memo(function WheelColumn({
         setActiveIndex(index);
       },
 
-      /*
-       * فقط ظاهر گزینه فعال تغییر می‌کند.
-       * onChange فرم اینجا اجرا نمی‌شود.
-       */
       slideChanged(slider: KeenSliderInstance) {
         const index = slider.track.details?.rel ?? 0;
-
         if (activeIndexRef.current === index) {
           return;
         }
-
         activeIndexRef.current = index;
-
         setActiveIndex(index);
       },
 
       dragStarted() {
         wasDraggedRef.current = true;
-
         clearSettleTimeout();
-
         if (resetDragTimeoutRef.current !== null) {
           window.clearTimeout(resetDragTimeoutRef.current);
         }
@@ -391,10 +322,6 @@ const WheelColumn = memo(function WheelColumn({
         }, 120);
       },
 
-      /*
-       * مسیر اصلی اجرای onChange:
-       * فقط پس از پایان کامل حرکت.
-       */
       animationEnded(slider: KeenSliderInstance) {
         clearSettleTimeout();
 
@@ -422,49 +349,32 @@ const WheelColumn = memo(function WheelColumn({
 
   useEffect(() => {
     const slider = sliderInstanceRef.current;
-
     if (!slider) {
       return;
     }
-
     if (previousItemsKeyRef.current === itemsKey) {
       return;
     }
 
     previousItemsKeyRef.current = itemsKey;
-
     const maximumIndex = Math.max(0, itemsRef.current.length - 1);
-
     const safeIndex = Math.min(selectedIndexRef.current, maximumIndex);
-
     activeIndexRef.current = safeIndex;
-
     setActiveIndex(safeIndex);
-
     slider.update(undefined, safeIndex);
   }, [itemsKey, sliderInstanceRef]);
 
-  /*
-   * هماهنگی Slider با مقدار خارجی مانند reset فرم
-   * یا مقدار دریافتی از سرور.
-   */
   useEffect(() => {
     const slider = sliderInstanceRef.current;
-
     if (!slider) {
       return;
     }
-
     const currentIndex = slider.track.details?.rel;
-
     activeIndexRef.current = selectedIndex;
-
     setActiveIndex(selectedIndex);
-
     if (currentIndex === selectedIndex) {
       return;
     }
-
     slider.moveToIdx(selectedIndex, false, {
       duration: 0,
     });
@@ -473,42 +383,30 @@ const WheelColumn = memo(function WheelColumn({
   useEffect(() => {
     return () => {
       clearSettleTimeout();
-
       if (resetDragTimeoutRef.current !== null) {
         window.clearTimeout(resetDragTimeoutRef.current);
       }
     };
   }, [clearSettleTimeout]);
 
-  /*
-   * انتخاب با کلیک.
-   * مقدار فرم بعد از animationEnded تغییر می‌کند.
-   */
   const moveToIndex = useCallback(
     (index: number): void => {
       if (disabled || wasDraggedRef.current) {
         return;
       }
-
       const slider = sliderInstanceRef.current;
-
       if (!slider) {
         return;
       }
-
       const safeIndex = Math.max(
         0,
         Math.min(index, itemsRef.current.length - 1),
       );
-
       const currentIndex = slider.track.details?.rel;
-
       if (currentIndex === safeIndex) {
         commitSettledValue(slider);
-
         return;
       }
-
       slider.moveToIdx(safeIndex, false, {
         duration: 240,
         easing: easeOutCubic,
@@ -533,17 +431,14 @@ const WheelColumn = memo(function WheelColumn({
         event.preventDefault();
         slider.prev();
         break;
-
       case "ArrowDown":
         event.preventDefault();
         slider.next();
         break;
-
       case "Home":
         event.preventDefault();
         moveToIndex(0);
         break;
-
       case "End":
         event.preventDefault();
         moveToIndex(items.length - 1);
@@ -564,14 +459,10 @@ const WheelColumn = memo(function WheelColumn({
       className={cn(
         "keen-slider",
         "relative z-20 h-full min-w-0",
-
         "overflow-hidden",
         "select-none outline-none",
-
         "touch-pan-x",
-
         disabled ? "cursor-not-allowed" : "cursor-grab active:cursor-grabbing",
-
         "focus-visible:ring-2",
         "focus-visible:ring-inset",
         "focus-visible:ring-white/10",
@@ -595,15 +486,11 @@ const WheelColumn = memo(function WheelColumn({
 
 export type BirthDatePickerProps = {
   value?: string | null;
-
   onChange: (value: string) => void;
-
   onBlur?: () => void;
-
   label?: string;
   error?: string;
   disabled?: boolean;
-
   minYear?: number;
   maxYear?: number;
 };
@@ -623,13 +510,9 @@ export const BirthDatePicker = forwardRef<HTMLDivElement, BirthDatePickerProps>(
     ref,
   ) {
     const id = useId();
-
     const todayJalali = useMemo(() => getTodayJalali(), []);
-
     const maximumYear = Math.min(maxYear ?? todayJalali.year, todayJalali.year);
-
     const minimumYear = Math.min(minYear ?? maximumYear - 120, maximumYear);
-
     const fallbackDate = useMemo<JalaliDate>(
       () => ({
         year: Math.max(minimumYear, maximumYear - 25),
@@ -642,20 +525,14 @@ export const BirthDatePicker = forwardRef<HTMLDivElement, BirthDatePickerProps>(
     const normalizePickerDate = useCallback(
       (date: JalaliDate): JalaliDate => {
         const year = Math.min(maximumYear, Math.max(minimumYear, date.year));
-
         const maximumMonth = year === todayJalali.year ? todayJalali.month : 12;
-
         const month = Math.min(maximumMonth, Math.max(1, date.month));
-
         const monthDays = getJalaliMonthDays(year, month);
-
         const maximumDay =
           year === todayJalali.year && month === todayJalali.month
             ? Math.min(monthDays, todayJalali.day)
             : monthDays;
-
         const day = Math.min(maximumDay, Math.max(1, date.day));
-
         return {
           year,
           month,
@@ -674,7 +551,6 @@ export const BirthDatePicker = forwardRef<HTMLDivElement, BirthDatePickerProps>(
     const getPickerDate = useCallback(
       (gregorianValue?: string | null): JalaliDate => {
         const convertedDate = gregorianToJalali(gregorianValue);
-
         return normalizePickerDate(convertedDate ?? fallbackDate);
       },
       [fallbackDate, normalizePickerDate],
@@ -685,16 +561,20 @@ export const BirthDatePicker = forwardRef<HTMLDivElement, BirthDatePickerProps>(
     });
 
     const selectedDateRef = useRef<JalaliDate>(selectedDate);
-
     useEffect(() => {
-      const nextDate = getPickerDate(value);
-
-      if (isSameJalaliDate(selectedDateRef.current, nextDate)) {
+      if (value) {
         return;
       }
 
-      selectedDateRef.current = nextDate;
+      onChange(jalaliToGregorian(fallbackDate));
+    }, [value, fallbackDate, onChange]);
 
+    useEffect(() => {
+      const nextDate = getPickerDate(value);
+      if (isSameJalaliDate(selectedDateRef.current, nextDate)) {
+        return;
+      }
+      selectedDateRef.current = nextDate;
       setSelectedDate(nextDate);
     }, [getPickerDate, value]);
 
@@ -704,24 +584,18 @@ export const BirthDatePicker = forwardRef<HTMLDivElement, BirthDatePickerProps>(
           ...selectedDateRef.current,
           ...changes,
         });
-
         if (isSameJalaliDate(selectedDateRef.current, nextDate)) {
           return;
         }
-
         selectedDateRef.current = nextDate;
-
         setSelectedDate(nextDate);
-
         onChange(jalaliToGregorian(nextDate));
       },
       [normalizePickerDate, onChange],
     );
 
     const selectedYear = selectedDate.year;
-
     const selectedMonth = selectedDate.month;
-
     const maximumMonth =
       selectedYear === todayJalali.year ? todayJalali.month : 12;
 
@@ -736,11 +610,9 @@ export const BirthDatePicker = forwardRef<HTMLDivElement, BirthDatePickerProps>(
 
     const maximumDay = useMemo(() => {
       const monthDays = getJalaliMonthDays(selectedYear, selectedMonth);
-
       const isCurrentMonth =
         selectedYear === todayJalali.year &&
         selectedMonth === todayJalali.month;
-
       return isCurrentMonth ? Math.min(monthDays, todayJalali.day) : monthDays;
     }, [
       selectedMonth,
@@ -770,10 +642,8 @@ export const BirthDatePicker = forwardRef<HTMLDivElement, BirthDatePickerProps>(
 
     const handleBlurCapture = (event: FocusEvent<HTMLDivElement>): void => {
       const nextFocusedElement = event.relatedTarget as Node | null;
-
       const focusIsStillInside =
         nextFocusedElement && event.currentTarget.contains(nextFocusedElement);
-
       if (!focusIsStillInside) {
         onBlur?.();
       }
@@ -798,30 +668,20 @@ export const BirthDatePicker = forwardRef<HTMLDivElement, BirthDatePickerProps>(
           onBlurCapture={handleBlurCapture}
           className={cn(
             "relative isolate grid",
-
             "h-15.5 w-full",
-
             "grid-cols-[0.9fr_1.3fr_1.1fr]",
-
             "overflow-hidden",
             "rounded-2xl",
-
             "border border-[#303641]",
             "bg-[#191A20]",
-
             "shadow-[inset_0_1px_0_rgba(255,255,255,0.025)]",
-
             "outline-none",
-
             "transition-[border-color,box-shadow,opacity]",
             "duration-200",
-
             "focus-within:border-[#566170]",
             "focus-within:ring-[3px]",
             "focus-within:ring-white/4",
-
             error && "border-red-500 focus-within:border-red-500",
-
             disabled && "cursor-not-allowed opacity-50",
           )}
         >
