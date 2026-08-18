@@ -9,7 +9,7 @@ import ScrollFade from "@/shared/base-components/scroll-fade";
 import Range from "@/shared/base-components/range";
 import { useState } from "react";
 import { AnimatePresence, easeInOut, motion } from "framer-motion";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Controller, useForm, type SubmitHandler } from "react-hook-form";
 import type { ConventionalGlobalDiet } from "../schemas/conventional-global-diet.schema";
 import { useMutation } from "@tanstack/react-query";
@@ -29,6 +29,7 @@ const priorityOptions = [
 
 const ConventionalGlobalDietDetails = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [priorityBox, setPriorityBox] = useState<boolean>(true);
 
   const { control, handleSubmit } = useForm<ConventionalGlobalDiet>();
@@ -37,6 +38,7 @@ const ConventionalGlobalDietDetails = () => {
     mutationFn: addConventionalGlobalDiet,
     onSuccess: () => {
       toast.success("رژیم شما انتخاب شد");
+      navigate("/dashboard");
     },
     onError: (error) => {
       const apiError = normalizeApiError(error);
