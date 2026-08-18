@@ -18,11 +18,12 @@ import {
   useWatch,
   type SubmitHandler,
 } from "react-hook-form";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import DoughnutChart from "../components/past-week-intake/doughnut-chart";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { normalizeApiError } from "@/shared/api";
+import { HiOutlineChevronDown } from "react-icons/hi";
 
 const CHART_CATEGORIES = [
   {
@@ -60,6 +61,10 @@ const CHART_CATEGORIES = [
 const PastWeekIntakePage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const chartRef = useRef<HTMLDivElement>(null);
+  const chartEndRef = useRef<HTMLDivElement>(null);
+
+  const [isChartVisible, setIsChartVisible] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["foodGroupsCategories"],
@@ -132,6 +137,34 @@ const PastWeekIntakePage = () => {
       };
     });
   }, [items]);
+
+  useEffect(() => {
+    const chartEndElement = chartEndRef.current;
+
+    if (!chartEndElement) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsChartVisible(entry.isIntersecting);
+      },
+      {
+        threshold: 0,
+      },
+    );
+
+    observer.observe(chartEndElement);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  const handleScrollToChart = useCallback(() => {
+    chartEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
+  }, []);
 
   const registeredCount = (items ?? []).filter(
     (item) => Number(item.percentUsage) > 0,
@@ -253,22 +286,37 @@ const PastWeekIntakePage = () => {
                   </PastWeekIntakeAccordion>
                 ))
               )}
-              <div className="w-full bg-darker-blue-300 border border-dark rounded-[30px] p-6">
+              <div
+                ref={chartRef}
+                className="w-full bg-darker-blue-300 border border-dark rounded-[30px] p-6"
+              >
                 <DoughnutChart
                   chartData={chartData}
                   registeredCount={registeredCount}
                 />
               </div>
+              <div ref={chartEndRef} className="w-full h-px shrink-0" />
             </div>
           </ScrollFade>
         </div>
         <form onSubmit={handleSubmit(onPastWeekIntakeHandler)}>
-          <Button
-            type="submit"
-            classes="btn btn-primary-green shrink-0"
-            title="تایید"
-            disable={!items.some((item) => item.value > 0) || isPending}
-          />
+          {isChartVisible ? (
+            <Button
+              type="submit"
+              classes="btn btn-primary-green shrink-0"
+              title="تایید"
+              disable={!items.some((item) => item.value > 0) || isPending}
+            />
+          ) : (
+            <Button
+              type="button"
+              classes="btn btn-primary-green shrink-0"
+              title="بررسی نمودار و تایید"
+              icon={<HiOutlineChevronDown className="text-4xl" />}
+              itemsGap={12}
+              onClick={handleScrollToChart}
+            />
+          )}
         </form>
       </div>
     </PlaygroundFlowContainer>
