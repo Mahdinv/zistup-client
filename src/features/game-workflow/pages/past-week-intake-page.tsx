@@ -3,8 +3,11 @@ import Button from "@/shared/base-components/button";
 import ScrollFade from "@/shared/base-components/scroll-fade";
 import PastWeekIntakeAccordion from "../components/past-week-intake/past-week-intake-accordion";
 import FoodFrequencyHelpBar from "../components/past-week-intake/food-frequency-help-bar";
-import { useQuery } from "@tanstack/react-query";
-import { getFoodGroupsCategories } from "../api/past-week-intake.api";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  addPastWeekIntake,
+  getFoodGroupsCategories,
+} from "../api/past-week-intake.api";
 import Skeleton from "react-loading-skeleton";
 import FoodFrequencyCard from "../components/past-week-intake/food-frequency-card";
 import type { Category } from "../api/category.types";
@@ -17,6 +20,9 @@ import {
 } from "react-hook-form";
 import { useCallback, useMemo } from "react";
 import DoughnutChart from "../components/past-week-intake/doughnut-chart";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+import { normalizeApiError } from "@/shared/api";
 
 const CHART_CATEGORIES = [
   {
@@ -52,6 +58,7 @@ const CHART_CATEGORIES = [
 ];
 
 const PastWeekIntakePage = () => {
+  const navigate = useNavigate();
   const { data, isLoading } = useQuery({
     queryKey: ["foodGroupsCategories"],
     queryFn: getFoodGroupsCategories,
@@ -59,6 +66,18 @@ const PastWeekIntakePage = () => {
     gcTime: 0,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
+  });
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: addPastWeekIntake,
+    onSuccess: () => {
+      toast.success("رژیم فعلی شما با موفقیت ثبت شد");
+      navigate("/game-workflow");
+    },
+    onError: (error) => {
+      const apiError = normalizeApiError(error);
+      toast.error(apiError.message);
+    },
   });
 
   const formValues = useMemo<PastWeekIntakeForm>(
@@ -179,7 +198,7 @@ const PastWeekIntakePage = () => {
   );
 
   const onPastWeekIntakeHandler: SubmitHandler<PastWeekIntakeForm> = (data) =>
-    console.log(data);
+    mutate(data);
 
   return (
     <PlaygroundFlowContainer>
@@ -243,6 +262,7 @@ const PastWeekIntakePage = () => {
             type="submit"
             classes="btn btn-primary-green shrink-0"
             title="تایید"
+            disable={!items.some((item) => item.value > 0) || isPending}
           />
         </form>
       </div>

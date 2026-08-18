@@ -24,7 +24,7 @@ const FoodFrequencyCard = ({
   return (
     <div className="w-full bg-darker-blue-300 border border-dark rounded-2xl p-3 flex flex-col justify-center items-center">
       <img
-        src="/Grains.png"
+        src={foodGroup.properties.imageUrl}
         className="w-full max-w-28 h-auto object-contain pointer-events-none"
         loading="lazy"
         alt=""

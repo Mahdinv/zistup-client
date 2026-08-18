@@ -146,7 +146,8 @@ const router = createBrowserRouter([
         element: <PastWeekIntakePage />,
         handle: {
           header: {
-            title: "در هفته گذشته از هر گروه غذایی چند وعده استفاده کردی؟",
+            title: "مصرف هفته گذشته",
+            subTitle: "میزان مصرفت از هر گروه غذایی رو مشخص کن",
             backTo: "/game-workflow",
           },
         } satisfies PlaygroundFlowRouteHandle,
