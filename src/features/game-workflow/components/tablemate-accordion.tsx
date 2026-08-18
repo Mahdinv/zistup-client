@@ -2,10 +2,19 @@ import { PiTrash, PiUsersThree } from "react-icons/pi";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { HiOutlineChevronDown } from "react-icons/hi";
+import { Controller, useFormContext } from "react-hook-form";
 
 import TextBox from "@/shared/base-components/text-box";
 import NumberCounter from "@/shared/base-components/number-counter";
 import Radio from "@/shared/base-components/radio";
+import type { TablematesForm } from "../schemas/tablemates.schema";
+
+type TablemateAccordionProps = {
+  index: number;
+  isOpen: boolean;
+  tablematesNumber?: number;
+  onRemoveClick: () => void;
+};
 
 const relationshipLevel = [
   { title: "خانواده", value: "family" },
@@ -21,8 +30,37 @@ const influenceLevel = [
   { title: "زیاد", value: "high" },
 ];
 
-const TablemateAccordion = () => {
-  const [open, setOpen] = useState(true);
+const titles = [
+  "اول",
+  "دوم",
+  "سوم",
+  "چهارم",
+  "پنجم",
+  "ششم",
+  "هفتم",
+  "هشتم",
+  "نهم",
+  "دهم",
+];
+
+const TablemateAccordion = ({
+  index,
+  isOpen,
+  tablematesNumber,
+  onRemoveClick,
+}: TablemateAccordionProps) => {
+  const {
+    register,
+    control,
+    formState: { errors },
+  } = useFormContext<TablematesForm>();
+
+  const [open, setOpen] = useState(isOpen);
+
+  const hasError = !!errors.tablemates?.[index];
+  const isExpanded = open || hasError;
+
+  const title = tablematesNumber ? titles[tablematesNumber - 1] : "";
 
   return (
     <motion.div
@@ -42,21 +80,21 @@ const TablemateAccordion = () => {
         <PiUsersThree className="text-green-600 text-5xl" />
 
         <h2 className="flex-1 text-sm font-medium font-peyda text-white mt-1">
-          همسفره اول{" "}
-          <span className="text-xs text-blue-600 mr-0.5">(اختیاری)</span>
+          همسفره {title}
+          <span className="text-xs text-blue-600 mr-0.5"> (اختیاری)</span>
         </h2>
 
         <PiTrash
           className="text-3xl text-darker-blue-100 cursor-pointer"
-          onClick={(e) => {
-            e.stopPropagation();
-            console.log("trash");
+          onClick={(event) => {
+            event.stopPropagation();
+            onRemoveClick();
           }}
         />
 
         <motion.span
           animate={{
-            rotate: open ? 180 : 0,
+            rotate: isExpanded ? 180 : 0,
           }}
           transition={{
             duration: 0.25,
@@ -69,7 +107,7 @@ const TablemateAccordion = () => {
       </div>
 
       <AnimatePresence initial={false}>
-        {open && (
+        {isExpanded && (
           <motion.div
             initial={{
               height: 0,
@@ -116,34 +154,60 @@ const TablemateAccordion = () => {
                 classes="border-green-950! text-green-950! rounded-sm! h-8.5!"
                 label="نام همسفره"
                 placeHolder="مثال: مهران"
+                {...register(`tablemates.${index}.name`)}
+                error={errors.tablemates?.[index]?.name?.message}
               />
 
-              <NumberCounter
-                label="تعداد وعده مشترک در هفته"
-                labelClasses="font-peyda! text-xs! font-medium! pr-3!"
-                suffix="بار"
-                suffixClasses="text-white text-sm font-peyda"
-                valueClasses="text-[28px]!"
+              <Controller
+                name={`tablemates.${index}.sharedMealsCount`}
+                control={control}
+                render={({ field }) => (
+                  <NumberCounter
+                    label="تعداد وعده مشترک در هفته"
+                    labelClasses="font-peyda! text-xs! font-medium! pr-3!"
+                    suffix="بار"
+                    suffixClasses="text-white text-sm font-peyda"
+                    valueClasses="text-[28px]!"
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
               />
 
-              <Radio
-                label="سطح ارتباط"
-                labelClasses="font-peyda! text-xs! font-medium! pr-3!"
-                gridClasses="grid-cols-4 gap-1"
-                variant="green"
-                options={relationshipLevel}
-                value="friend"
-                onChange={() => {}}
+              <Controller
+                name={`tablemates.${index}.relationshipLevel`}
+                control={control}
+                render={({ field }) => (
+                  <Radio
+                    label="سطح ارتباط"
+                    labelClasses="font-peyda! text-xs! font-medium! pr-3!"
+                    gridClasses="grid-cols-4 gap-1"
+                    variant="green"
+                    options={relationshipLevel}
+                    value={field.value}
+                    onChange={field.onChange}
+                    error={
+                      errors.tablemates?.[index]?.relationshipLevel?.message
+                    }
+                  />
+                )}
               />
 
-              <Radio
-                label="به نظر شما چقدر این فرد روی رژیم شما تاثیر می گذارد؟"
-                labelClasses="font-peyda! text-xs! font-medium! pr-3!"
-                gridClasses="grid-cols-4 gap-1"
-                variant="green"
-                options={influenceLevel}
-                value="none"
-                onChange={() => {}}
+              <Controller
+                name={`tablemates.${index}.influenceLevel`}
+                control={control}
+                render={({ field }) => (
+                  <Radio
+                    label="به نظر شما چقدر این فرد روی رژیم شما تاثیر می گذارد؟"
+                    labelClasses="font-peyda! text-xs! font-medium! pr-3!"
+                    gridClasses="grid-cols-4 gap-1"
+                    variant="green"
+                    options={influenceLevel}
+                    value={field.value}
+                    onChange={field.onChange}
+                    error={errors.tablemates?.[index]?.influenceLevel?.message}
+                  />
+                )}
               />
             </motion.div>
           </motion.div>

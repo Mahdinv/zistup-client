@@ -36,8 +36,8 @@ const DemographicInformationPage = lazy(
   () => import("@/features/game-workflow/pages/demographic-information-page"),
 );
 
-const TablematePage = lazy(
-  () => import("@/features/game-workflow/pages/tablemate-page"),
+const TablematesPage = lazy(
+  () => import("@/features/game-workflow/pages/tablemates-page"),
 );
 
 const PastWeekIntakePage = lazy(
@@ -132,7 +132,7 @@ const router = createBrowserRouter([
       },
       {
         path: "tablemates",
-        element: <TablematePage />,
+        element: <TablematesPage />,
         handle: {
           header: {
             title: "یک یا چند همسفره مشخص کن",
