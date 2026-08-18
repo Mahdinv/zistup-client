@@ -86,6 +86,7 @@ const PlaygroundFlowHeader = ({
                 hover:bg-blue-600/10
                 focus-visible:ring-2
                 focus-visible:ring-blue-600
+                cursor-pointer
               "
             >
               <PiCaretRight className="text-xl" aria-hidden="true" />

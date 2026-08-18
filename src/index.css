@@ -17,13 +17,13 @@
   --font-rokh: "RokhFaNum", ui-sans-serif, system-ui, sans-serif;
 
   /* Breakpoints */
-  --breakpoint-compact: 320px;
-  --breakpoint-mobile: 375px;
-  --breakpoint-mobile-lg: 460px;
-  --breakpoint-fold: 600px;
-  --breakpoint-tablet: 768px;
-  --breakpoint-laptop: 1024px;
-  --breakpoint-desktop: 1280px;
+  --breakpoint-compact: 320px; /* xxs */
+  --breakpoint-mobile: 375px; /* xs */
+  --breakpoint-mobile-lg: 460px; /* sm */
+  --breakpoint-fold: 600px; /* md */
+  --breakpoint-tablet: 768px; /* lg */
+  --breakpoint-laptop: 1024px; /* xl */
+  --breakpoint-desktop: 1280px; /* 2xl */
 
   /* Font Sizes */
   --text-xxs: var(--size-xxs);

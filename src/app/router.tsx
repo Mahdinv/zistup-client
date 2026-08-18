@@ -40,6 +40,10 @@ const TablematePage = lazy(
   () => import("@/features/game-workflow/pages/tablemate-page"),
 );
 
+const PastWeekIntakePage = lazy(
+  () => import("@/features/game-workflow/pages/past-week-intake-page"),
+);
+
 const router = createBrowserRouter([
   {
     element: <AccountFlowLayout />,
@@ -133,6 +137,16 @@ const router = createBrowserRouter([
           header: {
             title: "یک یا چند همسفره مشخص کن",
             subTitle: "افرادی که با  آنها غذا میخورید رو مشخص کنید. اختیاری",
+            backTo: "/game-workflow",
+          },
+        } satisfies PlaygroundFlowRouteHandle,
+      },
+      {
+        path: "past-week-intake",
+        element: <PastWeekIntakePage />,
+        handle: {
+          header: {
+            title: "در هفته گذشته از هر گروه غذایی چند وعده استفاده کردی؟",
             backTo: "/game-workflow",
           },
         } satisfies PlaygroundFlowRouteHandle,
