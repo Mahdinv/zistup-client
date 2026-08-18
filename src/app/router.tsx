@@ -120,7 +120,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <GameWorkflowPage /> },
       {
-        path: "demographic-informations",
+        path: "demographic-information",
         element: <DemographicInformationPage />,
         handle: {
           header: {
