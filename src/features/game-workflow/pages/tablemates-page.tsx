@@ -16,18 +16,22 @@ import {
   tablematesFormSchema,
   type TablematesForm,
 } from "../schemas/tablemates.schema";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { normalizeApiError } from "@/shared/api";
 import { addTablemates } from "../api/tablemates.api";
 
 const TablematesPage = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
     mutationFn: addTablemates,
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("مرحله همسفره‌ها با موفقیت به اتمام رسید");
+      await queryClient.invalidateQueries({
+        queryKey: ["roadMapList"],
+      });
       navigate("/game-workflow");
     },
     onError: (error) => {

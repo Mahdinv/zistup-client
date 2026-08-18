@@ -3,7 +3,7 @@ import Button from "@/shared/base-components/button";
 import ScrollFade from "@/shared/base-components/scroll-fade";
 import PastWeekIntakeAccordion from "../components/past-week-intake/past-week-intake-accordion";
 import FoodFrequencyHelpBar from "../components/past-week-intake/food-frequency-help-bar";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   addPastWeekIntake,
   getFoodGroupsCategories,
@@ -59,6 +59,8 @@ const CHART_CATEGORIES = [
 
 const PastWeekIntakePage = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
   const { data, isLoading } = useQuery({
     queryKey: ["foodGroupsCategories"],
     queryFn: getFoodGroupsCategories,
@@ -70,8 +72,11 @@ const PastWeekIntakePage = () => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: addPastWeekIntake,
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("رژیم فعلی شما با موفقیت ثبت شد");
+      await queryClient.invalidateQueries({
+        queryKey: ["roadMapList"],
+      });
       navigate("/game-workflow");
     },
     onError: (error) => {

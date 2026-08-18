@@ -18,7 +18,7 @@ import {
   type DemographicInformationForm,
 } from "../schemas/demographic-informations.schema";
 import { useMemo } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addDemographicInformation } from "../api/demographic-information.api";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -31,6 +31,7 @@ const provinces = iranProvinceCities.map(({ province }) => ({
 
 const DemographicInformationPage = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { control, handleSubmit } = useForm({
     defaultValues: {
       sportDayPerWeek: 3,
@@ -43,8 +44,11 @@ const DemographicInformationPage = () => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: addDemographicInformation,
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("پرسشنامه اولیه با موفقیت به اتمام رسید");
+      await queryClient.invalidateQueries({
+        queryKey: ["roadMapList"],
+      });
       navigate("/game-workflow");
     },
     onError: (error) => {

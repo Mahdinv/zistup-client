@@ -78,8 +78,8 @@ const router = createBrowserRouter([
             element: <ChoosePlanForm />,
             handle: {
               accountFlowHeader: {
-                firstLineTitle: "مسیر پیشرفتت",
-                secondLineTitle: "رو انتخاب کن",
+                firstLineTitle: "دو مسیر انتخابی",
+                secondLineTitle: "پیشرفت شما",
               },
               step: 1,
             } satisfies AccountFlowRouteHandle,

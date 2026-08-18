@@ -16,9 +16,9 @@ const ChoosePlanForm = () => {
   const navigate = useNavigate();
   return (
     <section className="flex min-h-full w-full flex-col gap-2">
-      <h2 className="shrink-0 font-yekan text-lg font-extrabold select-none">
+      {/* <h2 className="shrink-0 font-yekan text-lg font-extrabold select-none">
         دو راه پیش روی شماست...
-      </h2>
+      </h2> */}
       <ScrollFade>
         <div
           className="
