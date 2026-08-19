@@ -5,7 +5,8 @@ import type { AccountFlowRouteHandle } from "./layouts/account-flow/account-flow
 import type { PlaygroundFlowRouteHandle } from "./layouts/playground-flow/playground-flow-types";
 import PlaygroundFlowLayout from "./layouts/playground-flow/playground-flow-layout";
 import ChoosePlan from "@/features/onboarding/pages/choose-plan-page";
-import AuthGuard from "@/features/auth/components/auth-guard";
+import { requireAuth } from "@/features/auth/loaders/require-auth";
+import { redirectIfAuthenticated } from "@/features/auth/loaders/redirect-if-authenticated";
 
 /* Auth */
 const LoginPage = lazy(() => import("@/features/auth/pages/login-page"));
@@ -52,6 +53,7 @@ const router = createBrowserRouter([
       { index: true, element: <Navigate to="/auth/login" replace /> },
       {
         path: "/auth/login",
+        loader: redirectIfAuthenticated,
         element: <LoginPage />,
         handle: {
           accountFlowHeader: {
@@ -61,7 +63,7 @@ const router = createBrowserRouter([
         } satisfies AccountFlowRouteHandle,
       },
       {
-        element: <AuthGuard />,
+        loader: requireAuth,
         children: [
           {
             path: "/onboarding/basic-information",
@@ -115,7 +117,7 @@ const router = createBrowserRouter([
     ],
   },
   {
-    element: <AuthGuard />,
+    loader: requireAuth,
     children: [
       {
         path: "/game-workflow",
