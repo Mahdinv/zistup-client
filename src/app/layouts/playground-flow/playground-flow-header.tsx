@@ -1,5 +1,4 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-
 import { PiCaretRight } from "react-icons/pi";
 
 type PlaygroundFlowHeaderProps = {
@@ -14,34 +13,12 @@ const PlaygroundFlowHeader = ({
   onBack,
 }: PlaygroundFlowHeaderProps) => {
   const shouldReduceMotion = useReducedMotion();
-
   const titleKey = [title, subTitle].filter(Boolean).join("-");
-
   const horizontalOffset = shouldReduceMotion ? 0 : 12;
 
   return (
-    <header
-      className="
-        flex
-        h-36
-        w-full
-        shrink-0
-        flex-col
-        bg-darker-blue-200
-        compact:px-4
-        mobile-lg:px-6
-        py-3
-      "
-    >
-      <div
-        className="
-          flex
-          h-9
-          shrink-0
-          items-center
-          justify-start
-        "
-      >
+    <header className="flex h-36 w-full shrink-0 flex-col justify-around bg-darker-blue-200 py-3 compact:px-4 mobile-lg:px-6">
+      <div className="flex h-9 shrink-0 items-center justify-start">
         <AnimatePresence mode="wait">
           {onBack && (
             <motion.button
@@ -76,6 +53,7 @@ const PlaygroundFlowHeader = ({
                 ease: [0.22, 1, 0.36, 1],
               }}
               className="
+                cursor-pointer
                 rounded-sm
                 border
                 border-blue-600
@@ -86,7 +64,6 @@ const PlaygroundFlowHeader = ({
                 hover:bg-blue-600/10
                 focus-visible:ring-2
                 focus-visible:ring-blue-600
-                cursor-pointer
               "
             >
               <PiCaretRight className="text-xl" aria-hidden="true" />
@@ -94,14 +71,9 @@ const PlaygroundFlowHeader = ({
           )}
         </AnimatePresence>
       </div>
-      <div
-        className="
-          flex
-          min-h-0
-          flex-1
-          items-end
-        "
-      >
+
+      {/* Title */}
+      <div className="flex h-16 shrink-0 items-end">
         <AnimatePresence mode="wait">
           <motion.div
             key={titleKey}
@@ -121,43 +93,14 @@ const PlaygroundFlowHeader = ({
               duration: shouldReduceMotion ? 0.12 : 0.24,
               ease: [0.22, 1, 0.36, 1],
             }}
-            className="
-              flex
-              h-16
-              w-full
-              flex-col
-              justify-end
-            "
+            className=" flex h-16 w-full flex-col justify-end"
           >
-            <h1
-              className="
-                shrink-0
-                font-yekan
-                text-3xl
-                font-extrabold
-                leading-tight
-                text-white
-              "
-            >
+            <h1 className="shrink-0 font-yekan text-3xl font-extrabold leading-tight text-white">
               {title}
             </h1>
-            <div
-              className="
-                mt-1
-                min-h-5
-                w-full
-              "
-            >
+            <div className="mt-1 min-h-5 w-full">
               {subTitle && (
-                <p
-                  className="
-                    font-peyda
-                    text-sm
-                    font-medium
-                    leading-5
-                    text-blue-600
-                  "
-                >
+                <p className="font-peyda text-sm font-medium leading-5 text-blue-600">
                   {subTitle}
                 </p>
               )}
