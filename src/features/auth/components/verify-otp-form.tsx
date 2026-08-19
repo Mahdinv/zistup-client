@@ -37,14 +37,22 @@ const VerifyOtpForm = ({
     onSuccess: (data) => {
       toast.success("خوش آمدید");
       tokenStorage.set(data.token);
-      if (!data.isRegister) {
-        if (data.user.name === "کاربر جدید" || data.user.sex === null) {
-          navigate("/onboarding/basic-information");
-        } else {
-          navigate("/onboarding/choose-plan");
-        }
+      // if (!data.isRegister) {
+      //   if (data.user.name === "کاربر جدید" || data.user.sex === null) {
+      //     navigate("/onboarding/basic-information");
+      //   } else {
+      //     navigate("/onboarding/choose-plan");
+      //   }
+      // } else {
+      //   console.log("Dashboard");
+      // }
+      if (
+        (!data.isRegister && data.user.name === "کاربر جدید") ||
+        data.user.sex === null
+      ) {
+        navigate("/onboarding/basic-information");
       } else {
-        console.log("Dashboard");
+        navigate("/onboarding/choose-plan");
       }
     },
     onError: (error) => {
