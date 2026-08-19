@@ -5,6 +5,7 @@ import type { AccountFlowRouteHandle } from "./layouts/account-flow/account-flow
 import type { PlaygroundFlowRouteHandle } from "./layouts/playground-flow/playground-flow-types";
 import PlaygroundFlowLayout from "./layouts/playground-flow/playground-flow-layout";
 import ChoosePlan from "@/features/onboarding/pages/choose-plan-page";
+import AuthGuard from "@/features/auth/components/auth-guard";
 
 /* Auth */
 const LoginPage = lazy(() => import("@/features/auth/pages/login-page"));
@@ -60,97 +61,109 @@ const router = createBrowserRouter([
         } satisfies AccountFlowRouteHandle,
       },
       {
-        path: "/onboarding/basic-information",
-        element: <BasicInformationPage />,
-        handle: {
-          accountFlowHeader: {
-            firstLineTitle: "اطلاعــــــــــات",
-            secondLineTitle: "پایه",
-          },
-        } satisfies AccountFlowRouteHandle,
-      },
-      {
-        path: "/onboarding/choose-plan",
-        element: <ChoosePlan />,
+        element: <AuthGuard />,
         children: [
           {
-            index: true,
-            element: <ChoosePlanForm />,
+            path: "/onboarding/basic-information",
+            element: <BasicInformationPage />,
             handle: {
               accountFlowHeader: {
-                firstLineTitle: "دو مسیر انتخابی",
-                secondLineTitle: "پیشرفت شما",
+                firstLineTitle: "اطلاعــــــــــات",
+                secondLineTitle: "پایه",
               },
-              step: 1,
             } satisfies AccountFlowRouteHandle,
           },
           {
-            path: "conventional-global-diets",
-            element: <ConventionalGlobalDiets />,
-            handle: {
-              accountFlowHeader: {
-                firstLineTitle: "رژیم های",
-                secondLineTitle: "مرسوم جهانی",
-                backTo: "/onboarding/choose-plan",
+            path: "/onboarding/choose-plan",
+            element: <ChoosePlan />,
+            children: [
+              {
+                index: true,
+                element: <ChoosePlanForm />,
+                handle: {
+                  accountFlowHeader: {
+                    firstLineTitle: "دو مسیر انتخابی",
+                    secondLineTitle: "پیشرفت شما",
+                  },
+                  step: 1,
+                } satisfies AccountFlowRouteHandle,
               },
-              step: 2,
-            } satisfies AccountFlowRouteHandle,
-          },
-          {
-            path: "conventional-global-diets/:dietId",
-            element: <ConventionalGlobalDietDetails />,
-            handle: {
-              // accountFlowHeader is not write here. Because we have routeState in this path
-              step: 3,
-            } satisfies AccountFlowRouteHandle,
+              {
+                path: "conventional-global-diets",
+                element: <ConventionalGlobalDiets />,
+                handle: {
+                  accountFlowHeader: {
+                    firstLineTitle: "رژیم های",
+                    secondLineTitle: "مرسوم جهانی",
+                    backTo: "/onboarding/choose-plan",
+                  },
+                  step: 2,
+                } satisfies AccountFlowRouteHandle,
+              },
+              {
+                path: "conventional-global-diets/:dietId",
+                element: <ConventionalGlobalDietDetails />,
+                handle: {
+                  // accountFlowHeader is not write here. Because we have routeState in this path
+                  step: 3,
+                } satisfies AccountFlowRouteHandle,
+              },
+            ],
           },
         ],
       },
     ],
   },
   {
-    path: "/game-workflow",
-    element: <PlaygroundFlowLayout />,
-    handle: {
-      header: {
-        title: "سفر تو از همین‌جا شروع می‌شه",
-        backTo: "/onboarding/choose-plan",
-      },
-    } satisfies PlaygroundFlowRouteHandle,
+    element: <AuthGuard />,
     children: [
-      { index: true, element: <GameWorkflowPage /> },
       {
-        path: "demographic-information",
-        element: <DemographicInformationPage />,
+        path: "/game-workflow",
+        element: <PlaygroundFlowLayout />,
         handle: {
           header: {
-            title: "چند سؤال کوتاه برای شروع",
-            subTitle: "جوابشون رو بدی،یه رژیم بهتر و دقیق‌تربرای تو می‌چینیم",
-            backTo: "/game-workflow",
+            title: "سفر تو از همین‌جا شروع می‌شه",
+            backTo: "/onboarding/choose-plan",
           },
         } satisfies PlaygroundFlowRouteHandle,
-      },
-      {
-        path: "tablemates",
-        element: <TablematesPage />,
-        handle: {
-          header: {
-            title: "یک یا چند همسفره مشخص کن",
-            subTitle: "افرادی که با  آنها غذا میخورید رو مشخص کنید. اختیاری",
-            backTo: "/game-workflow",
+        children: [
+          { index: true, element: <GameWorkflowPage /> },
+          {
+            path: "demographic-information",
+            element: <DemographicInformationPage />,
+            handle: {
+              header: {
+                title: "چند سؤال کوتاه برای شروع",
+                subTitle:
+                  "جوابشون رو بدی،یه رژیم بهتر و دقیق‌تربرای تو می‌چینیم",
+                backTo: "/game-workflow",
+              },
+            } satisfies PlaygroundFlowRouteHandle,
           },
-        } satisfies PlaygroundFlowRouteHandle,
-      },
-      {
-        path: "past-week-intake",
-        element: <PastWeekIntakePage />,
-        handle: {
-          header: {
-            title: "مصرف هفته گذشته",
-            subTitle: "میزان مصرفت از هر گروه غذایی رو مشخص کن",
-            backTo: "/game-workflow",
+          {
+            path: "tablemates",
+            element: <TablematesPage />,
+            handle: {
+              header: {
+                title: "یک یا چند همسفره مشخص کن",
+                subTitle:
+                  "افرادی که با  آنها غذا میخورید رو مشخص کنید. اختیاری",
+                backTo: "/game-workflow",
+              },
+            } satisfies PlaygroundFlowRouteHandle,
           },
-        } satisfies PlaygroundFlowRouteHandle,
+          {
+            path: "past-week-intake",
+            element: <PastWeekIntakePage />,
+            handle: {
+              header: {
+                title: "مصرف هفته گذشته",
+                subTitle: "میزان مصرفت از هر گروه غذایی رو مشخص کن",
+                backTo: "/game-workflow",
+              },
+            } satisfies PlaygroundFlowRouteHandle,
+          },
+        ],
       },
     ],
   },
