@@ -7,6 +7,7 @@ import PlaygroundFlowLayout from "./layouts/playground-flow/playground-flow-layo
 import ChoosePlan from "@/features/onboarding/pages/choose-plan-page";
 import { requireAuth } from "@/features/auth/loaders/require-auth";
 import { redirectIfAuthenticated } from "@/features/auth/loaders/redirect-if-authenticated";
+import DashboardFlowLayout from "./layouts/dashboard-flow/dashboard-flow-layout";
 
 /* Auth */
 const LoginPage = lazy(() => import("@/features/auth/pages/login-page"));
@@ -168,6 +169,10 @@ const router = createBrowserRouter([
         ],
       },
     ],
+  },
+  {
+    loader: requireAuth,
+    children: [{ path: "/dashboard", element: <DashboardFlowLayout /> }],
   },
 ]);
 
