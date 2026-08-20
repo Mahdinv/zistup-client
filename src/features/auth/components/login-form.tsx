@@ -132,7 +132,7 @@ const LoginForm = ({
 
         <Button
           type="button"
-          classes="w-full btn btn-outline"
+          classes="w-full btn btn-outline-green"
           title="ورود با حساب گوگل"
           icon={<FcGoogle />}
           iconClasses="text-4xl"
