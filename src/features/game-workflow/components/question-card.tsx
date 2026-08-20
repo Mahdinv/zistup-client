@@ -18,9 +18,13 @@ const QuestionCard = ({
       <div className="w-full flex flex-row items-center gap-2">
         {icon && icon}
         <div className="w-full font-peyda font-medium flex flex-row items-center gap-1">
-          <label className="text-white text-sm">{title}</label>
+          <label className="text-white compact:text-sm fold:text-base laptop:text-lg">
+            {title}
+          </label>
           {!isRequiredField && (
-            <small className="text-blue-600 text-xs">(اختیاری)</small>
+            <small className="text-blue-600 compact:text-xs fold:text-sm laptop:text-base">
+              (اختیاری)
+            </small>
           )}
         </div>
       </div>

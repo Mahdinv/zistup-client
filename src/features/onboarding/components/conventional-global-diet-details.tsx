@@ -77,48 +77,58 @@ const ConventionalGlobalDietDetails = () => {
         <div className="w-full flex-1 min-h-full flex flex-col justify-start items-center gap-6 overflow-y-auto scrollbar-gutter-stable">
           <ul className="w-full flex flex-row justify-center items-center gap-2">
             <li className="w-full bg-darker-blue-100 rounded-lg px-3 py-3.5 font-peyda flex flex-col justify-center items-center gap-1">
-              <PiCalendarCheck className="text-7xl text-blue-300" />
-              <small className="text-blue-600 text-xs font-medium">
+              <PiCalendarCheck className="compact:text-7xl laptop:text-8xl text-blue-300" />
+              <small className="text-blue-600 compact:text-xs fold:text-sm laptop:text-base font-medium">
                 مدت نتیجه
               </small>
-              <label className="text-lg font-medium">
-                <span className="font-rokh text-base ml-0.5">
+              <label className="compact:text-xs laptop:text-xl font-medium">
+                <span className="font-rokh compact:text-sm laptop:text-lg ml-0.5">
                   {diet.duration}
                 </span>
                 هفته
               </label>
             </li>
             <li className="w-full bg-darker-blue-100 rounded-lg px-3 py-3.5 font-peyda flex flex-col justify-center items-center gap-1">
-              <PiSteps className="text-7xl text-blue-300" />
-              <small className="text-blue-600 text-xs font-medium">سختی</small>
-              <label className="text-lg font-medium">{diet.level}</label>
+              <PiSteps className="compact:text-7xl laptop:text-8xl text-blue-300" />
+              <small className="text-blue-600 compact:text-xs fold:text-sm laptop:text-base font-medium">
+                سختی
+              </small>
+              <label className="compact:text-xs laptop:text-xl font-medium">
+                {diet.level}
+              </label>
             </li>
             <li className="w-full bg-darker-blue-100 rounded-lg px-3 py-3.5 font-peyda flex flex-col justify-center items-center gap-1">
-              <PiHeart className="text-7xl text-blue-300" />
-              <small className="text-blue-600 text-xs font-medium">تمرکز</small>
-              <label className="text-lg font-medium">{diet.focus}</label>
+              <PiHeart className="compact:text-7xl laptop:text-8xl text-blue-300" />
+              <small className="text-blue-600 compact:text-xs fold:text-sm laptop:text-base font-medium">
+                تمرکز
+              </small>
+              <label className="compact:text-xs laptop:text-xl font-medium">
+                {diet.focus}
+              </label>
             </li>
           </ul>
-          <p className="w-full font-peyda text-base font-medium">{diet.desc}</p>
+          <p className="w-full font-peyda compact:text-base fold:text-lg laptop:text-xl font-medium">
+            {diet.desc}
+          </p>
           <div className="w-full flex flex-col items-start gap-4">
-            <h3 className="text-green-600 font-yekan text-base font-extrabold">
+            <h3 className="text-green-600 font-yekan compact:text-base fold:text-lg laptop:text-xl font-extrabold">
               این رژیم مناسب شماست، اگر...
             </h3>
             <ul className="w-full flex flex-row flex-wrap justify-start gap-2">
               {(diet.positiveTag || []).map((positive) => (
-                <li className="w-auto bg-green-950 text-green-300 font-peyda text-sm font-bold rounded-full px-4 py-1.5">
+                <li className="w-auto bg-green-950 text-green-300 font-peyda compact:text-sm fold:text-base laptop:text-lg font-bold rounded-full px-4 py-1.5">
                   {positive}
                 </li>
               ))}
             </ul>
           </div>
           <div className="w-full flex flex-col items-start gap-4">
-            <h3 className="text-red-300 font-yekan text-base font-extrabold">
+            <h3 className="text-red-300 font-yekan compact:text-base fold:text-lg laptop:text-xl font-extrabold">
               این رژیم مناسب نیست، اگر...
             </h3>
             <ul className="w-full flex flex-row flex-wrap justify-start gap-2">
               {(diet.negativeTeg || []).map((negative) => (
-                <li className="w-auto bg-[#7B1717] text-red-75 font-peyda text-sm font-bold rounded-full px-4 py-1.5">
+                <li className="w-auto bg-[#7B1717] text-red-75 font-peyda compact:text-sm fold:text-base laptop:text-lg font-bold rounded-full px-4 py-1.5">
                   {negative}
                 </li>
               ))}
@@ -129,7 +139,7 @@ const ConventionalGlobalDietDetails = () => {
               className="w-full text-blue-400 flex flex-row justify-center items-center gap-2"
               onClick={() => setPriorityBox((prev: boolean) => !prev)}
             >
-              <h3 className="font-peyda text-base font-medium">
+              <h3 className="font-peyda compact:text-base fold:text-lg laptop:text-xl font-medium">
                 اولویت‌های خودت رو مشخص کن
               </h3>
               <motion.div
@@ -137,7 +147,7 @@ const ConventionalGlobalDietDetails = () => {
                 animate={{ rotate: priorityBox ? 180 : 0 }}
                 transition={{ duration: 0.5, ease: easeInOut }}
               >
-                <PiCaretDownBold className="text-4xl" />
+                <PiCaretDownBold className="compact:text-4xl fold:text-5xl laptop:text-6xl" />
               </motion.div>
             </div>
             <AnimatePresence initial={false}>
@@ -166,7 +176,7 @@ const ConventionalGlobalDietDetails = () => {
                   className="w-full overflow-hidden"
                 >
                   <div className="w-full bg-darker-blue-300 border border-dark rounded-2xl p-3 flex flex-col justify-center items-start gap-3">
-                    <h3 className="font-yekan text-base font-extrabold">
+                    <h3 className="font-yekan compact:text-base fold:text-lg laptop:text-xl font-extrabold">
                       چه چیزی برایت مهم‌تر است؟
                     </h3>
 
@@ -181,7 +191,7 @@ const ConventionalGlobalDietDetails = () => {
                             key={name}
                             className="w-full flex flex-row justify-between items-center"
                           >
-                            <h4 className="flex-2/5 font-peyda text-sm font-bold">
+                            <h4 className="flex-2/5 font-peyda compact:text-sm fold:text-base laptop:text-lg font-bold">
                               {title}
                             </h4>
                             <div className="w-full flex-3/5">

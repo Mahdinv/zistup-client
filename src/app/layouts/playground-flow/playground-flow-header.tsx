@@ -95,12 +95,12 @@ const PlaygroundFlowHeader = ({
             }}
             className=" flex h-16 w-full flex-col justify-end"
           >
-            <h1 className="shrink-0 font-yekan text-3xl font-extrabold leading-tight text-white">
+            <h1 className="shrink-0 font-yekan compact:text-3xl fold:text-4xl laptop:text-5xl font-extrabold leading-tight text-white">
               {title}
             </h1>
             <div className="mt-1 min-h-5 w-full">
               {subTitle && (
-                <p className="font-peyda text-sm font-medium leading-5 text-blue-600">
+                <p className="font-peyda compact:text-sm fold:text-base laptop:text-lg font-medium leading-5 text-blue-600">
                   {subTitle}
                 </p>
               )}

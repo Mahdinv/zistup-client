@@ -49,11 +49,6 @@ const AccountFlowHeader = ({
         <AnimatePresence mode="wait">
           {onBack && (
             <motion.button
-              /*
-               * با تغییر Header
-               * Back button نیز component جدید
-               * محسوب می‌شود و animation می‌گیرد.
-               */
               key={`account-back-${titleKey}`}
               type="button"
               aria-label="بازگشت به مرحله قبل"
@@ -96,6 +91,7 @@ const AccountFlowHeader = ({
                 hover:bg-blue-600/10
                 focus-visible:ring-2
                 focus-visible:ring-blue-600
+                cursor-pointer
               "
             >
               <PiCaretRight className="text-xl" aria-hidden="true" />

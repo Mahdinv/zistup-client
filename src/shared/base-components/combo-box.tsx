@@ -404,7 +404,7 @@ const ComboBoxContent = <T extends ComboBoxValue>({
             flex w-full items-center justify-between
             rounded-2xl border-2 px-3 py-2
             bg-darker-blue-400
-            text-xl font-medium
+            compact:text-xl fold:text-2xl laptop:text-3xl font-medium
             outline-none
             transition-[border-color,opacity] duration-200
             ${
@@ -431,7 +431,7 @@ const ComboBoxContent = <T extends ComboBoxValue>({
                       ? "text-green-400"
                       : "text-green-950"
               }
-                    font-peyda text-sm font-medium
+                    font-peyda compact:text-sm fold:text-base laptop:text-lg font-medium
             `}
           >
             {selectedOption?.label ?? placeholder}
@@ -447,7 +447,7 @@ const ComboBoxContent = <T extends ComboBoxValue>({
             className="flex items-center justify-center"
           >
             <HiOutlineChevronDown
-              className={`text-4xl ${disabled ? "text-[#34343d]" : isOpen ? "text-green-400" : "text-green-950"}`}
+              className={`compact:text-4xl fold:text-5xl laptop:text-6xl ${disabled ? "text-[#34343d]" : isOpen ? "text-green-400" : "text-green-950"}`}
             />
           </span>
         </button>
@@ -514,7 +514,7 @@ const ComboBoxContent = <T extends ComboBoxValue>({
                         flex w-full shrink-0
                         items-center justify-start
                         p-2.5
-                        text-right text-xs
+                        text-right compact:text-xs fold:text-sm laptop:text-base
                         transition-colors duration-150
                         ${isSelected ? "text-green-400" : "text-[#f4f4f5]"}
                         ${isActive ? "bg-white/4.5" : "bg-transparent"}

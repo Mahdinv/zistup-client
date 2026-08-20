@@ -83,7 +83,9 @@ const DemographicInformationPage = () => {
         <ScrollFade>
           <div className="flex-1 w-full flex flex-col justify-start items-center gap-3">
             <QuestionCard
-              icon={<PiPersonSimpleRun className="text-green-600 text-5xl" />}
+              icon={
+                <PiPersonSimpleRun className="text-green-600 compact:text-5xl fold:text-6xl laptop:text-7xl" />
+              }
               title="چند روز ورزش در هفته؟"
               isRequiredField
             >
@@ -109,7 +111,9 @@ const DemographicInformationPage = () => {
               />
             </QuestionCard>
             <QuestionCard
-              icon={<PiCity className="text-green-600 text-5xl" />}
+              icon={
+                <PiCity className="text-green-600 compact:text-5xl fold:text-6xl laptop:text-7xl" />
+              }
               title="کجا زندگی میکنی؟"
             >
               <div className="w-full flex flex-row justify-center items-center gap-4">
@@ -144,7 +148,9 @@ const DemographicInformationPage = () => {
               </div>
             </QuestionCard>
             <QuestionCard
-              icon={<PiForkKnife className="text-green-600 text-5xl" />}
+              icon={
+                <PiForkKnife className="text-green-600 compact:text-5xl fold:text-6xl laptop:text-7xl" />
+              }
               title="سهم خوراک از هزینه‌ها؟"
             >
               <Controller

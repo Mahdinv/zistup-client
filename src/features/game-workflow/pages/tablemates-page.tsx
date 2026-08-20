@@ -104,8 +104,13 @@ const TablematesPage = () => {
                 <div className="w-full mt-auto border-2 border-dashed border-blue-900 rounded-2xl px-4 py-3 text-center">
                   <Button
                     type="button"
-                    classes="compact:w-2/3! mobile-lg:w-1/2! laptop:w-2/5! btn btn-outline-blue border! text-xs! font-bold! rounded-xs! py-1.5!"
-                    icon={<PiUserPlus className="text-5xl" strokeWidth={1} />}
+                    classes="compact:w-2/3! mobile-lg:w-1/2! laptop:w-2/5! btn btn-outline-blue border! compact:text-xs! fold:text-sm! laptop:text-base! font-bold! rounded-xs! py-1.5!"
+                    icon={
+                      <PiUserPlus
+                        className="compact:text-5xl fold:text-6xl laptop:text-7xl"
+                        strokeWidth={1}
+                      />
+                    }
                     title="افزودن همسفره"
                     iconFirst
                     itemsGap={4}

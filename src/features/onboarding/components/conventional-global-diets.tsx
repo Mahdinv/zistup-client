@@ -16,7 +16,7 @@ const ConventionalGlobalDiets = () => {
 
   return (
     <div className="flex h-full min-h-0 w-full flex-col gap-4">
-      <h2 className="w-full shrink-0 font-yekan text-lg font-extrabold select-none">
+      <h2 className="w-full shrink-0 font-yekan compact:text-lg fold:text-xl laptop:text-2xl font-extrabold select-none">
         رژیم خودت رو انتخاب کن
       </h2>
       <ScrollFade>

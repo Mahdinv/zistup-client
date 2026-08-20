@@ -77,15 +77,18 @@ const TablemateAccordion = ({
         className="w-full flex flex-row justify-start items-center gap-2 cursor-pointer select-none"
         onClick={() => setOpen((prev) => !prev)}
       >
-        <PiUsersThree className="text-green-600 text-5xl" />
+        <PiUsersThree className="text-green-600 compact:text-5xl fold:text-6xl laptop:text-7xl" />
 
-        <h2 className="flex-1 text-sm font-medium font-peyda text-white mt-1">
+        <h2 className="flex-1 compact:text-sm fold:text-base laptop:text-lg font-medium font-peyda text-white mt-1">
           همسفره {title}
-          <span className="text-xs text-blue-600 mr-0.5"> (اختیاری)</span>
+          <span className="compact:text-xs fold:text-sm laptop:text-base text-blue-600 mr-0.5">
+            {" "}
+            (اختیاری)
+          </span>
         </h2>
 
         <PiTrash
-          className="text-3xl text-darker-blue-100 cursor-pointer"
+          className="compact:text-3xl fold:text-4xl laptop:text-5xl text-darker-blue-100 cursor-pointer"
           onClick={(event) => {
             event.stopPropagation();
             onRemoveClick();
@@ -102,7 +105,7 @@ const TablemateAccordion = ({
           }}
           className="flex items-center justify-center"
         >
-          <HiOutlineChevronDown className="text-4xl text-darker-blue-100" />
+          <HiOutlineChevronDown className="compact:text-4xl fold:text-5xl laptop:text-6xl text-darker-blue-100" />
         </motion.span>
       </div>
 
@@ -150,8 +153,8 @@ const TablemateAccordion = ({
               className="w-full border-t border-t-darker-blue-100 pt-3 mt-3 flex flex-col justify-start items-start gap-3"
             >
               <TextBox
-                labelClasses="font-peyda! text-xs! font-medium! pr-3!"
-                classes="border-green-950! text-green-950! rounded-sm! h-8.5!"
+                labelClasses="font-peyda! compact:text-xs! fold:text-sm! laptop:text-base! font-medium! pr-3!"
+                classes="border-green-950! text-green-950! rounded-sm! compact:h-8.5! fold:h-9! laptop:h-9.5!"
                 label="نام همسفره"
                 placeHolder="مثال: مهران"
                 {...register(`tablemates.${index}.name`)}
@@ -164,9 +167,9 @@ const TablemateAccordion = ({
                 render={({ field }) => (
                   <NumberCounter
                     label="تعداد وعده مشترک در هفته"
-                    labelClasses="font-peyda! text-xs! font-medium! pr-3!"
+                    labelClasses="font-peyda! compact:text-xs! fold:text-sm! laptop:text-base! font-medium! pr-3!"
                     suffix="بار"
-                    suffixClasses="text-white text-sm font-peyda"
+                    suffixClasses="text-white compact:text-sm fold:text-base laptop:text-lg font-peyda"
                     valueClasses="text-[28px]!"
                     value={field.value}
                     onChange={field.onChange}
@@ -180,7 +183,7 @@ const TablemateAccordion = ({
                 render={({ field }) => (
                   <Radio
                     label="سطح ارتباط"
-                    labelClasses="font-peyda! text-xs! font-medium! pr-3!"
+                    labelClasses="font-peyda! compact:text-xs! fold:text-sm! laptop:text-base! font-medium! pr-3!"
                     gridClasses="grid-cols-4 gap-1"
                     variant="green"
                     options={relationshipLevel}
@@ -199,7 +202,7 @@ const TablemateAccordion = ({
                 render={({ field }) => (
                   <Radio
                     label="به نظر شما چقدر این فرد روی رژیم شما تاثیر می گذارد؟"
-                    labelClasses="font-peyda! text-xs! font-medium! pr-3!"
+                    labelClasses="font-peyda! compact:text-xs! fold:text-sm! laptop:text-base! font-medium! pr-3!"
                     gridClasses="grid-cols-4 gap-1"
                     variant="green"
                     options={influenceLevel}

@@ -59,7 +59,9 @@ const Range = ({
         dir="ltr"
         className="w-full flex flex-row justify-center items-center gap-3"
       >
-        <label className="font-peyda text-xs font-bold">کم</label>
+        <label className="font-peyda compact:text-xs fold:text-sm laptop:text-base font-bold">
+          کم
+        </label>
 
         <div className="relative h-8 w-full">
           <div className="absolute inset-x-2 top-1/2 h-1 -translate-y-1/2 overflow-hidden rounded-full bg-darker-blue-100">
@@ -107,7 +109,9 @@ const Range = ({
           />
         </div>
 
-        <label className="font-peyda text-xs font-bold">زیاد</label>
+        <label className="font-peyda compact:text-xs fold:text-sm laptop:text-base font-bold">
+          زیاد
+        </label>
       </div>
     </div>
   );

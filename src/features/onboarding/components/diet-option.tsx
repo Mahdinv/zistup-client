@@ -47,13 +47,13 @@ const DietOption = ({
                  items-center"
       >
         <div className="flex flex-col justify-start items-start gap-1">
-          <h3 className="text-lg font-medium">
+          <h3 className="compact:text-lg fold:text-xl laptop:text-2xl font-medium">
             {routeState.data!.title}{" "}
             {routeState.data!.subTitle && (
               <span> ({routeState.data!.subTitle})</span>
             )}
           </h3>
-          <h4 className="text-xs font-medium">
+          <h4 className="compact:text-xs fold:text-sm laptop:text-base font-medium">
             {routeState.data!.desc.slice(0, charNumToSlice)}
           </h4>
         </div>
