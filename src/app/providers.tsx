@@ -3,7 +3,8 @@ import type { ReactNode } from "react";
 import { SkeletonTheme } from "react-loading-skeleton";
 import { Toaster } from "sonner";
 import { queryClient } from "../shared/api";
-
+import PwaInstallPrompt from "@/app/pwa/components/pwa-install-prompt";
+import PwaUpdatePrompt from "@/app/pwa/components/pwa-update-prompt";
 import "react-loading-skeleton/dist/skeleton.css";
 
 type ProvidersProps = {
@@ -18,6 +19,9 @@ const Providers = ({ children }: ProvidersProps) => {
       </SkeletonTheme>
 
       <Toaster position="top-center" richColors />
+
+      <PwaInstallPrompt />
+      <PwaUpdatePrompt />
     </QueryClientProvider>
   );
 };
