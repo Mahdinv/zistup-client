@@ -291,6 +291,7 @@ const PastWeekIntakePage = () => {
                 className="w-full bg-darker-blue-300 border border-dark rounded-[30px] p-6"
               >
                 <DoughnutChart
+                  key={JSON.stringify(chartData)}
                   chartData={chartData}
                   registeredCount={registeredCount}
                 />

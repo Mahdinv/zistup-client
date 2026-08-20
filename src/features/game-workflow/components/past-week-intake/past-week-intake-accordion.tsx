@@ -45,13 +45,18 @@ const PastWeekIntakeAccordion = ({
         "
       >
         <div
-          className="w-4 h-4 shrink-0 rounded-full"
+          className="compact:w-4 compact:h-4 fold:w-5 fold:h-5 laptop:w-6 laptop:h-6 shrink-0 rounded-full"
           style={{ backgroundColor: color }}
         />
-        <span className="flex-1 text-white font-peyda text-lg">{title}</span>
+        <span className="flex-1 text-white font-peyda compact:text-lg fold:text-xl laptop:text-2xl">
+          {title}
+        </span>
         <PiArrowClockwiseFill
-          className="text-xl text-blue-600 hover:text-blue-800 active:text-blue-800 cursor-pointer"
-          onClick={onRefreshGroup}
+          className="compact:text-xl fold:text-2xl laptop:text-3xl text-blue-600 hover:text-blue-800 active:text-blue-800 cursor-pointer"
+          onClick={(event) => {
+            event.stopPropagation();
+            onRefreshGroup();
+          }}
         />
         <motion.span
           className="flex items-center justify-center"
@@ -74,7 +79,7 @@ const PastWeekIntakeAccordion = ({
         >
           <HiOutlineChevronDown
             className="
-              text-xl
+              compact:text-xl fold:text-2xl laptop:text-3xl
               text-blue-600
               hover:text-blue-800
               active:text-blue-800

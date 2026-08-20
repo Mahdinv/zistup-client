@@ -138,7 +138,7 @@ const DoughnutChart = ({
           <div className="w-full flex flex-row items-center gap-2">
             <div className="w-4 aspect-square rounded-full bg-[#D1D5DB]" />
 
-            <small className="flex-1 text-white font-normal font-peyda!">
+            <small className="flex-1 text-white compact:text-sm fold:text-base laptop:text-lg font-normal font-peyda!">
               داده‌ای برای نمایش وجود ندارد
             </small>
           </div>
@@ -160,7 +160,7 @@ const DoughnutChart = ({
               </small>
 
               <span className="text-white text-sm font-medium font-peyda">
-                {item.totalPercentUsage}%
+                {item.totalPercentUsage.toFixed(2)}%
               </span>
             </div>
           ))
