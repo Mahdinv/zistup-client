@@ -27,7 +27,7 @@ const FoodFrequencyCard = ({
         src={foodGroup.properties.imageUrl}
         className="w-full max-w-28 h-auto object-contain pointer-events-none"
         loading="lazy"
-        alt=""
+        alt={foodGroup.title}
       />
 
       <span className="text-white text-base font-peyda font-medium">

@@ -162,7 +162,7 @@ const AccountFlowHeader = ({
         <motion.img
           key={imageName}
           src={imageName}
-          alt=""
+          alt={secondLineTitle}
           aria-hidden="true"
           loading="lazy"
           initial={{
