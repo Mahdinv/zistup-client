@@ -654,7 +654,10 @@ export const BirthDatePicker = forwardRef<HTMLDivElement, BirthDatePickerProps>(
 
     return (
       <div dir="rtl" className="w-full">
-        <span id={labelId} className="mb-2 block text-lg font-bold text-white">
+        <span
+          id={labelId}
+          className="mb-2 block compact:text-xl laptop:text-2xl font-bold text-white"
+        >
           {label}
         </span>
 

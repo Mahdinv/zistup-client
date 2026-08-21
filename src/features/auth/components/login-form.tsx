@@ -74,7 +74,7 @@ const LoginForm = ({
           className="flex w-full cursor-pointer select-none items-center justify-start gap-1"
           onClick={() => setInviteCode((prev) => !prev)}
         >
-          <span className="font-yekan text-base font-extrabold text-white underline">
+          <span className="font-yekan compact:text-base fold:text-lg laptop:text-xl font-extrabold text-white underline">
             کد دعوت داری؟
           </span>
 
@@ -86,7 +86,7 @@ const LoginForm = ({
               ease: "easeInOut",
             }}
           >
-            <FaCaretDown className="text-xl text-white" />
+            <FaCaretDown className="compact:text-xl fold:text-2xl laptop:text-3xl text-white" />
           </motion.span>
         </button>
 

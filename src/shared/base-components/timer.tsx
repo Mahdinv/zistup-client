@@ -27,7 +27,7 @@ const Timer = memo(({ initialTime, onFinish }: TimerProps) => {
   return (
     <>
       {timeLeft > 0 ? (
-        <label className="flex items-center gap-1 text-xs font-peyda font-medium text-blue-500 self-center">
+        <label className="flex items-center compact:gap-1 fold:gap-2 laptop:gap-3.5 compact:text-xs fold:text-sm laptop:text-base font-peyda font-medium text-blue-500 self-center">
           <span className="w-6">{formatTime(timeLeft)}</span>
           <span>تا ارسال مجدد</span>
         </label>

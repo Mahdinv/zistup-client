@@ -33,12 +33,12 @@ const TextBox = ({
           >
             <label
               htmlFor={props.name}
-              className={`${labelClasses} shrink-0 text-xl font-yekan font-extrabold self-start text-white`}
+              className={`${labelClasses} shrink-0 compact:text-xl laptop:text-2xl font-yekan font-extrabold self-start text-white`}
             >
               {label}
             </label>
             {subLabel && (
-              <small className="font-peyda text-xs font-medium self-start text-blue-500">
+              <small className="font-peyda compact:text-xs fold:text-sm laptop:text-base font-medium self-start text-blue-500">
                 {subLabel}
               </small>
             )}
@@ -56,7 +56,8 @@ const TextBox = ({
             id={props.name}
             type="text"
             placeholder={placeHolder}
-            className="flex-1 w-full h-full px-4 bg-transparent rounded-xl font-medium font-peyda outline-none text-sm"
+            autoComplete="off"
+            className="flex-1 w-full h-full px-4 bg-transparent rounded-xl font-medium font-peyda outline-none text-base"
             {...props}
           />
         </div>

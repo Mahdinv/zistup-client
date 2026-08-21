@@ -154,7 +154,7 @@ const TablemateAccordion = ({
             >
               <TextBox
                 labelClasses="font-peyda! compact:text-xs! fold:text-sm! laptop:text-base! font-medium! pr-3!"
-                classes="border-green-950! text-green-950! rounded-sm! compact:h-8.5! fold:h-9! laptop:h-9.5!"
+                classes="border-green-950! text-green-950! autofill:text-green-950! rounded-sm! compact:h-8.5! fold:h-9! laptop:h-9.5!"
                 label="نام همسفره"
                 placeHolder="مثال: مهران"
                 {...register(`tablemates.${index}.name`)}

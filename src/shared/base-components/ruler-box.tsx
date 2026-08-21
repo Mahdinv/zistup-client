@@ -281,7 +281,7 @@ export default function RulerBox({
         <div className="mb-1 text-right text-white">
           <span
             className="
-            text-xl
+            compact:text-xl laptop:text-2xl
             font-yekan
             font-extrabold
           "
@@ -292,7 +292,7 @@ export default function RulerBox({
           <span
             className="
             mr-1
-            text-sm
+            compact:text-base laptop:text-lg
             font-normal
             font-peyda
             text-white

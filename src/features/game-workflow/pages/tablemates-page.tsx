@@ -3,7 +3,6 @@ import Button from "@/shared/base-components/button";
 import ScrollFade from "@/shared/base-components/scroll-fade";
 import TablemateAccordion from "../components/tablemate-accordion";
 import { PiUserPlus } from "react-icons/pi";
-import { useNavigate } from "react-router-dom";
 import {
   FormProvider,
   useFieldArray,
@@ -20,19 +19,20 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { normalizeApiError } from "@/shared/api";
 import { addTablemates } from "../api/tablemates.api";
+import GameCompletedModal from "../components/game-completed-modal";
+import { useState } from "react";
 
 const TablematesPage = () => {
-  const navigate = useNavigate();
+  const [modal, setModal] = useState(false);
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
     mutationFn: addTablemates,
     onSuccess: async () => {
-      toast.success("مرحله همسفره‌ها با موفقیت به اتمام رسید");
-      await queryClient.invalidateQueries({
+      setModal(true);
+      queryClient.invalidateQueries({
         queryKey: ["roadMapList"],
       });
-      navigate("/game-workflow");
     },
     onError: (error) => {
       const apiError = normalizeApiError(error);
@@ -80,6 +80,13 @@ const TablematesPage = () => {
     mutate(data);
   return (
     <PlaygroundFlowContainer>
+      {modal && (
+        <GameCompletedModal
+          open={modal}
+          step={2}
+          nextGameLink="/game-workflow/past-week-intake"
+        />
+      )}
       <FormProvider {...methods}>
         <form
           onSubmit={handleSubmit(onAddTablematesHandler)}

@@ -17,12 +17,12 @@ import {
   demographicInformationFormSchema,
   type DemographicInformationForm,
 } from "../schemas/demographic-informations.schema";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addDemographicInformation } from "../api/demographic-information.api";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { normalizeApiError } from "@/shared/api";
+import GameCompletedModal from "../components/game-completed-modal";
 
 const provinces = iranProvinceCities.map(({ province }) => ({
   value: province,
@@ -30,7 +30,7 @@ const provinces = iranProvinceCities.map(({ province }) => ({
 }));
 
 const DemographicInformationPage = () => {
-  const navigate = useNavigate();
+  const [modal, setModal] = useState(false);
   const queryClient = useQueryClient();
   const { control, handleSubmit } = useForm({
     defaultValues: {
@@ -45,11 +45,10 @@ const DemographicInformationPage = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: addDemographicInformation,
     onSuccess: async () => {
-      toast.success("پرسشنامه اولیه با موفقیت به اتمام رسید");
-      await queryClient.invalidateQueries({
+      setModal(true);
+      queryClient.invalidateQueries({
         queryKey: ["roadMapList"],
       });
-      navigate("/game-workflow");
     },
     onError: (error) => {
       const apiError = normalizeApiError(error);
@@ -76,6 +75,13 @@ const DemographicInformationPage = () => {
 
   return (
     <PlaygroundFlowContainer>
+      {modal && (
+        <GameCompletedModal
+          open={modal}
+          step={1}
+          nextGameLink="/game-workflow/tablemates"
+        />
+      )}
       <form
         onSubmit={handleSubmit(onAddDemographicInformationHandler)}
         className="w-full h-full flex flex-col justify-between items-center gap-2"

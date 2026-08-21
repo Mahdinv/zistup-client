@@ -110,12 +110,12 @@ const OtpBox = ({
   return (
     <div dir="ltr" className="flex w-full flex-col items-end gap-3">
       <div dir="rtl" className="flex w-full flex-col items-start gap-1">
-        <label className="font-yekan text-xl font-extrabold text-white">
+        <label className="font-yekan compact:text-xl laptop:text-2xl font-extrabold text-white">
           کد تأیید را وارد کنید
         </label>
 
         {phoneNumber && (
-          <p className="font-peyda text-sm text-blue-500">
+          <p className="font-peyda compact:text-base laptop:text-lg text-blue-500">
             کد تأیید را به شماره {phoneNumber} ارسال کردیم
           </p>
         )}

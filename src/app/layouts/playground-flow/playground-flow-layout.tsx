@@ -77,6 +77,7 @@ const PlaygroundFlowLayout = () => {
   return (
     <div
       className="
+        relative
         compact:w-full
         tablet:w-3/5
         laptop:w-2/5

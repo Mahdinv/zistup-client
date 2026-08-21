@@ -21,9 +21,9 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import DoughnutChart from "../components/past-week-intake/doughnut-chart";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
 import { normalizeApiError } from "@/shared/api";
 import { HiOutlineChevronDown } from "react-icons/hi";
+import GameCompletedModal from "../components/game-completed-modal";
 
 const CHART_CATEGORIES = [
   {
@@ -59,7 +59,7 @@ const CHART_CATEGORIES = [
 ];
 
 const PastWeekIntakePage = () => {
-  const navigate = useNavigate();
+  const [modal, setModal] = useState(false);
   const queryClient = useQueryClient();
   const chartRef = useRef<HTMLDivElement>(null);
   const chartEndRef = useRef<HTMLDivElement>(null);
@@ -78,11 +78,10 @@ const PastWeekIntakePage = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: addPastWeekIntake,
     onSuccess: async () => {
-      toast.success("رژیم فعلی شما با موفقیت ثبت شد");
-      await queryClient.invalidateQueries({
+      setModal(true);
+      queryClient.invalidateQueries({
         queryKey: ["roadMapList"],
       });
-      navigate("/game-workflow");
     },
     onError: (error) => {
       const apiError = normalizeApiError(error);
@@ -240,6 +239,13 @@ const PastWeekIntakePage = () => {
 
   return (
     <PlaygroundFlowContainer>
+      {modal && (
+        <GameCompletedModal
+          open={modal}
+          step={3}
+          nextGameLink="/game-workflow/preferred-food"
+        />
+      )}
       <div className="w-full h-full min-h-0 flex flex-col gap-3">
         <div className="flex-1 min-h-0">
           <ScrollFade>

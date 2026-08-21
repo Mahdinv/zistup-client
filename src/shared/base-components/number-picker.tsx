@@ -147,9 +147,9 @@ export default function NumberPicker({
   return (
     <div dir="ltr" className="w-full min-w-0 max-w-full">
       <div className="w-full overflow-x-clip flex flex-col justify-start items-center gap-1.5">
-        <div className="font-yekan text-xl font-extrabold self-end">
+        <div className="font-yekan compact:text-xl laptop:text-2xl font-extrabold self-end">
           {label}
-          <span className="font-peyda text-sm font-medium mr-1">
+          <span className="font-peyda compact:text-base laptop:text-lg font-medium mr-1">
             {subLabel}
           </span>
         </div>

@@ -46,11 +46,11 @@ const Radio = ({
       >
         {label && (
           <label
-            className={`${labelClasses} ${inlineLabel && "flex-1 self-center!"} w-full text-xl font-yekan font-extrabold self-start text-white`}
+            className={`${labelClasses} ${inlineLabel && "flex-1 self-center!"} w-full compact:text-xl laptop:text-2xl font-yekan font-extrabold self-start text-white`}
           >
             {label}
             {subLabel && (
-              <small className="font-peyda text-sm font-medium self-start mr-1">
+              <small className="font-peyda compact:text-sm fold:text-base laptop:text-lg font-medium self-start mr-1">
                 {subLabel}
               </small>
             )}
