@@ -1,4 +1,4 @@
-import { PiLockSimple, PiTrophyFill } from "react-icons/pi";
+import { PiCheckFatFill, PiLockSimple, PiTrophyFill } from "react-icons/pi";
 import type { RoadMapStep } from "../api/road-map.types";
 import Button from "@/shared/base-components/button";
 import { useNavigate } from "react-router-dom";
@@ -34,6 +34,8 @@ const RoadMap = ({ step }: RoadMapProps) => {
         >
           {step.key === "personalized_diet" ? (
             <PiTrophyFill className="text-yellow-200 compact:text-xl fold:text-2xl laptop:text-3xl" />
+          ) : step.status === "completed" ? (
+            <PiCheckFatFill className="text-darker-blue-100 compact:text-xl fold:text-2xl laptop:text-3xl" />
           ) : (
             <small
               className={`mt-2 compact:text-3xl laptop:text-4xl ${step.status === "current" || step.status === "completed" ? " text-green-500" : "text-blue-900"}`}
