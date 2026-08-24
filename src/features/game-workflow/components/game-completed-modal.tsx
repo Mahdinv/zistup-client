@@ -1,4 +1,5 @@
 import Button from "@/shared/base-components/button";
+import { stepTitles } from "@/shared/lib/step-titles";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
@@ -14,16 +15,6 @@ const GameCompletedModal = ({
   open = false,
 }: GameCompletedModalProps) => {
   const navigate = useNavigate();
-  const stepTitles = [
-    "اول",
-    "دوم",
-    "سوم",
-    "چهارم",
-    "پنجم",
-    "ششم",
-    "هفتم",
-    "هشتم",
-  ];
   const percent = (step * 100) / 8;
   const radius = 45;
   const strokeWidth = 10;

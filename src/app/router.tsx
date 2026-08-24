@@ -47,6 +47,10 @@ const PastWeekIntakePage = lazy(
   () => import("@/features/game-workflow/pages/past-week-intake-page"),
 );
 
+const PreferredFoodPage = lazy(
+  () => import("@/features/game-workflow/pages/preferred-food-page"),
+);
+
 const router = createBrowserRouter([
   {
     element: <AccountFlowLayout />,
@@ -162,6 +166,17 @@ const router = createBrowserRouter([
               header: {
                 title: "مصرف هفته گذشته",
                 subTitle: "میزان مصرفت از هر گروه غذایی رو مشخص کن",
+                backTo: "/game-workflow",
+              },
+            } satisfies PlaygroundFlowRouteHandle,
+          },
+          {
+            path: "preferred-food",
+            element: <PreferredFoodPage />,
+            handle: {
+              header: {
+                title: "چیدمان بشقاب‌ها به‌ترتیب علاقه",
+                subTitle: "پنج بشقاب انتخاب کن تا سلیقه غذاییت دستمون بیاد",
                 backTo: "/game-workflow",
               },
             } satisfies PlaygroundFlowRouteHandle,

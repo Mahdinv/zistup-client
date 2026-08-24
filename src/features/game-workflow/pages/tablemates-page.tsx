@@ -21,6 +21,7 @@ import { normalizeApiError } from "@/shared/api";
 import { addTablemates } from "../api/tablemates.api";
 import GameCompletedModal from "../components/game-completed-modal";
 import { useState } from "react";
+import { FaCheck } from "react-icons/fa6";
 
 const TablematesPage = () => {
   const [modal, setModal] = useState(false);
@@ -129,7 +130,12 @@ const TablematesPage = () => {
             </ScrollFade>
           </div>
 
-          <Button classes="btn btn-primary-green shrink-0" title="تایید" />
+          <Button
+            classes="btn btn-primary-green shrink-0"
+            title="تایید"
+            icon={<FaCheck strokeWidth={5} />}
+            itemsGap={10}
+          />
         </form>
       </FormProvider>
     </PlaygroundFlowContainer>

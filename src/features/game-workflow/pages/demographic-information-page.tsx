@@ -23,6 +23,7 @@ import { addDemographicInformation } from "../api/demographic-information.api";
 import { toast } from "sonner";
 import { normalizeApiError } from "@/shared/api";
 import GameCompletedModal from "../components/game-completed-modal";
+import { FaCheck } from "react-icons/fa6";
 
 const provinces = iranProvinceCities.map(({ province }) => ({
   value: province,
@@ -179,6 +180,8 @@ const DemographicInformationPage = () => {
           type="submit"
           classes="btn btn-primary-green"
           title="تایید"
+          icon={<FaCheck strokeWidth={5} />}
+          itemsGap={10}
           disable={isPending}
         />
       </form>

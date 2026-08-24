@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import { normalizeApiError } from "@/shared/api";
 import { HiOutlineChevronDown } from "react-icons/hi";
 import GameCompletedModal from "../components/game-completed-modal";
+import { FaCheck } from "react-icons/fa6";
 
 const CHART_CATEGORIES = [
   {
@@ -312,6 +313,8 @@ const PastWeekIntakePage = () => {
               type="submit"
               classes="btn btn-primary-green shrink-0"
               title="تایید"
+              icon={<FaCheck strokeWidth={5} />}
+              itemsGap={10}
               disable={!items.some((item) => item.value > 0) || isPending}
             />
           ) : (
