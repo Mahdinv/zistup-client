@@ -129,7 +129,9 @@ const router = createBrowserRouter([
         element: <PlaygroundFlowLayout />,
         handle: {
           header: {
-            title: "سفر تو از همین‌جا شروع می‌شه",
+            title: "مسیر تغییر تو",
+            subTitle:
+              "قدم به قدم جلو برو تا رژیمت دقیقاً بر اساس لایف‌استایلت شکل بگیره",
             backTo: "/onboarding/choose-plan",
           },
         } satisfies PlaygroundFlowRouteHandle,
@@ -140,7 +142,7 @@ const router = createBrowserRouter([
             element: <DemographicInformationPage />,
             handle: {
               header: {
-                title: "چند سؤال کوتاه برای شروع",
+                title: "چند سؤال کوتاه",
                 subTitle:
                   "جوابشون رو بدی،یه رژیم بهتر و دقیق‌تربرای تو می‌چینیم",
                 backTo: "/game-workflow",
@@ -152,7 +154,7 @@ const router = createBrowserRouter([
             element: <TablematesPage />,
             handle: {
               header: {
-                title: "یک یا چند همسفره مشخص کن",
+                title: "همسفره",
                 subTitle:
                   "افرادی که با  آنها غذا میخورید رو مشخص کنید. اختیاری",
                 backTo: "/game-workflow",
@@ -164,8 +166,9 @@ const router = createBrowserRouter([
             element: <PastWeekIntakePage />,
             handle: {
               header: {
-                title: "مصرف هفته گذشته",
-                subTitle: "میزان مصرفت از هر گروه غذایی رو مشخص کن",
+                title: "مصرف هفته پیش تو",
+                subTitle:
+                  "توی هفته‌ای که گذشت، از هر گروه غذایی حدوداً چقدر خوردی؟",
                 backTo: "/game-workflow",
               },
             } satisfies PlaygroundFlowRouteHandle,
@@ -175,7 +178,7 @@ const router = createBrowserRouter([
             element: <PreferredFoodPage />,
             handle: {
               header: {
-                title: "چیدمان بشقاب‌ها به‌ترتیب علاقه",
+                title: "چیدمان بشقاب‌ها",
                 subTitle: "پنج بشقاب انتخاب کن تا سلیقه غذاییت دستمون بیاد",
                 backTo: "/game-workflow",
               },
