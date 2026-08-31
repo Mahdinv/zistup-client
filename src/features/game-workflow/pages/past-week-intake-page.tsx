@@ -263,6 +263,7 @@ const PastWeekIntakePage = () => {
               ) : (
                 (data || []).map((category) => (
                   <PastWeekIntakeAccordion
+                    name="past-week-intake"
                     key={category.id}
                     title={category.title}
                     color={category.properties.color}

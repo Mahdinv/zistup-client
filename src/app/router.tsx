@@ -51,6 +51,10 @@ const PreferredFoodPage = lazy(
   () => import("@/features/game-workflow/pages/preferred-food-page"),
 );
 
+const FreeShoppingPage = lazy(
+  () => import("@/features/game-workflow/pages/free-shopping-page"),
+);
+
 const router = createBrowserRouter([
   {
     element: <AccountFlowLayout />,
@@ -180,6 +184,18 @@ const router = createBrowserRouter([
               header: {
                 title: "چیدمان بشقاب‌ها",
                 subTitle: "پنج بشقاب انتخاب کن تا سلیقه غذاییت دستمون بیاد",
+                backTo: "/game-workflow",
+              },
+            } satisfies PlaygroundFlowRouteHandle,
+          },
+          {
+            path: "free-shopping",
+            element: <FreeShoppingPage />,
+            handle: {
+              header: {
+                title: "فروشگاه بی‌‌نهایت",
+                subTitle:
+                  "فرض کن هیچ محدودیتی نداری؛ خوراکی‌های محبوبت رو برای یه هفته بدون نگرانی انتخاب کن",
                 backTo: "/game-workflow",
               },
             } satisfies PlaygroundFlowRouteHandle,

@@ -168,6 +168,8 @@ const TablemateAccordion = ({
                   <NumberCounter
                     label="تعداد وعده مشترک در هفته"
                     labelClasses="font-peyda! compact:text-xs! fold:text-sm! laptop:text-base! font-medium! pr-3!"
+                    wrapperClasses="w-full"
+                    counterClasses="w-full"
                     suffix="بار"
                     suffixClasses="text-white compact:text-sm fold:text-base laptop:text-lg font-peyda"
                     valueClasses="text-[28px]!"

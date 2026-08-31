@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 @import "./assets/fonts/fonts.css";
 
 @theme {
@@ -168,6 +170,10 @@ input:-webkit-autofill {
 html,
 body {
   @apply font-peyda m-0 h-dvh w-full overflow-hidden bg-[#EDECEA] p-0 select-none;
+}
+
+body {
+  @apply relative;
 }
 
 .btn {

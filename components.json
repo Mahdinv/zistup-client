@@ -1,0 +1,25 @@
+{
+  "style": "base-nova",
+
+  "rsc": false,
+
+  "tsx": true,
+
+  "tailwind": {
+    "config": "",
+    "css": "src/index.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+
+  "aliases": {
+    "components": "@/shared",
+    "ui": "@/shared/base-components",
+    "lib": "@/lib",
+    "utils": "@/lib/utils",
+    "hooks": "@/hooks"
+  },
+
+  "iconLibrary": "lucide"
+}

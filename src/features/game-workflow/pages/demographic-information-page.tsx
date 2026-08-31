@@ -168,6 +168,8 @@ const DemographicInformationPage = () => {
                     suffix="%"
                     suffixClasses="text-green-400 text-8xl font-rokh"
                     valueClasses="pt-1.5!"
+                    wrapperClasses="w-full"
+                    counterClasses="w-full"
                     value={field.value}
                     onChange={field.onChange}
                   />
