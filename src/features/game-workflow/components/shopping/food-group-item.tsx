@@ -25,7 +25,9 @@ const FoodGroupItem = ({
   handleAddFoodGroup,
 }: FoodGroupItemProps) => {
   return (
-    <div className="w-full bg-darker-blue-400 border border-green-900 rounded-2xl px-3 py-1 flex flex-row justify-start items-center gap-2">
+    <div
+      className={`w-full bg-darker-blue-400 ${itemIndex !== -1 && "ring-1 ring-inset ring-green-900"} rounded-2xl px-3 py-1 flex flex-row justify-start items-center gap-2`}
+    >
       <img
         src={foodGroup.properties.imageUrl}
         className="compact:size-12 fold:size-13 laptop:size-14 object-contain pointer-events-none select-none"
