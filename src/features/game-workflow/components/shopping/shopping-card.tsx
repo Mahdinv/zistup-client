@@ -68,6 +68,7 @@ export default function ShoppingCard({
             border-darker-blue-100
             px-5
             py-1
+            select-none
           "
         >
           <div className="flex items-center gap-2">
@@ -76,7 +77,7 @@ export default function ShoppingCard({
               strokeWidth={2}
             />
 
-            <span className="compact:text-lg fold:text-xl laptop:text-2xl font-bold">
+            <span className="compact:text-lg fold:text-xl laptop:text-2xl font-bold select-none">
               سبد خرید من
             </span>
           </div>
@@ -97,7 +98,7 @@ export default function ShoppingCard({
               hover:bg-white/5
             "
           >
-            <PiXCircle className="text-blue-900 hover:text-darker-blue-100 active:text-darker-blue-100 compact:text-5xl fold:text-6xl laptop:text-7xl" />
+            <PiXCircle className="text-blue-900 hover:text-darker-blue-100 active:text-darker-blue-100 compact:text-5xl fold:text-6xl laptop:text-7xl cursor-pointer" />
           </button>
         </header>
 
@@ -112,17 +113,17 @@ export default function ShoppingCard({
                   loading="lazy"
                   alt={item.imageUrl}
                 />
-                <h3 className="flex-1 min-w-0 compact:text-sm fold:text-base laptop:text-lg font-peyda text-white font-bold">
+                <h3 className="flex-1 min-w-0 compact:text-sm fold:text-base laptop:text-lg font-peyda text-white font-bold select-none">
                   {item.title}
                 </h3>
-                <label className="compact:text-xs fold:text-sm laptop:text-base font-peyda text-white font-medium">
+                <label className="compact:text-xs fold:text-sm laptop:text-base font-peyda text-white font-medium select-none">
                   <span className="compact:text-xl fold:text-2xl laptop:text-3xl font-rokh text-green-400 ml-1">
                     {item.value}
                   </span>
                   کیلو
                 </label>
                 <PiTrash
-                  className="compact:text-xl fold:text-2xl laptop:text-3xl text-red-200"
+                  className="compact:text-xl fold:text-2xl laptop:text-3xl text-red-200 cursor-pointer"
                   onClick={() => {
                     // if (prevItems?.current) {
                     //   delete prevItems.current[item.foodGroupId];
@@ -138,7 +139,7 @@ export default function ShoppingCard({
         {/* Footer */}
         <footer className="shrink-0 mt-auto px-3 pt-3 pb-5">
           <div className="bg-darker-blue-200 text-sm py-2">
-            <div className="w-full flex flex-row justify-around items-center gap-2">
+            <div className="w-full flex flex-row justify-around items-center gap-2 select-none">
               <span className="font-bold compact:text-base fold:text-lg laptop:text-xl">
                 مجموع اقلام
               </span>

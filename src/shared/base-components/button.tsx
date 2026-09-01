@@ -43,7 +43,7 @@ const Button = ({
       value={value}
     >
       {itemCount !== undefined && itemCount !== null && (
-        <div className="absolute top-0 compact:left-0 mobile:left-3 mobile-lg:left-5 fold:left-10 tablet:left-3 laptop:left-3 -translate-y-1/2 compact:size-6 mobile-lg:size-8 shrink-0 rounded-full bg-green-400 flex items-center justify-center">
+        <div className="absolute top-0 z-20 compact:left-0 mobile:left-3 mobile-lg:left-5 fold:left-10 tablet:left-3 laptop:left-3 -translate-y-1/2 compact:size-6 mobile-lg:size-8 shrink-0 rounded-full bg-green-400 flex items-center justify-center">
           <span className="font-rokh text-black leading-none translate-y-1 compact:text-lg fold:text-xl laptop:text-2xl">
             {itemCount}
           </span>

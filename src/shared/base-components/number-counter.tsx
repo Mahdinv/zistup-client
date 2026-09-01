@@ -143,10 +143,10 @@ const NumberCounter = ({
         </button>
 
         <div
-          className={`flex flex-row items-center justify-center gap-1 pt-1.5 ${controlsClasses}`}
+          className={`flex flex-row items-center justify-center gap-1 pt-1.5 w-[5.5rem] ${controlsClasses}`}
         >
           <label
-            className={`text-green-400 text-8xl font-rokh ${valueClasses}`}
+            className={`text-green-400 text-8xl font-rokh tabular-nums text-center min-w-[3ch] ${valueClasses}`}
           >
             {value ?? ""}
           </label>
