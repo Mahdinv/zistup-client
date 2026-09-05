@@ -55,6 +55,10 @@ const FreeShoppingPage = lazy(
   () => import("@/features/game-workflow/pages/free-shopping-page"),
 );
 
+const LimitedShoppingPage = lazy(
+  () => import("@/features/game-workflow/pages/limited-shopping-page"),
+);
+
 const router = createBrowserRouter([
   {
     element: <AccountFlowLayout />,
@@ -196,6 +200,18 @@ const router = createBrowserRouter([
                 title: "فروشگاه بی‌‌نهایت",
                 subTitle:
                   "فرض کن هیچ محدودیتی نداری؛ خوراکی‌های محبوبت رو برای یه هفته بدون نگرانی انتخاب کن",
+                backTo: "/game-workflow",
+              },
+            } satisfies PlaygroundFlowRouteHandle,
+          },
+          {
+            path: "limited-shopping",
+            element: <LimitedShoppingPage />,
+            handle: {
+              header: {
+                title: "فروشگاه و تاثیر انتخاب‌ها",
+                subTitle:
+                  "انتخاب‌های قبلیت اینجاست. اثر خوراکی‌ها رو روی شاخص ها ببین و طبق سلیقه‌ت تنظیمشون کن",
                 backTo: "/game-workflow",
               },
             } satisfies PlaygroundFlowRouteHandle,

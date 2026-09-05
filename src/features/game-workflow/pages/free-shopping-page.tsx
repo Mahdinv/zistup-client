@@ -94,7 +94,7 @@ const FreeShoppingPage = () => {
         <GameCompletedModal
           open={modal}
           step={5}
-          nextGameLink="/game-workflow/free-shopping"
+          nextGameLink="/game-workflow/limited-shopping"
         />
       )}
       <div className="w-full h-full min-h-0 flex flex-col gap-3">

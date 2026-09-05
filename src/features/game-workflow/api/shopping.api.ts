@@ -14,3 +14,8 @@ export async function addShopping(data: ShoppingForm) {
   const response = await httpClient.post("/users/free-shopping", finalData);
   return response.data;
 }
+
+export async function getFreeShopping() {
+  const response = await httpClient.get("/users/free-shopping");
+  return response;
+}
