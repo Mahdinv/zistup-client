@@ -30,6 +30,11 @@ const Dmax = {
   available: 88.48817898,
 };
 
+const clampPercent = (value: number) => Math.min(Math.max(value, 0), 100);
+
+const getUsedPercent = (value: number, max: number) =>
+  max > 0 ? clampPercent((value / max) * 100) : 0;
+
 const LimitedShoppingPage = () => {
   const [modal, setModal] = useState(false);
   const queryClient = useQueryClient();
@@ -77,6 +82,12 @@ const LimitedShoppingPage = () => {
     [foodGroupsCategories],
   );
 
+  const foodGroupById = useMemo(
+    () =>
+      new Map((foodGroups ?? []).map((foodGroup) => [foodGroup.id, foodGroup])),
+    [foodGroups],
+  );
+
   const formValues = useMemo<ShoppingForm>(() => {
     const items = (freeShoppingData?.data?.items ?? [])
       .map((freeShoppingItem: { foodGroupId: number; value: number }) => {
@@ -115,6 +126,42 @@ const LimitedShoppingPage = () => {
 
   const items = useWatch({ name: "items", control });
 
+  const scoreBars = useMemo(() => {
+    const totals = {
+      price: 0,
+      health: 0,
+      environment: 0,
+      available: 0,
+    };
+
+    for (const item of items ?? []) {
+      if (item.value <= 0) continue;
+
+      const score = foodGroupById.get(item.foodGroupId)?.properties.score;
+
+      if (!score) continue;
+
+      totals.price += item.value * score.price;
+      totals.health += item.value * score.health;
+      totals.environment += item.value * score.environment;
+      totals.available += item.value * score.available;
+    }
+
+    const used = {
+      price: getUsedPercent(totals.price, Dmax.price),
+      health: getUsedPercent(totals.health, Dmax.health),
+      environment: getUsedPercent(totals.environment, Dmax.environment),
+      available: getUsedPercent(totals.available, Dmax.available),
+    };
+
+    return {
+      health: used.health,
+      price: 100 - used.price,
+      environment: 100 - used.environment,
+      available: 100 - used.available,
+    };
+  }, [items, foodGroupById]);
+
   const onAddFoodGroupHandler = useCallback(
     function onAddFoodGroupHandler(
       foodGroupId: number,
@@ -150,8 +197,7 @@ const LimitedShoppingPage = () => {
         };
       }
 
-      const score = (foodGroups ?? []).find((fg) => fg.id === item.foodGroupId)
-        ?.properties.score;
+      const score = foodGroupById.get(item.foodGroupId)?.properties.score;
       if (!score) return;
 
       const Sprice = item.value * score.price;
@@ -195,7 +241,7 @@ const LimitedShoppingPage = () => {
         importanceAvailable,
       };
     },
-    [foodGroups],
+    [foodGroupById],
   );
 
   useEffect(() => {
@@ -234,38 +280,13 @@ const LimitedShoppingPage = () => {
       <div className="w-full h-full min-h-0 flex flex-col gap-3">
         <div className="flex-1 min-h-0 flex flex-col gap-3">
           <ul className="w-full shrink-0 flex flex-col items-center justify-start gap-2 mt-2">
-            <ScoreBar
-              type="health"
-              Dmax={Dmax.health}
-              totalScore={items.reduce(
-                (a, item) => a + (item.positionHealth ?? 0),
-                0,
-              )}
-            />
-            <ScoreBar
-              type="price"
-              Dmax={Dmax.price}
-              totalScore={items.reduce(
-                (a, item) => a + (item.positionPrice ?? 0),
-                0,
-              )}
-            />
-            <ScoreBar
-              type="available"
-              Dmax={Dmax.available}
-              totalScore={items.reduce(
-                (a, item) => a + (item.positionAvailable ?? 0),
-                0,
-              )}
-            />
-            <ScoreBar
-              type="environment"
-              Dmax={Dmax.environment}
-              totalScore={items.reduce(
-                (a, item) => a + (item.positionEnvironment ?? 0),
-                0,
-              )}
-            />
+            <ScoreBar type="health" percent={scoreBars.health} />
+
+            <ScoreBar type="price" percent={scoreBars.price} />
+
+            <ScoreBar type="available" percent={scoreBars.available} />
+
+            <ScoreBar type="environment" percent={scoreBars.environment} />
           </ul>
           <div className="flex-1 min-h-0">
             <ScrollFade>

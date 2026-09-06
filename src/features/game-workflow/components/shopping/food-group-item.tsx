@@ -125,7 +125,7 @@ const FoodGroupItem = ({
                     foodGroup.properties.imageUrl,
                     foodGroup.title,
                     foodGroup.properties.unit === "گرم"
-                      ? 50
+                      ? 200
                       : foodGroup.properties.unit === "عدد"
                         ? 1
                         : 0.5,

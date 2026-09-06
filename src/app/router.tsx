@@ -59,6 +59,10 @@ const LimitedShoppingPage = lazy(
   () => import("@/features/game-workflow/pages/limited-shopping-page"),
 );
 
+const SocialAlignmentPage = lazy(
+  () => import("@/features/game-workflow/pages/social-alignment-page"),
+);
+
 const router = createBrowserRouter([
   {
     element: <AccountFlowLayout />,
@@ -212,6 +216,18 @@ const router = createBrowserRouter([
                 title: "فروشگاه و تاثیر انتخاب‌ها",
                 subTitle:
                   "انتخاب‌های قبلیت اینجاست. اثر خوراکی‌ها رو روی شاخص ها ببین و طبق سلیقه‌ت تنظیمشون کن",
+                backTo: "/game-workflow",
+              },
+            } satisfies PlaygroundFlowRouteHandle,
+          },
+          {
+            path: "social-alignment",
+            element: <SocialAlignmentPage />,
+            handle: {
+              header: {
+                title: "هم‌سویی با الگوی جامعه",
+                subTitle:
+                  "این فقط یک مقایسه آماریه؛ انتخاب درست یا غلطی وجود نداره. می‌تونی بدون هیچ تغییری ادامه بدی یا اولویت‌ها رو جابه‌جا کنی",
                 backTo: "/game-workflow",
               },
             } satisfies PlaygroundFlowRouteHandle,

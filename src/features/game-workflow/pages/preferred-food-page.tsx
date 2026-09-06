@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getFoodGroupsCategories } from "../api/past-week-intake.api";
 import PlaygroundFlowContainer from "@/app/layouts/playground-flow/playground-flow-container";
 import Button from "@/shared/base-components/button";
@@ -17,8 +17,14 @@ import FoodPlate from "../components/preferred-food/food-plate";
 import { stepTitles } from "@/shared/lib/step-titles";
 import { FaCheck } from "react-icons/fa6";
 import FoodGroupCardSkeleton from "../components/preferred-food/food-group-card-skeleton";
+import { addPreferredFood } from "../api/preferred-food.api";
+import { normalizeApiError } from "@/shared/api";
+import { toast } from "sonner";
+import GameCompletedModal from "../components/game-completed-modal";
 
 const PreferredFoodPage = () => {
+  const [modal, setModal] = useState(false);
+  const queryClient = useQueryClient();
   const [plateState, setPlateState] = useState<{
     plateNum: number;
     actionType: "next" | "back";
@@ -33,6 +39,20 @@ const PreferredFoodPage = () => {
     gcTime: 0,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
+  });
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: addPreferredFood,
+    onSuccess: async () => {
+      setModal(true);
+      queryClient.invalidateQueries({
+        queryKey: ["roadMapList"],
+      });
+    },
+    onError: (error) => {
+      const apiError = normalizeApiError(error);
+      toast.error(apiError.message);
+    },
   });
 
   const foodGroups = useMemo(() => {
@@ -167,10 +187,17 @@ const PreferredFoodPage = () => {
   }
 
   const onPreferredFoodFormHandler: SubmitHandler<PreferredFoodForm> = (data) =>
-    console.log(data);
+    mutate(data);
 
   return (
     <PlaygroundFlowContainer>
+      {modal && (
+        <GameCompletedModal
+          open={modal}
+          step={4}
+          nextGameLink="/game-workflow/free-shopping"
+        />
+      )}
       <div className="w-full h-full min-h-0 flex flex-col gap-3">
         <FoodPlate
           plateNum={plateState.plateNum}
@@ -217,7 +244,10 @@ const PreferredFoodPage = () => {
               title="تایید"
               icon={<FaCheck strokeWidth={5} />}
               itemsGap={10}
-              disable={items.some((item) => item.foodGroupId === undefined)}
+              disable={
+                isPending ||
+                items.some((item) => item.foodGroupId === undefined)
+              }
             />
           ) : (
             <Button

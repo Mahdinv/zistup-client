@@ -23,7 +23,7 @@ const PlaygroundFlowHeader = ({
         duration: shouldReduceMotion ? 0.1 : 0.25,
         ease: "easeOut",
       }}
-      className="relative flex h-28 w-full shrink-0 items-center justify-center bg-darker-blue-200 compact:px-4 mobile-lg:px-6 pt-8 pb-2"
+      className="relative flex min-h-28 h-auto w-full shrink-0 items-center justify-center bg-darker-blue-200 compact:px-4 mobile-lg:px-6 pt-8 pb-2"
     >
       <AnimatePresence mode="wait">
         {onBack && (
@@ -115,7 +115,7 @@ const PlaygroundFlowHeader = ({
         <motion.div
           initial={false}
           animate={{
-            height: subTitle ? 40 : 0,
+            height: subTitle ? "auto" : 0,
             marginTop: subTitle ? 8 : 0,
           }}
           transition={{
