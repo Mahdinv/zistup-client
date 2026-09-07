@@ -86,7 +86,7 @@ const FreeShoppingPage = () => {
   }, [fields]);
 
   const onShoppingFormHandler: SubmitHandler<ShoppingForm> = (data) =>
-    mutate(data);
+    mutate({ data, game: "free-shopping" });
 
   return (
     <PlaygroundFlowContainer>

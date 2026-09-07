@@ -266,7 +266,7 @@ const LimitedShoppingPage = () => {
   }, [items, replace, calculatePositionI]);
 
   const onShoppingFormHandler: SubmitHandler<ShoppingForm> = (data) =>
-    mutate(data);
+    mutate({ data, game: "limited-shopping" });
 
   return (
     <PlaygroundFlowContainer>
@@ -274,7 +274,7 @@ const LimitedShoppingPage = () => {
         <GameCompletedModal
           open={modal}
           step={6}
-          nextGameLink="/game-workflow/limited-shopping"
+          nextGameLink="/game-workflow/social-alignment"
         />
       )}
       <div className="w-full h-full min-h-0 flex flex-col gap-3">

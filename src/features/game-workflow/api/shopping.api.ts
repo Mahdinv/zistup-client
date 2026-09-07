@@ -1,7 +1,18 @@
 import { httpClient } from "@/shared/api";
 import type { ShoppingForm } from "../schemas/shopping.schema";
 
-export async function addShopping(data: ShoppingForm) {
+export async function addShopping({
+  data,
+  game,
+}: {
+  data: ShoppingForm;
+  game: "free-shopping" | "limited-shopping";
+}) {
+  const url =
+    game === "free-shopping"
+      ? "/users/free-shopping"
+      : "/users/limited-shopping";
+
   const finalData = {
     items: data.items.map((item) =>
       Object.fromEntries(
@@ -11,7 +22,8 @@ export async function addShopping(data: ShoppingForm) {
       ),
     ),
   };
-  const response = await httpClient.post("/users/free-shopping", finalData);
+
+  const response = await httpClient.post(url, finalData);
   return response.data;
 }
 
