@@ -1,6 +1,7 @@
 import Button from "@/shared/base-components/button";
 import { stepTitles } from "@/shared/lib/step-titles";
 import { AnimatePresence, motion } from "framer-motion";
+import { PiCaretLeftBold } from "react-icons/pi";
 import { useNavigate } from "react-router-dom";
 
 type GameCompletedModalProps = {
@@ -15,7 +16,7 @@ const GameCompletedModal = ({
   open = false,
 }: GameCompletedModalProps) => {
   const navigate = useNavigate();
-  const percent = (step * 100) / 8;
+  const percent = (step * 100) / 7;
   const radius = 45;
   const strokeWidth = 10;
   const circumference = 2 * Math.PI * radius;
@@ -23,7 +24,7 @@ const GameCompletedModal = ({
   return (
     <AnimatePresence mode="wait">
       {open && (
-        <div className="absolute inset-0 grid place-items-center z-10">
+        <div className="absolute inset-0 grid place-items-center z-9999">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.8 }}
@@ -86,16 +87,34 @@ const GameCompletedModal = ({
                 />
               </svg>
               <span className="text-green-400 absolute compact:text-5xl fold:text-7xl laptop:text-8xl font-extrabold font-rokh mt-1.5">
-                {step}/8
+                {step}/7
               </span>
             </div>
-            <div className="compact:text-xl fold:text-2xl laptop:text-3xl font-peyda font-bold text-center">
-              مرحله {stepTitles[step - 1]} تکمیل شد!
+            <div className="compact:text-xl fold:text-2xl laptop:text-3xl text-center">
+              <h3 className="font-peyda font-bold">
+                {" "}
+                مرحله {stepTitles[step - 1]} تکمیل شد!
+              </h3>
+              {step === 7 && (
+                <p className="compact:text-sm fold:text-base laptop:text-lg text-blue-900 font-medium mt-1">
+                  انتخاب‌هات ثبت شدن، حالا زیستاپ داره برنامه اختصاصیت رو
+                  می‌سازه
+                </p>
+              )}
             </div>
             <div className="w-full flex flex-col items-center gap-3">
               <Button
                 classes="btn btn-primary-green compact:text-base! fold:text-lg! laptop:text-xl! rounded-lg!"
-                title={`شروع مرحله ${stepTitles[step]}`}
+                title={
+                  step === 7
+                    ? "شروع محاسبه و ساخت برنامه"
+                    : `شروع مرحله ${stepTitles[step]}`
+                }
+                icon={
+                  step === 7 ? (
+                    <PiCaretLeftBold className="text-black compact:text-4xl fold:text-5xl laptop:text-6xl" />
+                  ) : undefined
+                }
                 onClick={() => navigate(nextGameLink)}
               />
               <Button

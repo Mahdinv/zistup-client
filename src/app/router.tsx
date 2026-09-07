@@ -8,6 +8,7 @@ import ChoosePlan from "@/features/onboarding/pages/choose-plan-page";
 import { requireAuth } from "@/features/auth/loaders/require-auth";
 import { redirectIfAuthenticated } from "@/features/auth/loaders/redirect-if-authenticated";
 import DashboardFlowLayout from "./layouts/dashboard-flow/dashboard-flow-layout";
+import NotFoundPage from "./layouts/not-found-page";
 
 /* Auth */
 const LoginPage = lazy(() => import("@/features/auth/pages/login-page"));
@@ -239,6 +240,10 @@ const router = createBrowserRouter([
   {
     loader: requireAuth,
     children: [{ path: "/dashboard", element: <DashboardFlowLayout /> }],
+  },
+  {
+    path: "*",
+    element: <NotFoundPage />,
   },
 ]);
 
