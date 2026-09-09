@@ -18,7 +18,15 @@ const Providers = ({ children }: ProvidersProps) => {
         {children}
       </SkeletonTheme>
 
-      <Toaster position="top-center" richColors />
+      <Toaster
+        position="top-center"
+        richColors
+        toastOptions={{
+          style: {
+            fontFamily: '"Peyda", ui-sans-serif, system-ui, sans-serif',
+          },
+        }}
+      />
 
       <PwaInstallPrompt />
       <PwaUpdatePrompt />
