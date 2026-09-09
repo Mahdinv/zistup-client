@@ -8,6 +8,7 @@ import Providers from "@/app/providers";
 import router from "@/app/router";
 
 import { configureHttpClient, queryClient } from "@/shared/api";
+import { setupImageRetry } from "./shared/lib/image-retry";
 
 /* ---------------------------------- */
 /* HTTP Client                        */
@@ -20,6 +21,8 @@ configureHttpClient({
     window.location.replace("/auth/login");
   },
 });
+
+setupImageRetry();
 
 /* ---------------------------------- */
 /* React Root                         */

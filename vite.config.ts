@@ -58,6 +58,30 @@ export default defineConfig({
       workbox: {
         globPatterns: ["**/*.{js,css,html,woff,woff2}"],
         navigateFallback: "index.html",
+
+        runtimeCaching: [
+          {
+            urlPattern: ({ request, url }) =>
+              request.destination === "image" &&
+              url.hostname === "api.zistup.com",
+
+            handler: "StaleWhileRevalidate",
+
+            options: {
+              cacheName: "server-images-cache",
+
+              expiration: {
+                maxEntries: 200,
+                maxAgeSeconds: 60 * 60 * 24 * 30,
+                purgeOnQuotaError: true,
+              },
+
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+        ],
       },
     }),
   ],
