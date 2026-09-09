@@ -102,7 +102,7 @@ const ConventionalGlobalDietDetails = () => {
               <small className="text-blue-600 compact:text-xs fold:text-sm laptop:text-base font-medium">
                 تمرکز
               </small>
-              <label className="compact:text-xs laptop:text-xl font-medium">
+              <label className="compact:text-xs laptop:text-xl font-medium whitespace-nowrap">
                 {diet.focus}
               </label>
             </li>
