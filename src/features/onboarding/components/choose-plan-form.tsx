@@ -41,7 +41,7 @@ const ChoosePlanForm = () => {
               <h4 className="compact:text-base laptop:text-xl font-bold text-green-400">
                 چالش هشت مرحله‌ای
               </h4>
-              <p className="compact:text-base laptop:text-xl font-normal">
+              <p className="compact:text-base laptop:text-xl font-normal text-right text-pretty">
                 طراحی صدرصد اختصاصی بر اساس شرایط واقعی روزمره و آنالیز بدن تو
               </p>
             </div>
@@ -51,7 +51,7 @@ const ChoosePlanForm = () => {
                   className="compact:text-4xl laptop:text-4xl"
                   strokeWidth={5}
                 />
-                <small className="compact:text-xs laptop:text-base font-bold">
+                <small className="compact:text-xs laptop:text-base font-bold whitespace-nowrap">
                   سبک زندگی
                 </small>
               </li>
@@ -60,7 +60,7 @@ const ChoosePlanForm = () => {
                   className="compact:text-4xl laptop:text-4xl"
                   strokeWidth={5}
                 />
-                <small className="compact:text-xs laptop:text-base font-bold">
+                <small className="compact:text-xs laptop:text-base font-bold whitespace-nowrap">
                   بودجه
                 </small>
               </li>
@@ -69,7 +69,7 @@ const ChoosePlanForm = () => {
                   className="compact:text-4xl laptop:text-4xl"
                   strokeWidth={5}
                 />
-                <small className="compact:text-xs laptop:text-base font-bold">
+                <small className="compact:text-xs laptop:text-base font-bold whitespace-nowrap">
                   هدف شخصی
                 </small>
               </li>
@@ -78,7 +78,7 @@ const ChoosePlanForm = () => {
                   className="compact:text-4xl laptop:text-4xl"
                   strokeWidth={5}
                 />
-                <small className="compact:text-xs laptop:text-base font-bold">
+                <small className="compact:text-xs laptop:text-base font-bold whitespace-nowrap">
                   سلیقه غذایی
                 </small>
               </li>
@@ -109,7 +109,7 @@ const ChoosePlanForm = () => {
               <h4 className="compact:text-base laptop:text-xl font-bold text-blue-400">
                 مناسب شروع سریع
               </h4>
-              <p className="compact:text-base laptop:text-xl font-normal">
+              <p className="compact:text-base laptop:text-xl font-normal text-right text-pretty">
                 انتخاب از میان شش برنامه معروف جهانی (کتو، فستینگ و...) با فرمول
                 بهینه‌شده زیستاپ
               </p>

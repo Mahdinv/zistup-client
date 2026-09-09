@@ -43,7 +43,7 @@ const TablematesPage = () => {
     enabled: actionType !== "create",
   });
 
-  const formValues = useMemo(() => {
+  const formValues = useMemo<TablematesForm>(() => {
     if (!data || data === undefined) {
       return {
         tablemates: [
@@ -166,6 +166,7 @@ const TablematesPage = () => {
           </div>
 
           <Button
+            type="submit"
             classes="btn btn-primary-green shrink-0"
             title="تایید"
             icon={<FaCheck strokeWidth={5} />}
