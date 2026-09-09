@@ -79,10 +79,25 @@ const RoadMap = ({ step }: RoadMapProps) => {
             >
               {step.title}
             </h2>
-            {step.status === "completed" && (
+            {step.key !== "tablemates" && step.status === "completed" && (
               <Button
                 classes="btn btn-primary-blue w-auto! compact:text-xs! fold:text-sm! laptop:text-base! rounded-sm!"
                 title="ویرایش"
+                icon={
+                  <PiCaretLeftBold className="text-black compact:text-sm fold:text-base laptop:text-lg" />
+                }
+                itemsGap={2}
+                onClick={() =>
+                  navigate(`/game-workflow${step.link}`, {
+                    state: { actionType: "edit" },
+                  })
+                }
+              />
+            )}
+            {step.key === "tablemates" && step.status === "skipped" && (
+              <Button
+                classes="btn btn-primary-green w-auto! compact:text-xs! fold:text-sm! laptop:text-base! rounded-sm!"
+                title="تکمیل"
                 icon={
                   <PiCaretLeftBold className="text-black compact:text-sm fold:text-base laptop:text-lg" />
                 }

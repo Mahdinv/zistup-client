@@ -15,15 +15,14 @@ import {
   tablematesFormSchema,
   type TablematesForm,
 } from "../schemas/tablemates.schema";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { normalizeApiError } from "@/shared/api";
-import { addTablemates, getTablemates } from "../api/tablemates.api";
+import { addTablemates } from "../api/tablemates.api";
 import GameCompletedModal from "../components/game-completed-modal";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { FaCheck } from "react-icons/fa6";
 import { useLocation, useNavigate } from "react-router-dom";
-import type { Tablemate } from "../api/tablemate.types";
 
 const TablematesPage = () => {
   const { state } = useLocation();
@@ -33,41 +32,17 @@ const TablematesPage = () => {
 
   const actionType = state?.actionType ?? undefined;
 
-  const { data } = useQuery<Tablemate[]>({
-    queryKey: ["tablemates"],
-    queryFn: getTablemates,
-    staleTime: Infinity,
-    gcTime: 0,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    enabled: actionType !== "create",
-  });
-
-  const formValues = useMemo<TablematesForm>(() => {
-    if (!data || data === undefined) {
-      return {
-        tablemates: [
-          {
-            name: "",
-            sharedMealsCount: 0,
-            relationshipLevel: "",
-            influenceLevel: "",
-          },
-        ],
-      };
-    }
-    return {
-      tablemates: data.map((tablemate) => ({
-        name: tablemate.name ?? "",
-        sharedMealsCount: tablemate.sharedMealsCount ?? 0,
-        relationshipLevel: tablemate.relationshipLevel ?? "",
-        influenceLevel: tablemate.influenceLevel ?? "",
-      })),
-    };
-  }, [data]);
-
   const methods = useForm<TablematesForm>({
-    values: formValues,
+    defaultValues: {
+      tablemates: [
+        {
+          name: "",
+          sharedMealsCount: 0,
+          relationshipLevel: "",
+          influenceLevel: "",
+        },
+      ],
+    },
     resolver: zodResolver(tablematesFormSchema),
   });
 
@@ -84,7 +59,7 @@ const TablematesPage = () => {
       if (actionType === "create") {
         setModal(true);
       } else {
-        toast.success("ویرایش مرحله دوم با موفقیت انجام شد");
+        toast.success("تکمیل مرحله دوم با موفقیت انجام شد");
         navigate("/game-workflow");
       }
       queryClient.invalidateQueries({
