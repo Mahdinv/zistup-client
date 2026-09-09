@@ -18,12 +18,17 @@ import {
   type DemographicInformationForm,
 } from "../schemas/demographic-informations.schema";
 import { useMemo, useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { addDemographicInformation } from "../api/demographic-information.api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  addDemographicInformation,
+  getUserProfile,
+} from "../api/demographic-information.api";
 import { toast } from "sonner";
 import { normalizeApiError } from "@/shared/api";
 import GameCompletedModal from "../components/game-completed-modal";
 import { FaCheck } from "react-icons/fa6";
+import { useLocation, useNavigate } from "react-router-dom";
+import type { User } from "../api/user.types";
 
 const provinces = iranProvinceCities.map(({ province }) => ({
   value: province,
@@ -31,22 +36,53 @@ const provinces = iranProvinceCities.map(({ province }) => ({
 }));
 
 const DemographicInformationPage = () => {
+  const { state } = useLocation();
+  const navigate = useNavigate();
   const [modal, setModal] = useState(false);
   const queryClient = useQueryClient();
+
+  const actionType = state?.actionType ?? undefined;
+
+  const { data } = useQuery<User>({
+    queryKey: ["userProfile"],
+    queryFn: getUserProfile,
+    staleTime: Infinity,
+    gcTime: 0,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    enabled: actionType !== "create",
+  });
+
+  const formValues = useMemo(() => {
+    if (!data || data === undefined)
+      return {
+        sportDayPerWeek: 3,
+        province: "",
+        city: "",
+        dietIncomePercent: 20,
+      };
+    return {
+      sportDayPerWeek: data.sportDayPerWeek ?? 3,
+      province: data.province ?? "",
+      city: data.city ?? "",
+      dietIncomePercent: data.dietIncomePercent ?? 20,
+    };
+  }, [data]);
+
   const { control, handleSubmit } = useForm({
-    defaultValues: {
-      sportDayPerWeek: 3,
-      province: "",
-      city: "",
-      dietIncomePercent: 20,
-    },
+    values: formValues,
     resolver: zodResolver(demographicInformationFormSchema),
   });
 
   const { mutate, isPending } = useMutation({
     mutationFn: addDemographicInformation,
     onSuccess: async () => {
-      setModal(true);
+      if (actionType === "create") {
+        setModal(true);
+      } else {
+        toast.success("ویرایش مرحله اول با موفقیت انجام شد");
+        navigate("/game-workflow");
+      }
       queryClient.invalidateQueries({
         queryKey: ["roadMapList"],
       });
@@ -76,7 +112,7 @@ const DemographicInformationPage = () => {
 
   return (
     <PlaygroundFlowContainer>
-      {modal && (
+      {modal && actionType === "create" && (
         <GameCompletedModal
           open={modal}
           step={1}

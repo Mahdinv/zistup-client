@@ -17,12 +17,16 @@ import FoodPlate from "../components/preferred-food/food-plate";
 import { stepTitles } from "@/shared/lib/step-titles";
 import { FaCheck } from "react-icons/fa6";
 import FoodGroupCardSkeleton from "../components/preferred-food/food-group-card-skeleton";
-import { addPreferredFood } from "../api/preferred-food.api";
+import { addPreferredFood, getPreferredFoods } from "../api/preferred-food.api";
 import { normalizeApiError } from "@/shared/api";
 import { toast } from "sonner";
 import GameCompletedModal from "../components/game-completed-modal";
+import { useLocation, useNavigate } from "react-router-dom";
+import type { PreferredFood } from "../api/preferred-food.types";
 
 const PreferredFoodPage = () => {
+  const { state } = useLocation();
+  const navigate = useNavigate();
   const [modal, setModal] = useState(false);
   const queryClient = useQueryClient();
   const [plateState, setPlateState] = useState<{
@@ -32,7 +36,25 @@ const PreferredFoodPage = () => {
     plateNum: 1,
     actionType: "next",
   });
-  const { data, isLoading } = useQuery<Category[]>({
+
+  const actionType = state?.actionType ?? undefined;
+
+  const { data: preferredFoods, isLoading: isPreferredFoodsLoading } = useQuery<
+    PreferredFood[]
+  >({
+    queryKey: ["pastWeekIntake"],
+    queryFn: getPreferredFoods,
+    staleTime: Infinity,
+    gcTime: 0,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    enabled: actionType !== "create",
+  });
+
+  const {
+    data: foodGroupsCategories,
+    isLoading: isFoodGroupsCategoriesLoading,
+  } = useQuery<Category[]>({
     queryKey: ["foodGroupsCategories"],
     queryFn: getFoodGroupsCategories,
     staleTime: Infinity,
@@ -41,23 +63,15 @@ const PreferredFoodPage = () => {
     refetchOnReconnect: false,
   });
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: addPreferredFood,
-    onSuccess: async () => {
-      setModal(true);
-      queryClient.invalidateQueries({
-        queryKey: ["roadMapList"],
-      });
-    },
-    onError: (error) => {
-      const apiError = normalizeApiError(error);
-      toast.error(apiError.message);
-    },
-  });
+  const isLoading =
+    isFoodGroupsCategoriesLoading ||
+    (actionType !== "create" && isPreferredFoodsLoading);
 
   const foodGroups = useMemo(() => {
-    return data?.flatMap((category) => category.foodGroups) ?? [];
-  }, [data]);
+    return (
+      foodGroupsCategories?.flatMap((category) => category.foodGroups) ?? []
+    );
+  }, [foodGroupsCategories]);
 
   const formValues = useMemo<PreferredFoodForm>(() => {
     if (!foodGroups.length) {
@@ -66,13 +80,22 @@ const PreferredFoodPage = () => {
       };
     }
 
+    if (preferredFoods === undefined) {
+      return {
+        items: foodGroups.map(() => ({
+          foodGroupId: undefined,
+          priority: undefined,
+        })),
+      };
+    }
+
     return {
-      items: foodGroups.map(() => ({
-        foodGroupId: undefined,
-        priority: undefined,
+      items: (preferredFoods ?? []).map((preferredFood: PreferredFood) => ({
+        foodGroupId: preferredFood?.foodGroupId,
+        priority: preferredFood?.priority,
       })),
     };
-  }, [foodGroups]);
+  }, [foodGroups, preferredFoods]);
 
   const method = useForm<PreferredFoodForm>({
     values: formValues,
@@ -90,6 +113,25 @@ const PreferredFoodPage = () => {
   const items = useWatch({
     control,
     name: "items",
+  });
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: addPreferredFood,
+    onSuccess: async () => {
+      if (actionType === "create") {
+        setModal(true);
+      } else {
+        toast.success("ویرایش مرحله چهارم با موفقیت انجام شد");
+        navigate("/game-workflow");
+      }
+      queryClient.invalidateQueries({
+        queryKey: ["roadMapList"],
+      });
+    },
+    onError: (error) => {
+      const apiError = normalizeApiError(error);
+      toast.error(apiError.message);
+    },
   });
 
   const selectedCardsEachPlate = items
@@ -191,7 +233,7 @@ const PreferredFoodPage = () => {
 
   return (
     <PlaygroundFlowContainer>
-      {modal && (
+      {modal && actionType === "create" && (
         <GameCompletedModal
           open={modal}
           step={4}
@@ -239,6 +281,7 @@ const PreferredFoodPage = () => {
         >
           {plateState.plateNum === 5 ? (
             <Button
+              key="submit"
               type="submit"
               classes="btn btn-primary-green shrink-0"
               title="تایید"
@@ -251,7 +294,8 @@ const PreferredFoodPage = () => {
             />
           ) : (
             <Button
-              type="submit"
+              key="next"
+              type="button"
               classes="btn btn-primary-green shrink-0"
               title={`تایید و رفتن به بشقاب ${stepTitles[plateState.plateNum]}`}
               disable={onDisableNextPlateHandler()}

@@ -1,5 +1,10 @@
+import { addTablemates } from "@/features/game-workflow/api/tablemates.api";
+import { normalizeApiError } from "@/shared/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { PiCaretRight } from "react-icons/pi";
+import { PiCaretLeft, PiCaretRight } from "react-icons/pi";
+import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 type PlaygroundFlowHeaderProps = {
   title?: string;
@@ -12,122 +17,111 @@ const PlaygroundFlowHeader = ({
   subTitle,
   onBack,
 }: PlaygroundFlowHeaderProps) => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const shouldReduceMotion = useReducedMotion();
-  const titleKey = [title, subTitle].filter(Boolean).join("-");
+  const { pathname } = useLocation();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: addTablemates,
+    onSuccess: async () => {
+      toast.info("شما مرحله همسفره را رد کردید");
+      queryClient.invalidateQueries({ queryKey: ["roadMapList"] });
+      navigate("/game-workflow");
+    },
+    onError: (error) => {
+      const apiError = normalizeApiError(error);
+      toast.error(apiError.message);
+    },
+  });
+
+  const showSkipButton =
+    pathname.replace(/\/+$/, "") === "/game-workflow/tablemates";
+
+  const transition = {
+    duration: shouldReduceMotion ? 0.1 : 0.28,
+    ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+  };
+
+  const handleSkip = () => {
+    if (isPending) return;
+
+    mutate({
+      tablemates: [],
+    });
+  };
 
   return (
     <motion.header
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{
-        duration: shouldReduceMotion ? 0.1 : 0.25,
+        duration: shouldReduceMotion ? 0.1 : 0.2,
         ease: "easeOut",
       }}
-      className="relative flex min-h-28 h-auto w-full shrink-0 items-center justify-center bg-darker-blue-200 compact:px-4 mobile-lg:px-6 pt-8 pb-2"
+      className="min-h-28 h-auto w-full shrink-0 bg-darker-blue-200 compact:px-4 mobile-lg:px-6 pt-2 pb-2"
     >
-      <AnimatePresence mode="wait">
-        {onBack && (
-          <motion.button
-            key="playground-back"
-            type="button"
-            aria-label="بازگشت به مرحله قبل"
-            onClick={onBack}
-            initial={{
-              opacity: 0,
-              x: shouldReduceMotion ? 0 : -18,
-              rotate: shouldReduceMotion ? 0 : -8,
-              scale: shouldReduceMotion ? 1 : 0.8,
-            }}
-            animate={{
-              opacity: 1,
-              x: 0,
-              rotate: 0,
-              scale: 1,
-            }}
-            exit={{
-              opacity: 0,
-              x: shouldReduceMotion ? 0 : -10,
-              scale: shouldReduceMotion ? 1 : 0.85,
-            }}
-            whileHover={
-              shouldReduceMotion
-                ? undefined
-                : {
-                    x: 4,
-                    scale: 1.06,
-                  }
-            }
-            whileTap={
-              shouldReduceMotion
-                ? undefined
-                : {
-                    x: 7,
-                    scale: 0.9,
-                  }
-            }
-            transition={{
-              duration: shouldReduceMotion ? 0.1 : 0.35,
-              ease: [0.34, 1.56, 0.64, 1],
-            }}
-            className={`absolute inset-s-4 z-10 -translate-y-1/2 cursor-pointer text-blue-600 outline-none mobile-lg:inset-s-6 ${
-              subTitle ? "top-1/2" : "top-[calc(50%+12px)]"
-            }`}
-          >
-            <PiCaretRight
-              className="compact:text-5xl fold:text-6xl laptop:text-7xl"
-              aria-hidden="true"
-            />
-          </motion.button>
-        )}
-      </AnimatePresence>
-
-      <div className="flex w-full flex-col items-center justify-center">
-        <div className="flex w-full items-center justify-center overflow-hidden">
-          <AnimatePresence mode="wait">
-            <motion.h1
-              key={`title-${titleKey}`}
+      <div className="relative flex min-h-14 w-full items-center justify-center">
+        <AnimatePresence initial={false}>
+          {onBack && (
+            <motion.button
+              key="playground-back"
+              type="button"
+              aria-label="بازگشت به مرحله قبل"
+              onClick={onBack}
               initial={{
                 opacity: 0,
-                y: shouldReduceMotion ? 0 : 16,
-                filter: shouldReduceMotion ? "blur(0px)" : "blur(6px)",
+                x: shouldReduceMotion ? 0 : -16,
+                scale: shouldReduceMotion ? 1 : 0.9,
               }}
               animate={{
                 opacity: 1,
-                y: 0,
-                filter: "blur(0px)",
+                x: 0,
+                scale: 1,
               }}
               exit={{
                 opacity: 0,
-                y: shouldReduceMotion ? 0 : -10,
-                filter: shouldReduceMotion ? "blur(0px)" : "blur(4px)",
+                x: shouldReduceMotion ? 0 : -10,
+                scale: shouldReduceMotion ? 1 : 0.92,
               }}
-              transition={{
-                duration: shouldReduceMotion ? 0.1 : 0.42,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-              className="shrink-0 font-yekan compact:text-2xl fold:text-3xl laptop:text-4xl font-extrabold leading-tight text-white"
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : {
+                      x: 4,
+                      scale: 1.05,
+                    }
+              }
+              whileTap={
+                shouldReduceMotion
+                  ? undefined
+                  : {
+                      x: 6,
+                      scale: 0.92,
+                    }
+              }
+              transition={transition}
+              className="absolute inset-s-0 flex cursor-pointer items-center justify-center text-blue-600 outline-none"
             >
-              {title}
-            </motion.h1>
-          </AnimatePresence>
-        </div>
+              <PiCaretRight
+                className="compact:text-5xl fold:text-6xl laptop:text-7xl"
+                aria-hidden="true"
+              />
+            </motion.button>
+          )}
+        </AnimatePresence>
 
-        <motion.div
-          initial={false}
-          animate={{
-            height: subTitle ? "auto" : 0,
-            marginTop: subTitle ? 8 : 0,
-          }}
-          transition={{
-            duration: shouldReduceMotion ? 0.1 : 0.35,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-          className="flex w-full shrink-0 items-center justify-center overflow-hidden"
+        <div
+          className={`flex min-w-0 items-center justify-center ${
+            showSkipButton
+              ? "compact:max-w-[55%] mobile-lg:max-w-[65%] tablet:max-w-[75%]"
+              : "compact:max-w-[80%] mobile-lg:max-w-[85%] tablet:max-w-[90%]"
+          }`}
         >
-          <AnimatePresence mode="wait">
-            {subTitle && (
-              <motion.h2
-                key={`subtitle-${titleKey}`}
+          <AnimatePresence initial={false} mode="popLayout">
+            {title && (
+              <motion.h1
+                key={title}
                 initial={{
                   opacity: 0,
                   y: shouldReduceMotion ? 0 : 10,
@@ -140,19 +134,97 @@ const PlaygroundFlowHeader = ({
                 }}
                 exit={{
                   opacity: 0,
-                  y: shouldReduceMotion ? 0 : -6,
+                  y: shouldReduceMotion ? 0 : -8,
+                  scale: shouldReduceMotion ? 1 : 0.98,
                 }}
-                transition={{
-                  duration: shouldReduceMotion ? 0.1 : 0.3,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                className="w-4/5 font-peyda text-center compact:text-sm fold:text-base laptop:text-lg font-medium leading-5 text-blue-600"
+                transition={transition}
+                className="text-center font-yekan compact:text-2xl fold:text-3xl laptop:text-4xl font-extrabold leading-tight text-white"
               >
-                {subTitle}
-              </motion.h2>
+                {title}
+              </motion.h1>
             )}
           </AnimatePresence>
-        </motion.div>
+        </div>
+
+        <AnimatePresence initial={false}>
+          {showSkipButton && (
+            <motion.button
+              key="playground-skip"
+              type="button"
+              aria-label="رد کردن مرحله"
+              onClick={handleSkip}
+              initial={{
+                opacity: 0,
+                x: shouldReduceMotion ? 0 : 18,
+                scale: shouldReduceMotion ? 1 : 0.9,
+              }}
+              animate={{
+                opacity: 1,
+                x: 0,
+                scale: 1,
+              }}
+              exit={{
+                opacity: 0,
+                x: shouldReduceMotion ? 0 : 12,
+                scale: shouldReduceMotion ? 1 : 0.92,
+              }}
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : {
+                      x: -4,
+                      scale: 1.04,
+                    }
+              }
+              whileTap={
+                shouldReduceMotion
+                  ? undefined
+                  : {
+                      x: -6,
+                      scale: 0.94,
+                    }
+              }
+              transition={transition}
+              className="absolute inset-e-0 flex cursor-pointer items-center text-gray-500 outline-none"
+            >
+              <small className="whitespace-nowrap font-peyda">رد کردن</small>
+
+              <PiCaretLeft
+                className="compact:text-5xl fold:text-6xl laptop:text-7xl"
+                aria-hidden="true"
+              />
+            </motion.button>
+          )}
+        </AnimatePresence>
+      </div>
+
+      <div className="flex w-full items-start justify-center overflow-hidden">
+        <AnimatePresence initial={false} mode="popLayout">
+          {subTitle && (
+            <motion.h2
+              key={subTitle}
+              initial={{
+                opacity: 0,
+                y: shouldReduceMotion ? 0 : 8,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
+              exit={{
+                opacity: 0,
+                y: shouldReduceMotion ? 0 : -6,
+              }}
+              transition={{
+                duration: shouldReduceMotion ? 0.1 : 0.24,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="w-4/5 font-peyda text-center compact:text-sm fold:text-base laptop:text-lg font-medium leading-5 text-blue-600"
+            >
+              {subTitle}
+            </motion.h2>
+          )}
+        </AnimatePresence>
       </div>
     </motion.header>
   );

@@ -7,6 +7,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   addPastWeekIntake,
   getFoodGroupsCategories,
+  getPastWeekIntakes,
 } from "../api/past-week-intake.api";
 import Skeleton from "react-loading-skeleton";
 import FoodFrequencyCard from "../components/past-week-intake/food-frequency-card";
@@ -25,6 +26,8 @@ import { normalizeApiError } from "@/shared/api";
 import { HiOutlineChevronDown } from "react-icons/hi";
 import GameCompletedModal from "../components/game-completed-modal";
 import { FaCheck } from "react-icons/fa6";
+import { useLocation, useNavigate } from "react-router-dom";
+import type { PastWeekIntake } from "../api/past-week-intake.types";
 
 const CHART_CATEGORIES = [
   {
@@ -60,14 +63,32 @@ const CHART_CATEGORIES = [
 ];
 
 const PastWeekIntakePage = () => {
+  const { state } = useLocation();
+  const navigate = useNavigate();
   const [modal, setModal] = useState(false);
   const queryClient = useQueryClient();
   const chartRef = useRef<HTMLDivElement>(null);
   const chartEndRef = useRef<HTMLDivElement>(null);
 
+  const actionType = state?.actionType ?? undefined;
+
   const [isChartVisible, setIsChartVisible] = useState(false);
 
-  const { data, isLoading } = useQuery({
+  const { data: pastWeekIntakes, isLoading: isPastWeekIntakesLoading } =
+    useQuery<PastWeekIntake[]>({
+      queryKey: ["pastWeekIntake"],
+      queryFn: getPastWeekIntakes,
+      staleTime: Infinity,
+      gcTime: 0,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      enabled: actionType !== "create",
+    });
+
+  const {
+    data: foodGroupsCategories,
+    isLoading: isFoodGroupsCategoriesLoading,
+  } = useQuery<Category[]>({
     queryKey: ["foodGroupsCategories"],
     queryFn: getFoodGroupsCategories,
     staleTime: Infinity,
@@ -76,33 +97,40 @@ const PastWeekIntakePage = () => {
     refetchOnReconnect: false,
   });
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: addPastWeekIntake,
-    onSuccess: async () => {
-      setModal(true);
-      queryClient.invalidateQueries({
-        queryKey: ["roadMapList"],
-      });
-    },
-    onError: (error) => {
-      const apiError = normalizeApiError(error);
-      toast.error(apiError.message);
-    },
-  });
+  const isLoading =
+    isFoodGroupsCategoriesLoading ||
+    (actionType !== "create" && isPastWeekIntakesLoading);
 
-  const formValues = useMemo<PastWeekIntakeForm>(
-    () => ({
-      items: (data ?? []).flatMap((category: Category) =>
-        (category.foodGroups ?? []).map((fg) => ({
-          foodGroupId: fg.id,
-          categoryId: fg.categoryId,
-          value: 0,
-          percentUsage: 0,
-        })),
+  const formValues = useMemo<PastWeekIntakeForm>(() => {
+    if (pastWeekIntakes === undefined) {
+      return {
+        items: (foodGroupsCategories ?? []).flatMap((category) =>
+          (category.foodGroups ?? []).map((foodGroup) => ({
+            foodGroupId: foodGroup.id,
+            categoryId: foodGroup.categoryId,
+            value: 0,
+            percentUsage: 0,
+          })),
+        ),
+      };
+    }
+
+    return {
+      items: (foodGroupsCategories ?? []).flatMap((category) =>
+        (category.foodGroups ?? []).map((foodGroup) => {
+          const intake = pastWeekIntakes.find(
+            (item) => item.foodGroupId === foodGroup.id,
+          );
+          return {
+            foodGroupId: foodGroup.id,
+            categoryId: foodGroup.categoryId,
+            value: intake?.value ?? 0,
+            percentUsage: intake?.percentUsage ?? 0,
+          };
+        }),
       ),
-    }),
-    [data],
-  );
+    };
+  }, [pastWeekIntakes, foodGroupsCategories]);
 
   const method = useForm<PastWeekIntakeForm>({
     values: formValues,
@@ -118,6 +146,25 @@ const PastWeekIntakePage = () => {
   const items = useWatch({
     control,
     name: "items",
+  });
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: addPastWeekIntake,
+    onSuccess: async () => {
+      if (actionType === "create") {
+        setModal(true);
+      } else {
+        toast.success("ویرایش مرحله سوم با موفقیت انجام شد");
+        navigate("/game-workflow");
+      }
+      queryClient.invalidateQueries({
+        queryKey: ["roadMapList"],
+      });
+    },
+    onError: (error) => {
+      const apiError = normalizeApiError(error);
+      toast.error(apiError.message);
+    },
   });
 
   const chartData = useMemo(() => {
@@ -240,7 +287,7 @@ const PastWeekIntakePage = () => {
 
   return (
     <PlaygroundFlowContainer>
-      {modal && (
+      {modal && actionType === "create" && (
         <GameCompletedModal
           open={modal}
           step={3}
@@ -261,7 +308,7 @@ const PastWeekIntakePage = () => {
                   containerClassName="w-full flex flex-col gap-0"
                 />
               ) : (
-                (data || []).map((category) => (
+                (foodGroupsCategories || []).map((category) => (
                   <PastWeekIntakeAccordion
                     name="past-week-intake"
                     key={category.id}

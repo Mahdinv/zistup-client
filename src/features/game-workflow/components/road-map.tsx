@@ -1,4 +1,9 @@
-import { PiCheckFatFill, PiLockSimple, PiTrophyFill } from "react-icons/pi";
+import {
+  PiCaretLeftBold,
+  PiCheckFatFill,
+  PiLockSimple,
+  PiTrophyFill,
+} from "react-icons/pi";
 import type { RoadMapStep } from "../api/road-map.types";
 import Button from "@/shared/base-components/button";
 import { useNavigate } from "react-router-dom";
@@ -35,7 +40,7 @@ const RoadMap = ({ step }: RoadMapProps) => {
           {step.key === "personalized_diet" ? (
             <PiTrophyFill className="text-yellow-200 compact:text-xl fold:text-2xl laptop:text-3xl" />
           ) : step.status === "completed" ? (
-            <PiCheckFatFill className="text-darker-blue-100 compact:text-xl fold:text-2xl laptop:text-3xl" />
+            <PiCheckFatFill className="text-green-400 compact:text-xl fold:text-2xl laptop:text-3xl" />
           ) : (
             <small
               className={`mt-2 compact:text-3xl laptop:text-4xl ${step.status === "current" || step.status === "completed" ? " text-green-500" : "text-blue-900"}`}
@@ -53,29 +58,53 @@ const RoadMap = ({ step }: RoadMapProps) => {
       >
         <div className="w-full flex flex-col justify-center items-start gap-1">
           <div className="w-full flex flex-row justify-between items-center">
-            <small className="text-blue-700 compact:text-xxs fold:text-xs laptop:text-sm font-peyda font-medium">
-              {step.subtitle}
-            </small>
             <small
-              className={`${step.status === "completed" ? "text-green-400" : step.status === "skipped" ? "text-gray-400" : "hidden"} font-peyda compact:text-xxs fold:text-xs laptop:text-sm font-medium`}
+              className={`${step.status === "completed" ? "text-green-400" : "text-blue-700"} compact:text-xxs fold:text-xs laptop:text-sm font-peyda font-medium`}
             >
-              {step.status === "completed" ? "تکمیل شد" : "ناتمام"}
+              {step.subtitle}{" "}
+              <small
+                className={`${step.status === "completed" ? "text-green-400" : step.status === "skipped" ? "text-blue-700" : "hidden"} font-peyda compact:text-xxs fold:text-xs laptop:text-sm font-medium`}
+              >
+                {step.status === "completed" ? "تکمیل شد" : "ناتمام ماند"}
+              </small>
             </small>
+
             <PiLockSimple
               className={`${step.status === "locked" ? "block" : "hidden"} compact:text-lg fold:text-xl laptop:2xl: text-blue-900`}
             />
           </div>
-          <h2
-            className={`${step.status === "current" || step.status === "locked" ? "text-white" : "text-gray-400"} compact:text-lg fold:text-xl laptop:text-2xl font-peyda font-medium`}
-          >
-            {step.title}
-          </h2>
+          <div className="w-full flex flex-row justify-between items-center">
+            <h2
+              className={`${step.status === "current" || step.status === "locked" ? "text-white" : "text-gray-400"} compact:text-lg fold:text-xl laptop:text-2xl font-peyda font-medium`}
+            >
+              {step.title}
+            </h2>
+            {step.status === "completed" && (
+              <Button
+                classes="btn btn-primary-blue w-auto! compact:text-xs! fold:text-sm! laptop:text-base! rounded-sm!"
+                title="ویرایش"
+                icon={
+                  <PiCaretLeftBold className="text-black compact:text-sm fold:text-base laptop:text-lg" />
+                }
+                itemsGap={2}
+                onClick={() =>
+                  navigate(`/game-workflow${step.link}`, {
+                    state: { actionType: "edit" },
+                  })
+                }
+              />
+            )}
+          </div>
         </div>
         {step.status === "current" && (
           <Button
             classes="btn btn-primary-green compact:text-sm! fold:text-base! laptop:text-lg! py-1! rounded-sm! font-bold!"
             title="شروع این مرحله"
-            onClick={() => navigate(`/game-workflow${step.link}`)}
+            onClick={() =>
+              navigate(`/game-workflow${step.link}`, {
+                state: { actionType: "create" },
+              })
+            }
           />
         )}
       </div>

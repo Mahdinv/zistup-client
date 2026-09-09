@@ -1,5 +1,16 @@
 import { httpClient } from "@/shared/api";
 import type { ShoppingForm } from "../schemas/shopping.schema";
+import type { FreeShopping, LimitedShopping } from "./shopping.types";
+
+export async function getFreeShoppings(): Promise<FreeShopping[]> {
+  const response = await httpClient.get("/users/free-shopping");
+  return response.data.items;
+}
+
+export async function getLimitedShopping(): Promise<LimitedShopping[]> {
+  const response = await httpClient.get("/users/limited-shopping");
+  return response.data.items;
+}
 
 export async function addShopping({
   data,
@@ -25,9 +36,4 @@ export async function addShopping({
 
   const response = await httpClient.post(url, finalData);
   return response.data;
-}
-
-export async function getFreeShopping() {
-  const response = await httpClient.get("/users/free-shopping");
-  return response;
 }

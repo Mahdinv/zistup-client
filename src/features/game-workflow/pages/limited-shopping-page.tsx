@@ -1,7 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getFoodGroupsCategories } from "../api/past-week-intake.api";
-import { addShopping, getFreeShopping } from "../api/shopping.api";
+import {
+  addShopping,
+  getFreeShoppings,
+  getLimitedShopping,
+} from "../api/shopping.api";
 import { normalizeApiError } from "@/shared/api";
 import { toast } from "sonner";
 import {
@@ -22,6 +26,9 @@ import { HiOutlineShoppingBag } from "react-icons/hi";
 import { FaCheck } from "react-icons/fa6";
 import ShoppingCard from "../components/shopping/shopping-card";
 import ScoreBar from "../components/shopping/limited-shopping/score-bar";
+import { useLocation, useNavigate } from "react-router-dom";
+import type { Category } from "../api/category.types";
+import type { FreeShopping, LimitedShopping } from "../api/shopping.types";
 
 const Dmax = {
   price: 36.78415795,
@@ -36,46 +43,55 @@ const getUsedPercent = (value: number, max: number) =>
   max > 0 ? clampPercent((value / max) * 100) : 0;
 
 const LimitedShoppingPage = () => {
+  const { state } = useLocation();
+  const navigate = useNavigate();
   const [modal, setModal] = useState(false);
   const queryClient = useQueryClient();
   const [cartOpen, setCartOpen] = useState(false);
   const prevItemsRef = useRef<Record<number, number>>({});
 
-  const { data: foodGroupsCategories, isLoading: isFoodGroupsLoading } =
-    useQuery({
-      queryKey: ["foodGroupsCategories"],
-      queryFn: getFoodGroupsCategories,
+  const actionType = state?.actionType ?? undefined;
+
+  const { data: limitedShoppings, isLoading: isLimitedShoppingLoading } =
+    useQuery<LimitedShopping[]>({
+      queryKey: ["limitedShopping"],
+      queryFn: getLimitedShopping,
+      enabled: actionType !== "create",
       staleTime: Infinity,
       gcTime: 0,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
     });
 
-  const { data: freeShoppingData, isLoading: isFreeShoppingLoading } = useQuery(
-    {
-      queryKey: ["free-shopping-data"],
-      queryFn: getFreeShopping,
-      enabled: !!foodGroupsCategories,
-      staleTime: Infinity,
-      gcTime: 0,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-    },
-  );
-
-  const isLoading = isFoodGroupsLoading || isFreeShoppingLoading;
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: addShopping,
-    onSuccess: async () => {
-      setModal(true);
-      queryClient.invalidateQueries({ queryKey: ["roadMapList"] });
-    },
-    onError: (error) => {
-      const apiError = normalizeApiError(error);
-      toast.error(apiError.message);
-    },
+  const { data: freeShoppingData, isLoading: isFreeShoppingLoading } = useQuery<
+    FreeShopping[]
+  >({
+    queryKey: ["freeShoppings"],
+    queryFn: getFreeShoppings,
+    enabled: actionType === "create",
+    staleTime: Infinity,
+    gcTime: 0,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
+
+  const {
+    data: foodGroupsCategories,
+    isLoading: isFoodGroupsCategoriesLoading,
+  } = useQuery<Category[]>({
+    queryKey: ["foodGroupsCategories"],
+    queryFn: getFoodGroupsCategories,
+    staleTime: Infinity,
+    gcTime: 0,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
+
+  const isLoading =
+    isFoodGroupsCategoriesLoading ||
+    (actionType === "create"
+      ? isFreeShoppingLoading
+      : isLimitedShoppingLoading);
 
   const foodGroups = useMemo(
     () => foodGroupsCategories?.flatMap((category) => category.foodGroups),
@@ -89,18 +105,13 @@ const LimitedShoppingPage = () => {
   );
 
   const formValues = useMemo<ShoppingForm>(() => {
-    const items = (freeShoppingData?.data?.items ?? [])
-      .map((freeShoppingItem: { foodGroupId: number; value: number }) => {
-        const foodGroup = (foodGroups ?? []).find(
-          (foodGroup) => foodGroup.id === freeShoppingItem.foodGroupId,
-        );
-        if (!foodGroup) return null;
-
-        return {
-          foodGroupId: freeShoppingItem.foodGroupId,
-          imageUrl: foodGroup.properties.imageUrl,
-          title: foodGroup.title,
-          value: freeShoppingItem.value,
+    if (actionType === "create") {
+      return {
+        items: (freeShoppingData ?? []).map((item) => ({
+          foodGroupId: item.foodGroupId,
+          imageUrl: item.foodGroup.properties.imageUrl,
+          title: item.foodGroup.title,
+          value: item.value,
           positionPrice: 0,
           positionHealth: 0,
           positionEnvironment: 0,
@@ -109,12 +120,27 @@ const LimitedShoppingPage = () => {
           importanceHealth: 0,
           importanceEnvironment: 0,
           importanceAvailable: 0,
-        };
-      })
-      .filter((item: ShoppingForm) => item !== null);
+        })),
+      };
+    }
 
-    return { items };
-  }, [foodGroups, freeShoppingData?.data?.items]);
+    return {
+      items: (limitedShoppings ?? []).map((item) => ({
+        foodGroupId: item.foodGroupId,
+        imageUrl: item.foodGroup.properties.imageUrl,
+        title: item.foodGroup.title,
+        value: item.value,
+        positionPrice: item.positionPrice,
+        positionHealth: item.positionHealth,
+        positionEnvironment: item.positionEnvironment,
+        positionAvailable: item.positionAvailable,
+        importancePrice: item.importancePrice,
+        importanceHealth: item.importanceHealth,
+        importanceEnvironment: item.importanceEnvironment,
+        importanceAvailable: item.importanceAvailable,
+      })),
+    };
+  }, [actionType, freeShoppingData, limitedShoppings]);
 
   const method = useForm<ShoppingForm>({ values: formValues });
   const { control, getValues, handleSubmit } = method;
@@ -122,6 +148,23 @@ const LimitedShoppingPage = () => {
   const { fields, append, remove, replace } = useFieldArray({
     control,
     name: "items",
+  });
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: addShopping,
+    onSuccess: async () => {
+      if (actionType === "create") {
+        setModal(true);
+      } else {
+        toast.success("ویرایش مرحله ششم با موفقیت انجام شد");
+        navigate("/game-workflow");
+      }
+      queryClient.invalidateQueries({ queryKey: ["roadMapList"] });
+    },
+    onError: (error) => {
+      const apiError = normalizeApiError(error);
+      toast.error(apiError.message);
+    },
   });
 
   const items = useWatch({ name: "items", control });
@@ -270,7 +313,7 @@ const LimitedShoppingPage = () => {
 
   return (
     <PlaygroundFlowContainer>
-      {modal && (
+      {modal && actionType === "create" && (
         <GameCompletedModal
           open={modal}
           step={6}

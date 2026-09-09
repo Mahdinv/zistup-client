@@ -1,0 +1,21 @@
+export type User = {
+  id: number;
+  name: string;
+  mobile: string;
+  refCode: string;
+  birthDate: string;
+  version: string;
+  versionCode: number;
+  sex: "male" | "female";
+  email: string;
+  weight: number;
+  height: number;
+  job: string;
+  income: number;
+  married: number;
+  familyMembers: number;
+  city: string;
+  province: string;
+  dietIncomePercent: number;
+  sportDayPerWeek: number;
+};

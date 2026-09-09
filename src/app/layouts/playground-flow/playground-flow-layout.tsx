@@ -70,7 +70,9 @@ const PlaygroundFlowLayout = () => {
     }
 
     if (routeHeader.backTo) {
-      navigate(routeHeader.backTo);
+      navigate(routeHeader.backTo, {
+        replace: true,
+      });
     }
   };
 

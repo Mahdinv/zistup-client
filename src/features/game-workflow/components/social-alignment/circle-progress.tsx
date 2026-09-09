@@ -13,7 +13,7 @@ const CircleProgress = ({ value }: PriorityHintProps) => {
     <div className="w-full shrink-0 flex items-center justify-between gap-2 rounded-2xl border border-dark bg-darker-blue-300 px-4 py-2">
       <PiInfo className="shrink-0 text-white compact:text-7xl fold:text-8xl laptop:text-[40px]" />
 
-      <p className="flex-1 min-w-0 font-peyda compact:text-sm fold:text-base laptop:text-lg text-white font-bold">
+      <p className="flex-1 min-w-0 font-peyda compact:text-sm fold:text-base laptop:text-lg text-white font-bold text-right text-pretty">
         رتبه‌ها ثابتن؛ با کشیدن غذاها به بالا یا پایین، اولویت‌هاشون رو جابه‌جا
         کن
       </p>

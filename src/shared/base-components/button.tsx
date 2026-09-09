@@ -21,7 +21,7 @@ const Button = ({
   iconClasses,
   iconFirst,
   itemsGap,
-  type,
+  type = "button",
   title,
   itemCount,
   name,

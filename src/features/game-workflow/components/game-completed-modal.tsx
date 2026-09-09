@@ -115,12 +115,20 @@ const GameCompletedModal = ({
                     <PiCaretLeftBold className="text-black compact:text-4xl fold:text-5xl laptop:text-6xl" />
                   ) : undefined
                 }
-                onClick={() => navigate(nextGameLink)}
+                onClick={() =>
+                  navigate(nextGameLink, {
+                    state: { actionType: "create" },
+                  })
+                }
               />
               <Button
                 classes="btn btn-link compact:text-sm! fold:text-base! laptop:text-lg!"
                 title="مشاهده نقشه راه"
-                onClick={() => navigate("/game-workflow")}
+                onClick={() =>
+                  navigate("/game-workflow", {
+                    replace: true,
+                  })
+                }
               />
             </div>
           </motion.div>

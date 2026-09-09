@@ -21,14 +21,36 @@ import {
 import { normalizeApiError } from "@/shared/api";
 import { toast } from "sonner";
 import GameCompletedModal from "../components/game-completed-modal";
-import { addShopping } from "../api/shopping.api";
+import { addShopping, getFreeShoppings } from "../api/shopping.api";
+import { useLocation, useNavigate } from "react-router-dom";
+import type { Category } from "../api/category.types";
+import type { FreeShopping } from "../api/shopping.types";
 
 const FreeShoppingPage = () => {
+  const { state } = useLocation();
+  const navigate = useNavigate();
   const [modal, setModal] = useState(false);
   const queryClient = useQueryClient();
   const [cartOpen, setCartOpen] = useState(false);
 
-  const { data, isLoading } = useQuery({
+  const actionType = state?.actionType ?? undefined;
+
+  const { data: freeShoppings, isLoading: isFreeShoppingLoading } = useQuery<
+    FreeShopping[]
+  >({
+    queryKey: ["freeShopping"],
+    queryFn: getFreeShoppings,
+    staleTime: Infinity,
+    gcTime: 0,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    enabled: actionType !== "create",
+  });
+
+  const {
+    data: foodGroupsCategories,
+    isLoading: isFoodGroupsCategoriesLoading,
+  } = useQuery<Category[]>({
     queryKey: ["foodGroupsCategories"],
     queryFn: getFoodGroupsCategories,
     staleTime: Infinity,
@@ -37,21 +59,30 @@ const FreeShoppingPage = () => {
     refetchOnReconnect: false,
   });
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: addShopping,
-    onSuccess: async () => {
-      setModal(true);
-      queryClient.invalidateQueries({
-        queryKey: ["roadMapList"],
-      });
-    },
-    onError: (error) => {
-      const apiError = normalizeApiError(error);
-      toast.error(apiError.message);
-    },
-  });
+  const isLoading =
+    isFoodGroupsCategoriesLoading ||
+    (actionType !== "create" && isFreeShoppingLoading);
 
-  const method = useForm<ShoppingForm>({ defaultValues: { items: [] } });
+  const formValues = useMemo<ShoppingForm>(() => {
+    if (freeShoppings === undefined) {
+      return {
+        items: [],
+      };
+    }
+
+    return {
+      items: (freeShoppings ?? []).flatMap((shopping) => {
+        return {
+          foodGroupId: shopping.foodGroupId,
+          imageUrl: shopping.foodGroup.properties.imageUrl,
+          title: shopping.foodGroup.title,
+          value: shopping.value,
+        };
+      }),
+    };
+  }, [freeShoppings]);
+
+  const method = useForm<ShoppingForm>({ values: formValues });
   const { control, getValues, handleSubmit } = method;
 
   const { fields, append, remove } = useFieldArray({
@@ -62,6 +93,25 @@ const FreeShoppingPage = () => {
   const items = useWatch({
     name: "items",
     control,
+  });
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: addShopping,
+    onSuccess: async () => {
+      if (actionType === "create") {
+        setModal(true);
+      } else {
+        toast.success("ویرایش مرحله پنجم با موفقیت انجام شد");
+        navigate("/game-workflow");
+      }
+      queryClient.invalidateQueries({
+        queryKey: ["roadMapList"],
+      });
+    },
+    onError: (error) => {
+      const apiError = normalizeApiError(error);
+      toast.error(apiError.message);
+    },
   });
 
   const onAddFoodGroupHandler = useCallback(
@@ -90,7 +140,7 @@ const FreeShoppingPage = () => {
 
   return (
     <PlaygroundFlowContainer>
-      {modal && (
+      {modal && actionType === "create" && (
         <GameCompletedModal
           open={modal}
           step={5}
@@ -111,7 +161,7 @@ const FreeShoppingPage = () => {
                   containerClassName="w-full flex flex-col gap-0"
                 />
               ) : (
-                (data || []).map((category) => (
+                (foodGroupsCategories || []).map((category) => (
                   <PastWeekIntakeAccordion
                     name="shopping"
                     key={category.id}

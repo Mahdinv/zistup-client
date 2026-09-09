@@ -15,12 +15,18 @@ import {
   useWatch,
   type SubmitHandler,
 } from "react-hook-form";
-import { getPreferredFoods } from "../api/preferred-food.api";
 import type { FoodGroup } from "../api/food-group.types";
 import SocialAlignmentSkeleton from "../components/social-alignment/social-alignment-skeleton";
 import { normalizeApiError } from "@/shared/api";
 import { toast } from "sonner";
-import { addSocialAlignment } from "../api/social-alignment.api";
+import {
+  addSocialAlignment,
+  getSocialAlignments,
+} from "../api/social-alignment.api";
+import { useLocation, useNavigate } from "react-router-dom";
+import type { PreferredFood } from "../api/preferred-food.types";
+import type { SocialAlignment } from "../api/social-alignment.types";
+import { getPreferredFoods } from "../api/preferred-food.api";
 
 const societyRanks = [
   { foodGroupId: 13, rank: 9 }, // Eggs
@@ -52,50 +58,88 @@ const calculateX = (lastPriority: number, newPriority: number) => {
 };
 
 const SocialAlignmentPage = () => {
+  const { state } = useLocation();
+  const navigate = useNavigate();
   const [modal, setModal] = useState(false);
   const queryClient = useQueryClient();
   const listRef = useRef<HTMLUListElement | null>(null);
 
-  const { data: preferedFoodItems, isLoading } = useQuery({
-    queryKey: ["preferred-foods"],
-    queryFn: getPreferredFoods,
+  const actionType = state?.actionType ?? undefined;
+
+  const {
+    data: socialAlignments,
+    isLoading: isSocialAlignmentsLoading,
+    isSuccess: isSocialAlignmentsSuccess,
+  } = useQuery<SocialAlignment[]>({
+    queryKey: ["socialAlignments"],
+    queryFn: getSocialAlignments,
+    enabled: actionType !== "create",
     staleTime: Infinity,
     gcTime: 0,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: addSocialAlignment,
-    onSuccess: async () => {
-      setModal(true);
-      queryClient.invalidateQueries({ queryKey: ["roadMapList"] });
-    },
-    onError: (error) => {
-      const apiError = normalizeApiError(error);
-      toast.error(apiError.message);
-    },
-  });
+  const shouldFetchPreferredFoods =
+    actionType === "create" ||
+    (actionType !== "create" &&
+      isSocialAlignmentsSuccess &&
+      socialAlignments.length === 0);
 
-  const formValues = useMemo(
-    () => ({
-      items: (preferedFoodItems || []).map(
-        (pfi: {
-          foodGroupId: number;
-          priority: number;
-          foodGroup: FoodGroup;
-        }) => ({
-          foodGroupId: pfi.foodGroupId,
-          title: pfi.foodGroup.title,
-          imageUrl: pfi.foodGroup.properties.imageUrl,
-          priority: pfi.priority,
-          newPriority: pfi.priority,
-          x: calculateX(pfi.priority, pfi.priority),
+  const { data: preferedFoodItems, isLoading: isPreferredFoodsLoading } =
+    useQuery<PreferredFood[]>({
+      queryKey: ["preferredFoods"],
+      queryFn: getPreferredFoods,
+      enabled: shouldFetchPreferredFoods,
+      staleTime: Infinity,
+      gcTime: 0,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+    });
+
+  const isLoading =
+    actionType === "create"
+      ? isPreferredFoodsLoading
+      : isSocialAlignmentsLoading ||
+        (shouldFetchPreferredFoods && isPreferredFoodsLoading);
+
+  const formValues = useMemo<SocialAlignmentForm>(() => {
+    if (
+      !socialAlignments ||
+      socialAlignments === undefined ||
+      socialAlignments.length === 0
+    ) {
+      return {
+        items: (preferedFoodItems || []).map(
+          (pfi: {
+            foodGroupId: number;
+            priority: number;
+            foodGroup: FoodGroup;
+          }) => ({
+            foodGroupId: pfi.foodGroupId,
+            title: pfi.foodGroup.title,
+            imageUrl: pfi.foodGroup.properties.imageUrl,
+            priority: pfi.priority,
+            newPriority: pfi.priority,
+            x: calculateX(pfi.priority, pfi.priority),
+          }),
+        ),
+      };
+    }
+
+    return {
+      items: (socialAlignments || []).map(
+        (socialAlignment: SocialAlignment) => ({
+          foodGroupId: socialAlignment.foodGroupId,
+          title: socialAlignment.foodGroup.title,
+          imageUrl: socialAlignment.foodGroup.properties.imageUrl,
+          priority: socialAlignment.priority,
+          newPriority: socialAlignment.priority,
+          x: socialAlignment.x,
         }),
       ),
-    }),
-    [preferedFoodItems],
-  );
+    };
+  }, [preferedFoodItems, socialAlignments]);
 
   const method = useForm<SocialAlignmentForm>({
     values: formValues,
@@ -105,6 +149,23 @@ const SocialAlignmentPage = () => {
 
   const { fields, move } = useFieldArray({ control, name: "items" });
   const items = useWatch({ control, name: "items" });
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: addSocialAlignment,
+    onSuccess: async () => {
+      if (actionType === "create") {
+        setModal(true);
+      } else {
+        toast.success("ویرایش مرحله هفتم با موفقیت انجام شد");
+        navigate("/game-workflow");
+      }
+      queryClient.invalidateQueries({ queryKey: ["roadMapList"] });
+    },
+    onError: (error) => {
+      const apiError = normalizeApiError(error);
+      toast.error(apiError.message);
+    },
+  });
 
   const calculateSimilarity = useMemo<number>(() => {
     let totalFace = 0;
@@ -167,7 +228,7 @@ const SocialAlignmentPage = () => {
 
   return (
     <PlaygroundFlowContainer>
-      {modal && (
+      {modal && actionType === "create" && (
         <GameCompletedModal
           open={modal}
           step={7}
