@@ -1,4 +1,4 @@
-import { httpClient } from "../../../shared/api";
+import { httpClient, queryClient, tokenStorage } from "../../../shared/api";
 import type { AuthIdentifierDTO } from "./auth.types";
 
 export async function sendCode(input: AuthIdentifierDTO) {
@@ -21,4 +21,9 @@ export async function validateUser(data: {
     },
   );
   return response.data.data;
+}
+
+export function logout() {
+  tokenStorage.remove();
+  queryClient.clear();
 }

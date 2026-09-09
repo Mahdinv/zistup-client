@@ -221,6 +221,7 @@ const ConventionalGlobalDietDetails = () => {
         </div>
       </ScrollFade>
       <Button
+        type="submit"
         classes="w-full! btn btn-primary-blue"
         title="شروع رژیم"
         disable={isPending}
