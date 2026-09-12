@@ -59,7 +59,7 @@ const RoadMap = ({ step }: RoadMapProps) => {
         <div className="w-full flex flex-col justify-center items-start gap-1">
           <div className="w-full flex flex-row justify-between items-center">
             <small
-              className={`${step.status === "completed" ? "text-green-400" : "text-blue-700"} compact:text-xxs fold:text-xs laptop:text-sm font-peyda font-medium`}
+              className={`${step.status === "completed" ? "text-green-400" : "text-blue-700"} compact:text-xs fold:text-sm laptop:text-base font-peyda font-medium`}
             >
               {step.subtitle}{" "}
               <small
@@ -75,7 +75,7 @@ const RoadMap = ({ step }: RoadMapProps) => {
           </div>
           <div className="w-full flex flex-row justify-between items-center">
             <h2
-              className={`${step.status === "current" || step.status === "locked" ? "text-white" : "text-gray-400"} compact:text-lg fold:text-xl laptop:text-2xl font-peyda font-medium`}
+              className={`${step.status === "current" || step.status === "locked" ? "text-white" : "text-gray-400"} compact:text-lg fold:text-xl laptop:text-2xl font-peyda font-bold`}
             >
               {step.title}
             </h2>

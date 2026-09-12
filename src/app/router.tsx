@@ -144,7 +144,7 @@ const router = createBrowserRouter([
           header: {
             title: "مسیر تغییر تو",
             subTitle:
-              "قدم به قدم جلو برو تا رژیمت دقیقاً بر اساس لایف‌استایلت شکل بگیره",
+              "گام به گام همراهتون هستیم تا برنامه غذایی دقیقاً با روال روزمره هماهنگ بشه",
             backTo: "/onboarding/choose-plan",
           },
         } satisfies PlaygroundFlowRouteHandle,
@@ -157,7 +157,7 @@ const router = createBrowserRouter([
               header: {
                 title: "چند سؤال کوتاه",
                 subTitle:
-                  "جوابشون رو بدی،یه رژیم بهتر و دقیق‌تربرای تو می‌چینیم",
+                  "با پاسخ به این سوالات، برنامه‌ای دقیق‌تر و متناسب‌تر با شرایط شما تنظیم می‌کنیم",
                 backTo: "/game-workflow",
               },
             } satisfies PlaygroundFlowRouteHandle,
@@ -169,7 +169,7 @@ const router = createBrowserRouter([
               header: {
                 title: "همسفره",
                 subTitle:
-                  "افرادی که با  آنها غذا میخورید رو مشخص کنید. اختیاری",
+                  "برای تنظیم برنامه‌ای دقیق‌تر، افرادی که معمولاً با اون‌ها هم‌سفره هستید رو مشخص کنید",
                 backTo: "/game-workflow",
               },
             } satisfies PlaygroundFlowRouteHandle,
@@ -192,7 +192,7 @@ const router = createBrowserRouter([
             handle: {
               header: {
                 title: "چیدمان بشقاب‌ها",
-                subTitle: "پنج بشقاب انتخاب کن تا سلیقه غذاییت دستمون بیاد",
+                subTitle: "انتخاب ۲۰ خوراکی محبوب به ترتیب علاقه",
                 backTo: "/game-workflow",
               },
             } satisfies PlaygroundFlowRouteHandle,

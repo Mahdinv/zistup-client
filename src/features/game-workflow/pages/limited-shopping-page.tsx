@@ -31,10 +31,10 @@ import type { Category } from "../api/category.types";
 import type { FreeShopping, LimitedShopping } from "../api/shopping.types";
 
 const Dmax = {
-  price: 36.78415795,
-  health: 61.45663568,
-  environment: 98.05564877,
-  available: 88.48817898,
+  price: 8.582970188,
+  health: 14.33988166,
+  environment: 22.87965138,
+  available: 20.64724176,
 };
 
 const clampPercent = (value: number) => Math.min(Math.max(value, 0), 100);
@@ -46,6 +46,7 @@ const LimitedShoppingPage = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
   const [modal, setModal] = useState(false);
+  const [accordionOpen, setAccordionOpen] = useState<number | null>(null);
   const queryClient = useQueryClient();
   const [cartOpen, setCartOpen] = useState(false);
   const prevItemsRef = useRef<Record<number, number>>({});
@@ -355,6 +356,12 @@ const LimitedShoppingPage = () => {
                             (item) => item.foodGroupId === foodGroup.id,
                           ),
                         ).length || 0
+                      }
+                      open={accordionOpen === category.id}
+                      onToggle={() =>
+                        setAccordionOpen((prev) =>
+                          prev === category.id ? null : category.id,
+                        )
                       }
                     >
                       {(category.foodGroups || []).map((foodGroup) => (

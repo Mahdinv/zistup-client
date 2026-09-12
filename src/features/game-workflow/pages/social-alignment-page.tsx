@@ -27,6 +27,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import type { PreferredFood } from "../api/preferred-food.types";
 import type { SocialAlignment } from "../api/social-alignment.types";
 import { getPreferredFoods } from "../api/preferred-food.api";
+import ImageWithSkeleton from "@/shared/base-components/image-with-skeleton";
 
 const societyRanks = [
   { foodGroupId: 13, rank: 9 }, // Eggs
@@ -269,14 +270,12 @@ const SocialAlignmentPage = () => {
                         <div className="drag-handle h-full flex items-center cursor-grab">
                           <RxDragHandleDots2 className="text-darker-blue-200 h-full compact:text-5xl fold:text-6xl laptop:text-7xl" />
                         </div>
-
-                        <img
-                          src={field.imageUrl}
-                          className="compact:size-12 fold:size-13 laptop:size-14 object-contain pointer-events-none select-none"
-                          loading="lazy"
+                        <ImageWithSkeleton
+                          src={field.imageUrl!}
                           alt={field.title}
+                          wrapperClassName="compact:size-12 fold:size-13 laptop:size-14"
+                          className="w-full h-full object-contain pointer-events-none"
                         />
-
                         <h5 className="text-white grow font-medium">
                           {field.title}
                         </h5>

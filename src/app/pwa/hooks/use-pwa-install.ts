@@ -8,6 +8,7 @@ import type {
 
 const DISMISS_COUNT_KEY = "zistup:pwa-install-dismiss-count";
 const NEXT_PROMPT_AT_KEY = "zistup:pwa-install-next-prompt-at";
+const IOS_DISMISSED_SESSION_KEY = "zistup:pwa-ios-install-dismissed";
 
 const SHORT_COOLDOWN_DAYS = 3;
 const LONG_COOLDOWN_AFTER_DISMISS_COUNT = 3;
@@ -74,12 +75,15 @@ const usePwaInstall = (): UsePwaInstallResult => {
 
   const [installed, setInstalled] = useState(isStandaloneMode);
 
+  const [iosDismissed, setIosDismissed] = useState(
+    () => sessionStorage.getItem(IOS_DISMISSED_SESSION_KEY) === "1",
+  );
+
   const isIos = isIosDevice();
+  const isIosOnly = isIos && !installPrompt;
 
   useEffect(() => {
-    if (installed) {
-      return;
-    }
+    if (installed) return;
 
     const handleBeforeInstallPrompt = (event: Event) => {
       event.preventDefault();
@@ -91,8 +95,10 @@ const usePwaInstall = (): UsePwaInstallResult => {
       setInstallPrompt(null);
       setInstalled(true);
       setInCooldown(false);
+      setIosDismissed(false);
 
       clearInstallPromptPreferences();
+      sessionStorage.removeItem(IOS_DISMISSED_SESSION_KEY);
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
@@ -109,20 +115,24 @@ const usePwaInstall = (): UsePwaInstallResult => {
   }, [installed]);
 
   const dismiss = useCallback(() => {
-    const nextDismissCount = getDismissCount() + 1;
+    if (isIosOnly) {
+      sessionStorage.setItem(IOS_DISMISSED_SESSION_KEY, "1");
+      setIosDismissed(true);
 
+      return;
+    }
+
+    const nextDismissCount = getDismissCount() + 1;
     const nextPromptAt = getNextPromptTimestamp(nextDismissCount);
 
     localStorage.setItem(DISMISS_COUNT_KEY, String(nextDismissCount));
     localStorage.setItem(NEXT_PROMPT_AT_KEY, String(nextPromptAt));
 
     setInCooldown(true);
-  }, []);
+  }, [isIosOnly]);
 
   const install = useCallback(async () => {
-    if (!installPrompt) {
-      return;
-    }
+    if (!installPrompt) return;
 
     await installPrompt.prompt();
 
@@ -135,10 +145,9 @@ const usePwaInstall = (): UsePwaInstallResult => {
     }
   }, [dismiss, installPrompt]);
 
-  const isIosOnly = isIos && !installPrompt;
-
   const shouldShowPrompt =
-    !installed && !inCooldown && Boolean(installPrompt || isIos);
+    !installed &&
+    (isIosOnly ? !iosDismissed : Boolean(installPrompt) && !inCooldown);
 
   return {
     shouldShowPrompt,

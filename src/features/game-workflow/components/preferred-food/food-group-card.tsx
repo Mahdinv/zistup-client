@@ -1,3 +1,4 @@
+import ImageWithSkeleton from "@/shared/base-components/image-with-skeleton";
 import type { FoodGroup } from "../../api/food-group.types";
 import { motion } from "framer-motion";
 
@@ -45,12 +46,13 @@ const FoodGroupCard = ({
                 `}
       onClick={() => !disable && handleSelectCard(foodGroup.id)}
     >
-      <img
+      <ImageWithSkeleton
         src={foodGroup.properties.imageUrl}
-        className="w-full max-w-28 h-auto object-contain pointer-events-none"
-        loading="lazy"
         alt={foodGroup.title}
+        wrapperClassName="w-28 h-28"
+        className="w-full h-full object-contain pointer-events-none"
       />
+
       <span className="text-white text-center compact:text-sm mobile:text-base fold:text-lg laptop:text-xl font-peyda font-medium">
         {foodGroup.title}
       </span>

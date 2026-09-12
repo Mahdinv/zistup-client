@@ -166,7 +166,7 @@ const OtpBox = ({
       </div>
 
       {error && (
-        <span className="w-full text-center font-peyda text-sm text-red-500">
+        <span className="w-full text-center font-peyda text-sm text-red-400">
           {error}
         </span>
       )}

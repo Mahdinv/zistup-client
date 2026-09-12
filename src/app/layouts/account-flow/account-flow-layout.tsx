@@ -46,7 +46,7 @@ const AccountFlowLayout = () => {
     : (backHandlerState ?? undefined);
 
   return (
-    <div className="compact:w-full tablet:w-3/5 laptop:w-2/5 desktop:w-1/3 mx-auto flex h-dvh flex-col items-center justify-start overflow-hidden bg-blue-300">
+    <div className="compact:w-full tablet:w-3/5 laptop:w-2/5 desktop:w-1/3 mx-auto flex h-dvh flex-col items-center justify-start overflow-hidden bg-[radial-gradient(ellipse_120%_90%_at_50%_-20%,#75D5F6_0%,#C4ECF8_75%,#DBF0F8_100%)]">
       {showHeader && (
         <AccountFlowHeader
           firstLineTitle={header.firstLineTitle}

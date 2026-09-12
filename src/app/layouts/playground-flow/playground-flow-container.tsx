@@ -51,8 +51,7 @@ const PlaygroundFlowContainer = ({
         w-full
         max-w-full
         overflow-hidden
-        compact:px-4
-        mobile-lg:px-6
+        px-6
         pb-[calc(1.75rem+env(safe-area-inset-bottom))]
       "
     >

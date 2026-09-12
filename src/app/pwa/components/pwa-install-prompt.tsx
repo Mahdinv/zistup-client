@@ -14,7 +14,7 @@ const PwaInstallPrompt = () => {
       aria-label="نصب اپلیکیشن زیست‌آپ"
       className="
         fixed
-        bottom-4
+        bottom-[calc(1rem+env(safe-area-inset-bottom))]
         left-1/2
         z-9999
         w-[calc(100%-2rem)]
@@ -53,7 +53,7 @@ const PwaInstallPrompt = () => {
             type="button"
             title="نصب زیست‌آپ"
             onClick={install}
-            classes="btn btn-primary-green py-3! compact:text-sm! mobile-lg: text-base! laptop:text-lg!"
+            classes="btn btn-primary-green py-3! compact:text-sm! mobile-lg:text-base! laptop:text-lg!"
           />
         )}
 
@@ -73,7 +73,7 @@ const PwaInstallPrompt = () => {
             text-darker-blue-200
             transition-colors
             compact:text-sm
-            mobile-lg: text-base
+            mobile-lg:text-base
             laptop:text-lg
             laptop:hover:bg-gray-75
           "

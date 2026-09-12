@@ -7,6 +7,7 @@ import type { ShoppingForm } from "../../schemas/shopping.schema";
 import { Controller, type Control } from "react-hook-form";
 import { PiAlarm, PiCoins, PiHeartbeat, PiPlant } from "react-icons/pi";
 import { AnimatePresence, motion } from "framer-motion";
+import ImageWithSkeleton from "@/shared/base-components/image-with-skeleton";
 
 type FoodGroupItemProps = {
   name: "free-shopping" | "limited-shopping";
@@ -33,11 +34,11 @@ const FoodGroupItem = ({
       <div
         className={`w-full bg-darker-blue-400 ${itemIndex !== -1 && "ring-1 ring-inset ring-green-900"} rounded-2xl px-3 py-1 flex flex-row justify-start items-center gap-2`}
       >
-        <img
+        <ImageWithSkeleton
           src={foodGroup.properties.imageUrl}
-          className="compact:size-12 fold:size-13 laptop:size-14 object-contain pointer-events-none select-none"
-          loading="lazy"
-          alt={foodGroup.properties.imageUrl}
+          alt={foodGroup.title}
+          wrapperClassName="compact:size-12 fold:size-13 laptop:size-14"
+          className="w-full h-full object-contain pointer-events-none"
         />
         <h3 className="flex-1 min-w-0 compact:text-sm fold:text-base laptop:text-lg font-peyda text-white font-bold">
           {foodGroup.title}

@@ -45,7 +45,7 @@ const TextBox = ({
           </div>
         )}
         <div
-          className={`${classes} ${inlineLabel && "flex-2"} bg-darker-blue-400 text-blue-900 h-12 desktop:h-14 flex flex-row w-full items-center justify-between rounded-2xl border border-darker-blue-100 group focus-within:border-blue-900`}
+          className={`${classes} ${inlineLabel && "flex-2"} bg-darker-blue-400 text-[#FCFCFC] h-12 desktop:h-14 flex flex-row w-full items-center justify-between rounded-2xl border border-darker-blue-100 ${error && "border-red-400!"} group focus-within:border-blue-900`}
         >
           {icon && (
             <span className="px-1 pr-3 text-xl desktop:text-2xl text-text-input">
@@ -57,13 +57,13 @@ const TextBox = ({
             type="text"
             placeholder={placeHolder}
             autoComplete="off"
-            className="flex-1 w-full h-full px-4 bg-transparent rounded-xl font-medium font-peyda outline-none text-base"
+            className="ios-textbox flex-1 w-full h-full px-3 bg-transparent rounded-xl font-medium font-peyda outline-none text-base"
             {...props}
           />
         </div>
       </div>
       {error && (
-        <small className="text-red-500 self-end text-xs font-peyda ml-2">
+        <small className="text-red-400 self-end text-xs font-peyda ml-2">
           {error}
         </small>
       )}

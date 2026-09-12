@@ -1,5 +1,6 @@
 import { memo, useState } from "react";
 import type { FoodGroup } from "../../api/food-group.types";
+import ImageWithSkeleton from "@/shared/base-components/image-with-skeleton";
 
 type FoodFrequencyCardProps = {
   foodGroup: FoodGroup;
@@ -23,11 +24,11 @@ const FoodFrequencyCard = ({
 
   return (
     <div className="w-full bg-darker-blue-300 border border-dark rounded-2xl p-3 flex flex-col justify-center items-center">
-      <img
+      <ImageWithSkeleton
         src={foodGroup.properties.imageUrl}
-        className="w-full max-w-28 h-auto object-contain pointer-events-none"
-        loading="lazy"
         alt={foodGroup.title}
+        wrapperClassName="w-28 h-28"
+        className="w-full h-full object-contain pointer-events-none"
       />
 
       <span className="text-white text-base font-peyda font-medium">

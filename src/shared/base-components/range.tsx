@@ -50,7 +50,7 @@ const Range = ({
   return (
     <div className="flex w-full flex-col items-center gap-4">
       {error && (
-        <small className="self-start mr-2 mt-1 font-peyda text-red-500">
+        <small className="self-start mr-2 mt-1 font-peyda text-red-400">
           {error}
         </small>
       )}

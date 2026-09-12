@@ -40,9 +40,8 @@ const AccountFlowHeader = ({
         select-none
         flex-col
         justify-around
-        bg-blue-300
-        compact:px-4
-        mobile-lg:px-6
+        bg-[radial-gradient(ellipse_120%_90%_at_50%_130%,#75D5F6_0%,#C4ECF8_75%,#DBF0F8_100%)]
+        px-6
       "
     >
       <div className="h-9 self-start">

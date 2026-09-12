@@ -30,6 +30,7 @@ const FreeShoppingPage = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
   const [modal, setModal] = useState(false);
+  const [accordionOpen, setAccordionOpen] = useState<number | null>(null);
   const queryClient = useQueryClient();
   const [cartOpen, setCartOpen] = useState(false);
 
@@ -173,6 +174,12 @@ const FreeShoppingPage = () => {
                           (item) => item.foodGroupId === foodGroup.id,
                         ),
                       ).length || 0
+                    }
+                    open={accordionOpen === category.id}
+                    onToggle={() =>
+                      setAccordionOpen((prev) =>
+                        prev === category.id ? null : category.id,
+                      )
                     }
                   >
                     {(category.foodGroups || []).map((foodGroup) => (

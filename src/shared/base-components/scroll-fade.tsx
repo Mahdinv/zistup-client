@@ -56,12 +56,14 @@ const ScrollFade = ({
         ref={scrollRef}
         onScroll={updateFadeVisibility}
         className={`
-        h-full
-        overflow-y-auto
-        scrollbar-none
-        [&::-webkit-scrollbar]:hidden
-        ${className}
-      `}
+                    h-full
+                    min-w-0
+                    overflow-x-hidden
+                    overflow-y-auto
+                    scrollbar-none
+                    [&::-webkit-scrollbar]:hidden
+                    ${className}
+                  `}
       >
         {children}
       </div>

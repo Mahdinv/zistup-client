@@ -59,7 +59,7 @@ const PlaygroundFlowHeader = ({
         duration: shouldReduceMotion ? 0.1 : 0.2,
         ease: "easeOut",
       }}
-      className="min-h-28 h-auto w-full shrink-0 bg-darker-blue-200 compact:px-4 mobile-lg:px-6 pt-2 pb-2"
+      className="min-h-28 h-auto w-full shrink-0 bg-darker-blue-200 px-6 pt-2 pb-2"
     >
       <div className="relative flex min-h-14 w-full items-center justify-center">
         <AnimatePresence initial={false}>

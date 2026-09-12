@@ -85,40 +85,22 @@ const DoughnutChart = ({
 
   const options: ChartOptions<"doughnut"> = {
     responsive: true,
-    maintainAspectRatio: true,
+    maintainAspectRatio: false,
+    events: [],
     cutout: "68%",
     plugins: {
       legend: {
         display: false,
       },
-      tooltip: isEmpty
-        ? {
-            enabled: false,
-          }
-        : {
-            rtl: true,
-            textDirection: "rtl",
-            backgroundColor: "#111827",
-            titleAlign: "left",
-            bodyAlign: "right",
-            padding: 12,
-            titleFont: {
-              family: "Peyda",
-              size: 13,
-              weight: "normal",
-            },
-            bodyFont: {
-              family: "Peyda",
-              size: 11,
-              weight: "normal",
-            },
-          },
+      tooltip: {
+        enabled: false,
+      },
     },
   };
 
   return (
-    <div className="flex flex-col items-center compact:gap-4 tablet:gap-2 laptop:gap-4">
-      <div className="grow compact:w-36 mobile:w-44 mobile-lg:w-48 fold:w-60 tablet:w-52 laptop:w-48 aspect-square">
+    <div className="flex w-full min-w-0 flex-col items-center compact:gap-4 tablet:gap-2 laptop:gap-4">
+      <div className="relative mx-auto aspect-square min-w-0 max-w-full shrink-0 overflow-hidden compact:w-36 mobile:w-44 mobile-lg:w-48 fold:w-60 tablet:w-52 laptop:w-48">
         <Doughnut
           key={registeredCount}
           data={data}
@@ -128,17 +110,17 @@ const DoughnutChart = ({
       </div>
 
       <div
-        className={`w-full ${
+        className={`w-full min-w-0 ${
           activeData.length <= 1
             ? "flex"
             : "grid compact:grid-cols-1 mobile-lg:grid-cols-2 items-center"
         } self-start compact:gap-2 mobile-lg:gap-2 fold:gap-4 tablet:gap-2 laptop:gap-1`}
       >
         {isEmpty ? (
-          <div className="w-full flex flex-row items-center gap-2">
-            <div className="w-4 aspect-square rounded-full bg-[#D1D5DB]" />
+          <div className="flex w-full min-w-0 flex-row items-center gap-2">
+            <div className="w-4 shrink-0 aspect-square rounded-full bg-[#D1D5DB]" />
 
-            <small className="flex-1 text-white compact:text-sm fold:text-base laptop:text-lg font-normal font-peyda!">
+            <small className="min-w-0 flex-1 text-white compact:text-sm fold:text-base laptop:text-lg font-normal font-peyda!">
               داده‌ای برای نمایش وجود ندارد
             </small>
           </div>
@@ -146,20 +128,20 @@ const DoughnutChart = ({
           activeData.map((item) => (
             <div
               key={item.categoryId}
-              className="w-full flex flex-row items-center gap-2 mobile-lg:px-2 fold:px-4 tablet:px-2 laptop:px-1"
+              className="flex w-full min-w-0 flex-row items-center gap-2 mobile-lg:px-2 fold:px-4 tablet:px-2 laptop:px-1"
             >
               <div
-                className="w-4 aspect-square rounded-full"
+                className="w-4 shrink-0 aspect-square rounded-full"
                 style={{
                   backgroundColor: item.color,
                 }}
               />
 
-              <small className="flex-1 text-white font-normal font-peyda!">
+              <small className="min-w-0 flex-1 text-white font-normal font-peyda!">
                 {item.categoryTitle}
               </small>
 
-              <span className="text-white text-sm font-medium font-peyda">
+              <span className="shrink-0 text-white text-sm font-medium font-peyda">
                 {item.totalPercentUsage.toFixed(2)}%
               </span>
             </div>

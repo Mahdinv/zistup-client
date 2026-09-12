@@ -158,8 +158,7 @@ const AccountFlowContainer = ({
               min-w-0
               flex-col
               pt-7
-              compact:px-4
-              mobile-lg:px-6
+              px-6
               pb-[calc(1.75rem+env(safe-area-inset-bottom))]
               ${contentHeightClass}
             `}

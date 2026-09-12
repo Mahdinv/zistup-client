@@ -727,7 +727,7 @@ export const BirthDatePicker = forwardRef<HTMLDivElement, BirthDatePickerProps>(
           <p
             id={errorId}
             role="alert"
-            className="mt-2 px-2 text-sm font-medium text-red-500"
+            className="mt-2 px-2 text-sm font-medium text-red-400"
           >
             {error}
           </p>

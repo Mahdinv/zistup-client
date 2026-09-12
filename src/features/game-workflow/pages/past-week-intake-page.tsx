@@ -66,6 +66,7 @@ const PastWeekIntakePage = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
   const [modal, setModal] = useState(false);
+  const [accordionOpen, setAccordionOpen] = useState<number | null>(null);
   const queryClient = useQueryClient();
   const chartRef = useRef<HTMLDivElement>(null);
   const chartEndRef = useRef<HTMLDivElement>(null);
@@ -314,6 +315,12 @@ const PastWeekIntakePage = () => {
                     key={category.id}
                     title={category.title}
                     color={category.properties.color}
+                    open={accordionOpen === category.id}
+                    onToggle={() =>
+                      setAccordionOpen((prev) =>
+                        prev === category.id ? null : category.id,
+                      )
+                    }
                     onRefreshGroup={() =>
                       onRefreshFoodGroupsCategory(
                         category.foodGroups.map((ff) => ff.id),
@@ -343,10 +350,9 @@ const PastWeekIntakePage = () => {
               )}
               <div
                 ref={chartRef}
-                className="w-full bg-darker-blue-300 border border-dark rounded-[30px] p-6"
+                className="w-full min-w-0 overflow-hidden bg-darker-blue-300 border border-dark rounded-[30px] p-6"
               >
                 <DoughnutChart
-                  key={JSON.stringify(chartData)}
                   chartData={chartData}
                   registeredCount={registeredCount}
                 />

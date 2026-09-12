@@ -487,7 +487,7 @@ export default function RulerBox({
         </div>
       </div>
       {error && (
-        <small className="text-red-500 self-end text-xs font-peyda ml-2">
+        <small className="text-red-400 self-end text-xs font-peyda ml-2">
           {error}
         </small>
       )}

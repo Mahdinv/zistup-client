@@ -28,7 +28,7 @@ const NotFoundPage = () => {
           متاسفم این آدرس پیدا نشد!
         </h1>
         <img
-          src="/public/pwa/404.webp"
+          src="/pwa/404.webp"
           alt="not-found"
           className="compact:size-80 laptop:size-96 pointer-events-none select-none"
         />

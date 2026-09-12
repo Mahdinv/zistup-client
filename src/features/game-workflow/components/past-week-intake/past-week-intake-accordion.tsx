@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 import { HiOutlineChevronDown } from "react-icons/hi";
@@ -10,6 +10,8 @@ type PastWeekIntakeProps = {
   color: string;
   selectedItemCount?: number;
   children: ReactNode;
+  open: boolean;
+  onToggle: () => void;
   onRefreshGroup?: () => void;
 };
 
@@ -19,9 +21,10 @@ const PastWeekIntakeAccordion = ({
   color,
   selectedItemCount,
   children,
+  open = false,
+  onToggle,
   onRefreshGroup,
 }: PastWeekIntakeProps) => {
-  const [isOpen, setIsOpen] = useState(false);
   const shouldReduceMotion = useReducedMotion();
 
   const layoutMethodClasses =
@@ -33,8 +36,8 @@ const PastWeekIntakeAccordion = ({
     <div className="w-full flex flex-col justify-start gap-2">
       <div
         role="button"
-        aria-expanded={isOpen}
-        onClick={() => setIsOpen((prev) => !prev)}
+        aria-expanded={open}
+        onClick={onToggle}
         className="
           bg-darker-blue-300
           w-full
@@ -78,7 +81,7 @@ const PastWeekIntakeAccordion = ({
         <motion.span
           className="flex items-center justify-center"
           animate={{
-            rotate: isOpen ? 180 : 0,
+            rotate: open ? 180 : 0,
           }}
           transition={
             shouldReduceMotion
@@ -106,7 +109,7 @@ const PastWeekIntakeAccordion = ({
       </div>
 
       <AnimatePresence initial={false}>
-        {isOpen && (
+        {open && (
           <motion.div
             key="accordion-content"
             initial={{

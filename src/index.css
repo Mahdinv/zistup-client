@@ -236,3 +236,9 @@ body {
        disabled:border-[#BFBFBF] 
        disabled:text-[#BFBFBF];
 }
+
+@supports (-webkit-touch-callout: none) {
+  .ios-textbox {
+    font-size: 16px !important;
+  }
+}

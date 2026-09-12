@@ -303,6 +303,7 @@ const BasicInformationPage = () => {
               type="submit"
               classes="btn btn-primary-green w-full"
               title="ثبت اطلاعات"
+              disable={isPending}
             />
           )}
         </div>
