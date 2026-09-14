@@ -146,13 +146,16 @@ const OtpBox = ({
             disabled={disabled}
             aria-invalid={Boolean(error)}
             className={`
+              bg-darker-blue-400
               h-12 w-12
+              font-rokh
               rounded-2xl
               border
-              bg-darker-blue-400
+              ${error ? "border-red-400" : "border-dark"}
               text-center
+              pt-1
               text-xl
-              text-blue-800
+              text-[#FCFCFC]
               outline-none
               disabled:cursor-not-allowed
               disabled:opacity-50    

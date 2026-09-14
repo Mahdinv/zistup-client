@@ -63,7 +63,9 @@ const LoginForm = ({
       <TextBox
         label="شماره موبایل یا ایمیل"
         subLabel="برای ورود، شماره تماست رو وارد کن"
-        placeHolder="مثال: 09333593301"
+        type="number"
+        placeHolder="مثال: 09123456789"
+        localizePhoneNumber
         {...register("identifier")}
         error={errors.identifier?.message}
       />

@@ -32,7 +32,7 @@ const ChoosePlanForm = () => {
               </h3>
               <div className="flex flex-row justify-start items-center gap-1 bg-green-950 text-white rounded-full px-3 py-1.5">
                 <PiAlarmFill className="compact:text-base laptop:text-xl" />
-                <label className="font-peyda compact:text-sm laptop:text-base font-bold mt-0.5">
+                <label className="font-peyda compact:text-sm laptop:text-base font-bold mt-0.5 whitespace-nowrap">
                   <span className="font-rokh">8</span> دقیقه
                 </label>
               </div>
@@ -46,7 +46,7 @@ const ChoosePlanForm = () => {
               </p>
             </div>
             <ul className="w-full flex flex-row items-center justify-between gap-2">
-              <li className="w-full bg-green-800 rounded-[6px] flex flex-col justify-start items-center gap-1.5 py-2 px-1">
+              <li className="w-full bg-green-950 rounded-[6px] flex flex-col justify-start items-center gap-1.5 py-2 px-1">
                 <PiPersonSimpleTaiChi
                   className="compact:text-4xl laptop:text-4xl"
                   strokeWidth={5}
@@ -55,7 +55,7 @@ const ChoosePlanForm = () => {
                   سبک زندگی
                 </small>
               </li>
-              <li className="w-full bg-green-800 rounded-[6px] flex flex-col justify-start items-center gap-1.5 py-2 px-1">
+              <li className="w-full bg-green-950 rounded-[6px] flex flex-col justify-start items-center gap-1.5 py-2 px-1">
                 <PiWallet
                   className="compact:text-4xl laptop:text-4xl"
                   strokeWidth={5}
@@ -64,7 +64,7 @@ const ChoosePlanForm = () => {
                   بودجه
                 </small>
               </li>
-              <li className="w-full bg-green-800 rounded-[6px] flex flex-col justify-start items-center gap-1.5 py-2 px-1">
+              <li className="w-full bg-green-950 rounded-[6px] flex flex-col justify-start items-center gap-1.5 py-2 px-1">
                 <PiTarget
                   className="compact:text-4xl laptop:text-4xl"
                   strokeWidth={5}
@@ -73,7 +73,7 @@ const ChoosePlanForm = () => {
                   هدف شخصی
                 </small>
               </li>
-              <li className="w-full bg-green-800 rounded-[6px] flex flex-col justify-start items-center gap-1.5 py-2 px-1">
+              <li className="w-full bg-green-950 rounded-[6px] flex flex-col justify-start items-center gap-1.5 py-2 px-1">
                 <PiForkKnife
                   className="compact:text-4xl laptop:text-4xl"
                   strokeWidth={5}

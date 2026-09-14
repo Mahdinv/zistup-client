@@ -63,7 +63,11 @@ const Button = ({
         style={{ gap: itemsGap }}
       >
         {title && (
-          <div className={`mt-1 ${!icon ? "grow" : "grow-0"}`}>{title}</div>
+          <div
+            className={`mt-1 ${!icon ? "grow" : "grow-0"} whitespace-nowrap`}
+          >
+            {title}
+          </div>
         )}
 
         {icon && (

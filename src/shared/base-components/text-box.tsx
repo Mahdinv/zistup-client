@@ -4,10 +4,12 @@ type TextBoxProps = {
   inlineLabel?: boolean;
   label?: string;
   subLabel?: string;
+  type?: string;
   icon?: ReactNode;
   labelClasses?: string;
   classes?: string;
   placeHolder: string;
+  localizePhoneNumber?: boolean;
   error?: string;
 } & InputHTMLAttributes<HTMLInputElement>;
 
@@ -15,13 +17,22 @@ const TextBox = ({
   inlineLabel,
   label,
   subLabel,
+  type = "text",
   icon,
   labelClasses,
   classes,
   placeHolder,
+  localizePhoneNumber,
+  onChange,
   error,
   ...props
 }: TextBoxProps) => {
+  const toPersianDigits = (value: string) =>
+    value.replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[Number(d)]);
+
+  const toEnglishDigits = (value: string) =>
+    value.replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)));
+
   return (
     <div className="w-full flex flex-col justify-center items-center gap-1.5">
       <div
@@ -54,11 +65,31 @@ const TextBox = ({
           )}
           <input
             id={props.name}
-            type="text"
-            placeholder={placeHolder}
+            type={type === "number" ? "text" : type}
+            inputMode={type === "number" ? "numeric" : undefined}
+            placeholder={
+              type === "number" || localizePhoneNumber
+                ? toPersianDigits(placeHolder)
+                : placeHolder
+            }
             autoComplete="off"
             className="ios-textbox flex-1 w-full h-full px-3 bg-transparent rounded-xl font-medium font-peyda outline-none text-base"
             {...props}
+            onChange={(e) => {
+              const englishValue = toEnglishDigits(e.target.value);
+              const shouldLocalize =
+                type === "number" ||
+                (localizePhoneNumber && /^[0-9+\-\s()]*$/.test(englishValue));
+              if (type === "number" || localizePhoneNumber) {
+                e.target.value = englishValue;
+                onChange?.(e);
+                if (shouldLocalize) {
+                  e.target.value = toPersianDigits(englishValue);
+                }
+                return;
+              }
+              onChange?.(e);
+            }}
           />
         </div>
       </div>
