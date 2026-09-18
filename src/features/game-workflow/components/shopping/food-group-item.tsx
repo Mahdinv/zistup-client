@@ -1,34 +1,48 @@
-import NumberCounter from "@/shared/base-components/number-counter";
 import type { FoodGroup } from "../../api/food-group.types";
 import { HiOutlineShoppingBag } from "react-icons/hi";
 import Button from "@/shared/base-components/button";
 import { memo } from "react";
-import type { ShoppingForm } from "../../schemas/shopping.schema";
-import { Controller, type Control } from "react-hook-form";
-import { PiAlarm, PiCoins, PiHeartbeat, PiPlant } from "react-icons/pi";
+import {
+  PiAlarm,
+  PiCoins,
+  PiHeartbeat,
+  PiPencilSimpleBold,
+  PiPlant,
+} from "react-icons/pi";
 import { AnimatePresence, motion } from "framer-motion";
 import ImageWithSkeleton from "@/shared/base-components/image-with-skeleton";
+import { getDisplayQuantity } from "@/shared/lib/utils";
 
 type FoodGroupItemProps = {
   name: "free-shopping" | "limited-shopping";
   foodGroup: FoodGroup;
-  control: Control<ShoppingForm>;
   itemIndex: number | -1;
+  value?: number;
   handleAddFoodGroup: (
     foodGroupId: number,
     imageUrl: string,
     title: string,
     value: number,
+    unit: string,
+  ) => void;
+  handleOpenFoodGroupQuantityDrawer: (
+    foodGroupId: number,
+    imageUrl: string,
+    title: string,
+    unit: string,
   ) => void;
 };
 
 const FoodGroupItem = ({
   name,
   foodGroup,
-  control,
   itemIndex,
+  value,
   handleAddFoodGroup,
+  handleOpenFoodGroupQuantityDrawer,
 }: FoodGroupItemProps) => {
+  const displayQuantity = getDisplayQuantity(value, foodGroup.properties.unit);
+
   return (
     <div className="w-full h-auto bg-darker-blue-300 border border-dark rounded-2xl flex flex-col items-center">
       <div
@@ -66,27 +80,32 @@ const FoodGroupItem = ({
                 duration: 0.2,
                 ease: [0.4, 0, 0.2, 1],
               }}
+              className="flex flex-row items-center gap-1.5"
             >
-              <Controller
-                name={`items.${itemIndex}.value`}
-                control={control}
-                render={({ field }) => (
-                  <NumberCounter
-                    min={0}
-                    max={500}
-                    value={field.value}
-                    onChange={field.onChange}
-                    suffix={foodGroup.properties.unit}
-                    counterClasses="py-0! px-0! rounded-xl compact:gap-0! mobile:gap-1! mobile-lg:gap-2! fold:gap-6!"
-                    plusButtonClasses="p-1.5"
-                    minusButtonClasses="p-1.5"
-                    plusIconClasses="text-lg"
-                    minusIconClasses="text-lg"
-                    valueClasses="compact:text-2xl! fold:text-3xl! laptop:text-4xl!"
-                    suffixClasses="compact:text-sm! fold:text-base! laptop:text-lg! text-white"
-                    controlsClasses="pt-0 gap-0.5"
+              <div className="flex flex-row items-center gap-0.5">
+                <label className="font-rokh compact:text-2xl fold:text-3xl laptop:text-4xl text-green-400 mt-1">
+                  {displayQuantity.value}
+                </label>
+                <small className="text-white font-peyda compact:text-xs fold:text-sm laptop:text-base">
+                  {displayQuantity.unit}
+                </small>
+              </div>
+              <Button
+                classes="btn btn-outline-green compact:size-7! fold:size-8! laptop:size-9! rounded-xxs!"
+                icon={
+                  <PiPencilSimpleBold
+                    className="compact:text-xl fold:text-2xl laptop:text-3xl"
+                    strokeWidth={2}
                   />
-                )}
+                }
+                onClick={() =>
+                  handleOpenFoodGroupQuantityDrawer(
+                    foodGroup.id,
+                    foodGroup.properties.imageUrl,
+                    foodGroup.title,
+                    foodGroup.properties.unit,
+                  )
+                }
               />
             </motion.div>
           ) : (
@@ -113,7 +132,7 @@ const FoodGroupItem = ({
               }}
             >
               <Button
-                classes="btn btn-outline-green compact:size-7! fold:size-8! laptop:size-9! rounded-xxs!"
+                classes="btn btn-primary-green compact:size-7! fold:size-8! laptop:size-9! rounded-xxs!"
                 icon={
                   <HiOutlineShoppingBag
                     className="compact:text-xl fold:text-2xl laptop:text-3xl"
@@ -127,9 +146,11 @@ const FoodGroupItem = ({
                     foodGroup.title,
                     foodGroup.properties.unit === "گرم"
                       ? 200
-                      : foodGroup.properties.unit === "عدد"
+                      : foodGroup.properties.unit === "عدد" ||
+                          foodGroup.properties.unit === "لیتر"
                         ? 1
                         : 0.5,
+                    foodGroup.properties.unit,
                   )
                 }
               />

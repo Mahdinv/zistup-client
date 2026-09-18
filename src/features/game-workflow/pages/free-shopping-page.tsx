@@ -5,7 +5,6 @@ import { FaCheck } from "react-icons/fa6";
 import { HiOutlineShoppingBag } from "react-icons/hi";
 import InventoryBox from "../components/shopping/free-shopping/inventory-box";
 import { useCallback, useMemo, useState } from "react";
-import ShoppingCard from "../components/shopping/shopping-card";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getFoodGroupsCategories } from "../api/past-week-intake.api";
 import PastWeekIntakeAccordion from "../components/past-week-intake/past-week-intake-accordion";
@@ -25,6 +24,8 @@ import { addShopping, getFreeShoppings } from "../api/shopping.api";
 import { useLocation, useNavigate } from "react-router-dom";
 import type { Category } from "../api/category.types";
 import type { FreeShopping } from "../api/shopping.types";
+import ShoppingCardDrawer from "../components/shopping/shopping-card-drawer";
+import FoodGroupQuantityDrawer from "../components/shopping/food-group-quantity-drawer";
 
 const FreeShoppingPage = () => {
   const { state } = useLocation();
@@ -33,6 +34,25 @@ const FreeShoppingPage = () => {
   const [accordionOpen, setAccordionOpen] = useState<number | null>(null);
   const queryClient = useQueryClient();
   const [cartOpen, setCartOpen] = useState(false);
+  const [foodGroupQuantityDrawer, setFoodGroupQuantityDrawer] = useState<{
+    open: boolean;
+    data: {
+      foodGroupId: number;
+      imageUrl: string;
+      title: string;
+      unit: string;
+      value: number;
+    };
+  }>({
+    open: false,
+    data: {
+      foodGroupId: -1,
+      imageUrl: "",
+      title: "",
+      unit: "",
+      value: 0,
+    },
+  });
 
   const actionType = state?.actionType ?? undefined;
 
@@ -78,13 +98,14 @@ const FreeShoppingPage = () => {
           imageUrl: shopping.foodGroup.properties.imageUrl,
           title: shopping.foodGroup.title,
           value: shopping.value,
+          unit: shopping.foodGroup.properties.unit,
         };
       }),
     };
   }, [freeShoppings]);
 
   const method = useForm<ShoppingForm>({ values: formValues });
-  const { control, getValues, handleSubmit } = method;
+  const { control, getValues, setValue, handleSubmit } = method;
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -115,19 +136,75 @@ const FreeShoppingPage = () => {
     },
   });
 
+  const { selectedFoodGroupIds, itemValueByFoodGroupId } = useMemo(() => {
+    const selectedIds = new Set<number>();
+    const values = new Map<number, number>();
+
+    (items ?? []).forEach((item) => {
+      selectedIds.add(item.foodGroupId);
+      values.set(item.foodGroupId, item.value);
+    });
+
+    return {
+      selectedFoodGroupIds: selectedIds,
+      itemValueByFoodGroupId: values,
+    };
+  }, [items]);
+
   const onAddFoodGroupHandler = useCallback(
     function onAddFoodGroupHandler(
       foodGroupId: number,
       imageUrl: string,
       title: string,
       value: number,
+      unit: string,
     ) {
       const items = getValues("items") || [];
       if (!items.find((item) => item.foodGroupId === foodGroupId)) {
-        append({ foodGroupId, imageUrl, title, value });
+        append({ foodGroupId, imageUrl, title, value, unit });
       }
     },
     [append, getValues],
+  );
+
+  const onOpenFoodGroupQuantityDrawerHandler = useCallback(
+    (foodGroupId: number, imageUrl: string, title: string, unit: string) => {
+      if (cartOpen) return;
+
+      const currentItem = getValues("items").find(
+        (item) => item.foodGroupId === foodGroupId,
+      );
+
+      if (!currentItem) return;
+
+      setFoodGroupQuantityDrawer({
+        open: true,
+        data: {
+          foodGroupId,
+          title,
+          imageUrl,
+          unit,
+          value: currentItem.value,
+        },
+      });
+    },
+    [cartOpen, getValues],
+  );
+
+  const onConfirmFoodGroupQuantityHandler = useCallback(
+    (foodGroupId: number, value: number) => {
+      const itemIndex = getValues("items").findIndex(
+        (item) => item.foodGroupId === foodGroupId,
+      );
+
+      if (itemIndex === -1) return;
+
+      setValue(`items.${itemIndex}.value`, value, {
+        shouldDirty: true,
+        shouldTouch: true,
+      });
+    },
+    [getValues, setValue],
   );
 
   const indexByFoodGroupId = useMemo(() => {
@@ -170,10 +247,8 @@ const FreeShoppingPage = () => {
                     color={category.properties.color}
                     selectedItemCount={
                       category.foodGroups.filter((foodGroup) =>
-                        items?.some(
-                          (item) => item.foodGroupId === foodGroup.id,
-                        ),
-                      ).length || 0
+                        selectedFoodGroupIds.has(foodGroup.id),
+                      ).length
                     }
                     open={accordionOpen === category.id}
                     onToggle={() =>
@@ -187,9 +262,12 @@ const FreeShoppingPage = () => {
                         key={foodGroup.id}
                         name="free-shopping"
                         foodGroup={foodGroup}
-                        control={control}
                         itemIndex={indexByFoodGroupId.get(foodGroup.id) ?? -1}
+                        value={itemValueByFoodGroupId.get(foodGroup.id)}
                         handleAddFoodGroup={onAddFoodGroupHandler}
+                        handleOpenFoodGroupQuantityDrawer={
+                          onOpenFoodGroupQuantityDrawerHandler
+                        }
                       />
                     ))}
                   </PastWeekIntakeAccordion>
@@ -205,11 +283,11 @@ const FreeShoppingPage = () => {
           <Button
             type="button"
             classes="flex-1! btn btn-outline-green shrink-0"
-            title="بررسی سبد"
+            title="سبد"
             itemCount={items.length > 0 ? items.length : 0}
             icon={
               <HiOutlineShoppingBag
-                className="compact:text-2xl mobile:text-3xl fold:text-4xl laptop:text-5xl"
+                className="compact:text-3xl mobile:text-4xl fold:text-5xl laptop:text-6xl"
                 strokeWidth={2}
               />
             }
@@ -218,7 +296,7 @@ const FreeShoppingPage = () => {
           />
           <Button
             type="submit"
-            classes="flex-1! btn btn-primary-green shrink-0"
+            classes="flex-3! btn btn-primary-green shrink-0"
             title="تایید"
             icon={<FaCheck strokeWidth={5} />}
             itemsGap={10}
@@ -227,7 +305,19 @@ const FreeShoppingPage = () => {
               !items.some((item) => item.foodGroupId && item.value > 0)
             }
           />
-          <ShoppingCard
+          <FoodGroupQuantityDrawer
+            open={foodGroupQuantityDrawer.open}
+            onOpenChange={(open) =>
+              setFoodGroupQuantityDrawer((prev) => ({
+                ...prev,
+                open,
+              }))
+            }
+            foodGroupItem={foodGroupQuantityDrawer.data}
+            onConfirm={onConfirmFoodGroupQuantityHandler}
+          />
+
+          <ShoppingCardDrawer
             open={cartOpen}
             onOpenChange={setCartOpen}
             shoppingItems={items}

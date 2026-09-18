@@ -138,7 +138,7 @@ const PlaygroundFlowHeader = ({
                   scale: shouldReduceMotion ? 1 : 0.98,
                 }}
                 transition={transition}
-                className="text-center font-yekan compact:text-2xl fold:text-3xl laptop:text-4xl font-extrabold leading-tight text-white"
+                className="text-center font-yekan compact:text-3xl fold:text-4xl laptop:text-5xl font-extrabold leading-tight text-white"
               >
                 {title}
               </motion.h1>
@@ -219,7 +219,7 @@ const PlaygroundFlowHeader = ({
                 duration: shouldReduceMotion ? 0.1 : 0.24,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              className="w-4/5 font-peyda text-center compact:text-sm fold:text-base laptop:text-lg font-medium leading-5 text-blue-600"
+              className="w-4/5 font-peyda text-center compact:text-sm fold:text-base laptop:text-lg font-medium leading-5 text-blue-600 text-pretty"
             >
               {subTitle}
             </motion.h2>

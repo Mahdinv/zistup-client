@@ -5,6 +5,7 @@ export const shoppingFieldsSchema = z.object({
   imageUrl: z.string(),
   title: z.string(),
   value: z.number().min(0.5, "مقدار نمی‌تواند 0 باشد"),
+  unit: z.string(),
   positionPrice: z.number().optional(),
   positionHealth: z.number().optional(),
   positionEnvironment: z.number().optional(),

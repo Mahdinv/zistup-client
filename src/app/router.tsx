@@ -202,7 +202,7 @@ const router = createBrowserRouter([
             element: <FreeShoppingPage />,
             handle: {
               header: {
-                title: "فروشگاه بی‌‌نهایت",
+                title: "فروشگاه انتخاب آزاد",
                 subTitle:
                   "فرض کن هیچ محدودیتی نداری؛ خوراکی‌های محبوبت رو برای یه هفته بدون نگرانی انتخاب کن",
                 backTo: "/game-workflow",
@@ -214,9 +214,9 @@ const router = createBrowserRouter([
             element: <LimitedShoppingPage />,
             handle: {
               header: {
-                title: "فروشگاه و تاثیر انتخاب‌ها",
+                title: "فروشگاه و انتخاب‌های تو",
                 subTitle:
-                  "انتخاب‌های قبلیت اینجاست. اثر خوراکی‌ها رو روی شاخص ها ببین و طبق سلیقه‌ت تنظیمشون کن",
+                  "خوراکی‌های انتخابی‌ت اینجان. اثر هر کدوم رو روی شاخص‌ها ببین و مقدارشون رو طبق اولویت‌هات تنظیم کن",
                 backTo: "/game-workflow",
               },
             } satisfies PlaygroundFlowRouteHandle,

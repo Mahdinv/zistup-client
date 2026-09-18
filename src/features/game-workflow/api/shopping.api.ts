@@ -28,7 +28,7 @@ export async function addShopping({
     items: data.items.map((item) =>
       Object.fromEntries(
         Object.entries(item).filter(
-          ([key]) => key !== "imageUrl" && key !== "title",
+          ([key]) => key !== "imageUrl" && key !== "title" && key !== "unit",
         ),
       ),
     ),
