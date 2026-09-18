@@ -14,21 +14,36 @@ const PwaUpdatePrompt = () => {
     updateServiceWorker,
   } = useRegisterSW({
     immediate: true,
+
     onRegisteredSW: (_swUrl, currentRegistration) => {
       setRegistration(currentRegistration ?? null);
     },
   });
 
   const checkForUpdate = useCallback(() => {
-    if (!registration) return;
-    if (!navigator.onLine) return;
-    if (registration.installing) return;
+    if (!registration) {
+      return;
+    }
+
+    if (!navigator.onLine) {
+      return;
+    }
+
+    /*
+     * وقتی worker در حال install است یا نسخه جدیدی از قبل
+     * در حالت waiting قرار دارد، update check جدید لازم نیست.
+     */
+    if (registration.installing || registration.waiting) {
+      return;
+    }
 
     void registration.update().catch(() => undefined);
   }, [registration]);
 
   useEffect(() => {
-    if (!registration) return;
+    if (!registration) {
+      return;
+    }
 
     checkForUpdate();
 
@@ -42,6 +57,7 @@ const PwaUpdatePrompt = () => {
 
     window.addEventListener("focus", checkForUpdate);
     window.addEventListener("online", checkForUpdate);
+
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
@@ -54,10 +70,41 @@ const PwaUpdatePrompt = () => {
     };
   }, [registration, checkForUpdate]);
 
-  if (!needRefresh) return null;
+  /*
+   * needRefresh صرفاً یک event/state از Workbox است.
+   *
+   * Prompt فقط زمانی معتبر است که واقعاً یک Service Worker
+   * در waiting وجود داشته باشد.
+   */
+  useEffect(() => {
+    if (!needRefresh) {
+      return;
+    }
+
+    if (!registration) {
+      return;
+    }
+
+    if (registration.waiting) {
+      return;
+    }
+
+    /*
+     * اگر Workbox یک needRefresh قدیمی یا external event
+     * ایجاد کرده ولی worker واقعی در waiting نیست،
+     * state را پاک می‌کنیم.
+     */
+    setNeedRefresh(false);
+  }, [needRefresh, registration, setNeedRefresh]);
+
+  const hasWaitingUpdate = Boolean(registration?.waiting);
+
+  if (!needRefresh || !hasWaitingUpdate) {
+    return null;
+  }
 
   const handleUpdate = () => {
-    void updateServiceWorker(true);
+    void updateServiceWorker();
   };
 
   const handleLater = () => {
