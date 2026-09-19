@@ -7,6 +7,68 @@ const UPDATE_INTERVAL = 60 * 60 * 1000;
 const MIN_UPDATE_CHECK_INTERVAL = 60 * 1000;
 const ACTIVATION_TIMEOUT = 10 * 1000;
 
+const DISMISSED_UPDATE_VERSION_KEY = "zistup:pwa-dismissed-update-version";
+
+type VersionInfo = {
+  version: string;
+};
+
+const compareVersions = (versionA: string, versionB: string) => {
+  const normalize = (version: string) =>
+    version
+      .split("-")[0]
+      .split(".")
+      .map((part) => Number.parseInt(part, 10) || 0);
+
+  const a = normalize(versionA);
+  const b = normalize(versionB);
+
+  const length = Math.max(a.length, b.length);
+
+  for (let i = 0; i < length; i += 1) {
+    const aPart = a[i] ?? 0;
+    const bPart = b[i] ?? 0;
+
+    if (aPart > bPart) {
+      return 1;
+    }
+
+    if (aPart < bPart) {
+      return -1;
+    }
+  }
+
+  return 0;
+};
+
+const isNewerVersion = (latestVersion: string, currentVersion: string) =>
+  compareVersions(latestVersion, currentVersion) > 0;
+
+const fetchLatestAppVersion = async (): Promise<string | null> => {
+  try {
+    const response = await fetch(`/version.json?t=${Date.now()}`, {
+      cache: "no-store",
+      headers: {
+        "cache-control": "no-cache",
+      },
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = (await response.json()) as Partial<VersionInfo>;
+
+    if (typeof data.version !== "string") {
+      return null;
+    }
+
+    return data.version.trim();
+  } catch {
+    return null;
+  }
+};
+
 const waitForWorkerActivation = (worker: ServiceWorker): Promise<void> => {
   return new Promise((resolve, reject) => {
     if (worker.state === "activated") {
@@ -52,6 +114,8 @@ const PwaUpdatePrompt = () => {
 
   const [isUpdating, setIsUpdating] = useState(false);
 
+  const [availableVersion, setAvailableVersion] = useState<string | null>(null);
+
   const lastUpdateCheckRef = useRef(0);
 
   const {
@@ -79,6 +143,82 @@ const PwaUpdatePrompt = () => {
       lastUpdateCheckRef.current = Date.now();
     },
   });
+
+  useEffect(() => {
+    if (!needRefresh) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const validateUpdate = async () => {
+      const latestVersion = await fetchLatestAppVersion();
+
+      if (cancelled) {
+        return;
+      }
+
+      /*
+       * تا وقتی نسخه سرور مشخص نشده،
+       * هیچ پیغام بروزرسانی نشان نمی‌دهیم.
+       */
+      if (!latestVersion) {
+        setAvailableVersion(null);
+        return;
+      }
+
+      /*
+       * اگر نسخه سرور جدیدتر از نسخه فعلی نیست،
+       * این waiting worker یک "نسخه جدید" محسوب نمی‌شود.
+       */
+      if (!isNewerVersion(latestVersion, __APP_VERSION__)) {
+        setAvailableVersion(null);
+        setNeedRefresh(false);
+
+        /*
+         * اگر یک worker با همین version به دلیل redeploy/build
+         * در حالت waiting مانده، بدون نمایش پیغام فعالش می‌کنیم.
+         */
+        const currentRegistration =
+          registration ?? (await navigator.serviceWorker.getRegistration());
+
+        if (currentRegistration?.waiting) {
+          try {
+            await updateServiceWorker();
+          } catch {
+            // Silent update failure should not affect the app.
+          }
+        }
+
+        return;
+      }
+
+      /*
+       * اگر کاربر قبلاً برای همین نسخه "بعداً" زده،
+       * دوباره مزاحمش نمی‌شویم.
+       */
+      const dismissedVersion = window.localStorage.getItem(
+        DISMISSED_UPDATE_VERSION_KEY,
+      );
+
+      if (dismissedVersion === latestVersion) {
+        setAvailableVersion(null);
+        setNeedRefresh(false);
+        return;
+      }
+
+      /*
+       * فقط اینجا واقعاً اجازه نمایش popup را می‌دهیم.
+       */
+      setAvailableVersion(latestVersion);
+    };
+
+    void validateUpdate();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [needRefresh, registration, setNeedRefresh, updateServiceWorker]);
 
   const checkForUpdate = useCallback(async () => {
     if (!registration || !serviceWorkerUrl) {
@@ -112,10 +252,16 @@ const PwaUpdatePrompt = () => {
     lastUpdateCheckRef.current = now;
 
     try {
-      /*
-       * طبق الگوی پیشنهادی vite-plugin-pwa ابتدا
-       * خود sw.js را بدون cache چک می‌کنیم.
-       */
+      const latestVersion = await fetchLatestAppVersion();
+
+      if (!latestVersion) {
+        return;
+      }
+
+      if (!isNewerVersion(latestVersion, __APP_VERSION__)) {
+        return;
+      }
+
       const response = await fetch(serviceWorkerUrl, {
         cache: "no-store",
         headers: {
@@ -221,6 +367,12 @@ const PwaUpdatePrompt = () => {
 
       setNeedRefresh(false);
 
+      if (availableVersion) {
+        window.localStorage.removeItem(DISMISSED_UPDATE_VERSION_KEY);
+      }
+
+      setAvailableVersion(null);
+
       /*
        * حالا reload کاملاً safe است و worker جدید active است.
        */
@@ -233,12 +385,13 @@ const PwaUpdatePrompt = () => {
   };
 
   const handleLater = () => {
+    setAvailableVersion(null);
     setNeedRefresh(false);
   };
 
   const hasWaitingUpdate = Boolean(registration?.waiting);
 
-  if (!needRefresh || !hasWaitingUpdate) {
+  if (!needRefresh || !hasWaitingUpdate || !availableVersion) {
     return null;
   }
 

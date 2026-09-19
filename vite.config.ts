@@ -1,14 +1,37 @@
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
+import { readFileSync } from "node:fs";
 import { fileURLToPath, URL } from "node:url";
+
+const packageJson = JSON.parse(
+  readFileSync(new URL("./package.json", import.meta.url), "utf-8"),
+) as {
+  version: string;
+};
+
+const APP_VERSION = packageJson.version;
+
+const appVersionPlugin = (version: string): Plugin => ({
+  name: "zistup-app-version",
+
+  generateBundle() {
+    this.emitFile({
+      type: "asset",
+      fileName: "version.json",
+      source: JSON.stringify({
+        version,
+      }),
+    });
+  },
+});
 
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-
+    appVersionPlugin(APP_VERSION),
     VitePWA({
       registerType: "prompt",
       injectRegister: "auto",
@@ -85,6 +108,10 @@ export default defineConfig({
       },
     }),
   ],
+
+  define: {
+    __APP_VERSION__: JSON.stringify(APP_VERSION),
+  },
 
   resolve: {
     alias: {
