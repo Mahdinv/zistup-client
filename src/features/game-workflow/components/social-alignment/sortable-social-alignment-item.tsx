@@ -42,7 +42,6 @@ const SortableSocialAlignmentItem = ({
         cursor-grab
         active:cursor-grabbing
         select-none
-        touch-none
         transition-opacity
         ${isDragging ? "z-10 opacity-70 shadow-xl" : ""}
       `}
