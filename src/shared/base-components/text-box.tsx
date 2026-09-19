@@ -1,4 +1,9 @@
-import type { InputHTMLAttributes, ReactNode } from "react";
+import type {
+  ChangeEvent,
+  FocusEvent,
+  InputHTMLAttributes,
+  ReactNode,
+} from "react";
 
 type TextBoxProps = {
   inlineLabel?: boolean;
@@ -24,23 +29,68 @@ const TextBox = ({
   placeHolder,
   localizePhoneNumber,
   onChange,
+  onBlur,
   error,
   ...props
 }: TextBoxProps) => {
   const toPersianDigits = (value: string) =>
-    value.replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[Number(d)]);
+    value
+      .replace(/\d/g, (digit) => "۰۱۲۳۴۵۶۷۸۹"[Number(digit)])
+      .replace(/[٠-٩]/g, (digit) => "۰۱۲۳۴۵۶۷۸۹"["٠١٢٣٤٥٦٧٨٩".indexOf(digit)]);
 
   const toEnglishDigits = (value: string) =>
-    value.replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)));
+    value
+      .replace(/[۰-۹]/g, (digit) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit)))
+      .replace(/[٠-٩]/g, (digit) => String("٠١٢٣٤٥٦٧٨٩".indexOf(digit)));
+
+  const shouldLocalize = type === "number" || localizePhoneNumber;
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (!shouldLocalize) {
+      onChange?.(e);
+      return;
+    }
+    const input = e.currentTarget;
+    const selectionStart = input.selectionStart;
+    const selectionEnd = input.selectionEnd;
+    const englishValue = toEnglishDigits(input.value);
+    const persianValue = toPersianDigits(englishValue);
+    input.value = englishValue;
+    onChange?.(e);
+
+    input.value = persianValue;
+
+    if (selectionStart !== null && selectionEnd !== null) {
+      input.setSelectionRange(selectionStart, selectionEnd);
+    }
+  };
+
+  const handleBlur = (e: FocusEvent<HTMLInputElement>) => {
+    if (!shouldLocalize) {
+      onBlur?.(e);
+      return;
+    }
+    const input = e.currentTarget;
+    const englishValue = toEnglishDigits(input.value);
+    const persianValue = toPersianDigits(englishValue);
+    input.value = englishValue;
+    onBlur?.(e);
+
+    input.value = persianValue;
+  };
 
   return (
     <div className="w-full flex flex-col justify-center items-center gap-1.5">
       <div
-        className={`flex ${inlineLabel ? "flex-row" : "flex-col gap-1"} items-center w-full select-none`}
+        className={`flex ${
+          inlineLabel ? "flex-row" : "flex-col gap-1"
+        } items-center w-full select-none`}
       >
         {label && (
           <div
-            className={`w-full flex flex-col justify-center items-center ${inlineLabel && "flex-1"} ${subLabel ? "mb-1" : "mb-0"}`}
+            className={`w-full flex flex-col justify-center items-center ${
+              inlineLabel && "flex-1"
+            } ${subLabel ? "mb-1" : "mb-0"}`}
           >
             <label
               htmlFor={props.name}
@@ -48,6 +98,7 @@ const TextBox = ({
             >
               {label}
             </label>
+
             {subLabel && (
               <small className="font-peyda compact:text-xs fold:text-sm laptop:text-base font-medium self-start text-blue-500">
                 {subLabel}
@@ -55,44 +106,36 @@ const TextBox = ({
             )}
           </div>
         )}
+
         <div
-          className={`${classes} ${inlineLabel && "flex-2"} bg-darker-blue-400 text-[#FCFCFC] h-12 desktop:h-14 flex flex-row w-full items-center justify-between rounded-2xl border border-darker-blue-100 ${error && "border-red-400!"} group focus-within:border-blue-900`}
+          className={`${classes} ${
+            inlineLabel && "flex-2"
+          } bg-darker-blue-400 text-[#FCFCFC] h-12 desktop:h-14 flex flex-row w-full items-center justify-between rounded-2xl border border-darker-blue-100 ${
+            error && "border-red-400!"
+          } group focus-within:border-blue-900`}
         >
           {icon && (
             <span className="px-1 pr-3 text-xl desktop:text-2xl text-text-input">
               {icon}
             </span>
           )}
+
           <input
             id={props.name}
             type={type === "number" ? "text" : type}
             inputMode={type === "number" ? "numeric" : undefined}
             placeholder={
-              type === "number" || localizePhoneNumber
-                ? toPersianDigits(placeHolder)
-                : placeHolder
+              shouldLocalize ? toPersianDigits(placeHolder) : placeHolder
             }
             autoComplete="off"
             className="ios-textbox flex-1 w-full h-full px-3 bg-transparent rounded-xl font-medium font-peyda outline-none text-base"
             {...props}
-            onChange={(e) => {
-              const englishValue = toEnglishDigits(e.target.value);
-              const shouldLocalize =
-                type === "number" ||
-                (localizePhoneNumber && /^[0-9+\-\s()]*$/.test(englishValue));
-              if (type === "number" || localizePhoneNumber) {
-                e.target.value = englishValue;
-                onChange?.(e);
-                if (shouldLocalize) {
-                  e.target.value = toPersianDigits(englishValue);
-                }
-                return;
-              }
-              onChange?.(e);
-            }}
+            onChange={handleChange}
+            onBlur={handleBlur}
           />
         </div>
       </div>
+
       {error && (
         <small className="text-red-400 self-end text-xs font-peyda ml-2">
           {error}
