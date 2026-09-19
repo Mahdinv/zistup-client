@@ -89,7 +89,7 @@ const ScoreBar = ({ type, percent }: ScoreBarProps) => {
         />
 
         <span className="compact:text-lg fold:text-xl laptop:text-2xl font-rokh text-white mt-1 z-20">
-          {displayPercent}
+          {displayPercent}%
         </span>
 
         <label className="compact:text-sm fold:text-base laptop:text-lg font-peyda font-bold text-white z-20">

@@ -1,20 +1,13 @@
-import type { FoodGroup } from "../../api/food-group.types";
+import type { FoodGroup, ParametersType } from "../../api/food-group.types";
 import { HiOutlineShoppingBag } from "react-icons/hi";
 import Button from "@/shared/base-components/button";
 import { memo } from "react";
-import {
-  PiAlarm,
-  PiCoins,
-  PiHeartbeat,
-  PiPencilSimpleBold,
-  PiPlant,
-} from "react-icons/pi";
+import { PiPencilSimpleBold } from "react-icons/pi";
 import { AnimatePresence, motion } from "framer-motion";
 import ImageWithSkeleton from "@/shared/base-components/image-with-skeleton";
 import { getDisplayQuantity } from "@/shared/lib/utils";
 
 type FoodGroupItemProps = {
-  name: "free-shopping" | "limited-shopping";
   foodGroup: FoodGroup;
   itemIndex: number | -1;
   value?: number;
@@ -24,17 +17,18 @@ type FoodGroupItemProps = {
     title: string,
     value: number,
     unit: string,
+    cost: ParametersType,
   ) => void;
   handleOpenFoodGroupQuantityDrawer: (
     foodGroupId: number,
     imageUrl: string,
     title: string,
     unit: string,
+    cost: ParametersType,
   ) => void;
 };
 
 const FoodGroupItem = ({
-  name,
   foodGroup,
   itemIndex,
   value,
@@ -80,7 +74,7 @@ const FoodGroupItem = ({
                 duration: 0.2,
                 ease: [0.4, 0, 0.2, 1],
               }}
-              className="flex flex-row items-center gap-1.5"
+              className="flex flex-row items-center gap-3"
             >
               <div className="flex flex-row items-center gap-0.5">
                 <label className="font-rokh compact:text-2xl fold:text-3xl laptop:text-4xl text-green-400 mt-1">
@@ -104,6 +98,7 @@ const FoodGroupItem = ({
                     foodGroup.properties.imageUrl,
                     foodGroup.title,
                     foodGroup.properties.unit,
+                    foodGroup.properties.cost,
                   )
                 }
               />
@@ -145,12 +140,13 @@ const FoodGroupItem = ({
                     foodGroup.properties.imageUrl,
                     foodGroup.title,
                     foodGroup.properties.unit === "گرم"
-                      ? 200
+                      ? 50
                       : foodGroup.properties.unit === "عدد" ||
                           foodGroup.properties.unit === "لیتر"
                         ? 1
-                        : 0.5,
+                        : 0,
                     foodGroup.properties.unit,
+                    foodGroup.properties.cost,
                   )
                 }
               />
@@ -158,7 +154,7 @@ const FoodGroupItem = ({
           )}
         </AnimatePresence>
       </div>
-      <AnimatePresence initial={false}>
+      {/* <AnimatePresence initial={false}>
         {name === "limited-shopping" && itemIndex !== -1 && (
           <motion.ul
             initial={{
@@ -221,7 +217,7 @@ const FoodGroupItem = ({
             </li>
           </motion.ul>
         )}
-      </AnimatePresence>
+      </AnimatePresence> */}
     </div>
   );
 };

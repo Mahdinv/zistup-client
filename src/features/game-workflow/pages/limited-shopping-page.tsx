@@ -30,6 +30,7 @@ import type { Category } from "../api/category.types";
 import type { FreeShopping, LimitedShopping } from "../api/shopping.types";
 import ShoppingCardDrawer from "../components/shopping/shopping-card-drawer";
 import FoodGroupQuantityDrawer from "../components/shopping/food-group-quantity-drawer";
+import type { ParametersType } from "../api/food-group.types";
 
 const Dmax = {
   price: 8.582970188,
@@ -58,6 +59,7 @@ const LimitedShoppingPage = () => {
       title: string;
       unit: string;
       value: number;
+      cost: ParametersType;
     };
   }>({
     open: false,
@@ -67,8 +69,15 @@ const LimitedShoppingPage = () => {
       title: "",
       unit: "",
       value: 0,
+      cost: {
+        price: 0,
+        health: 0,
+        environment: 0,
+        available: 0,
+      },
     },
   });
+
   const prevItemsRef = useRef<Record<number, number>>({});
 
   const actionType = state?.actionType ?? undefined;
@@ -247,22 +256,45 @@ const LimitedShoppingPage = () => {
   }, [items, foodGroupById]);
 
   const onAddFoodGroupHandler = useCallback(
-    function onAddFoodGroupHandler(
+    (
       foodGroupId: number,
       imageUrl: string,
       title: string,
       value: number,
       unit: string,
-    ) {
-      const items = getValues("items") || [];
-      if (!items.find((item) => item.foodGroupId === foodGroupId))
-        append({ foodGroupId, imageUrl, title, value, unit });
+      cost: ParametersType,
+    ) => {
+      const currentItem = getValues("items").find(
+        (item) => item.foodGroupId === foodGroupId,
+      );
+
+      if (currentItem) {
+        return;
+      }
+
+      setFoodGroupQuantityDrawer({
+        open: true,
+        data: {
+          foodGroupId,
+          imageUrl,
+          title,
+          unit,
+          value,
+          cost,
+        },
+      });
     },
-    [append, getValues],
+    [getValues],
   );
 
   const onOpenFoodGroupQuantityDrawerHandler = useCallback(
-    (foodGroupId: number, imageUrl: string, title: string, unit: string) => {
+    (
+      foodGroupId: number,
+      imageUrl: string,
+      title: string,
+      unit: string,
+      cost: ParametersType,
+    ) => {
       if (cartOpen) return;
 
       const currentItem = getValues("items").find(
@@ -279,6 +311,7 @@ const LimitedShoppingPage = () => {
           imageUrl,
           unit,
           value: currentItem.value,
+          cost,
         },
       });
     },
@@ -287,18 +320,38 @@ const LimitedShoppingPage = () => {
 
   const onConfirmFoodGroupQuantityHandler = useCallback(
     (foodGroupId: number, value: number) => {
-      const itemIndex = getValues("items").findIndex(
+      const currentItems = getValues("items");
+
+      const itemIndex = currentItems.findIndex(
         (item) => item.foodGroupId === foodGroupId,
       );
 
-      if (itemIndex === -1) return;
+      /* Edit */
+      if (itemIndex !== -1) {
+        setValue(`items.${itemIndex}.value`, value, {
+          shouldDirty: true,
+          shouldTouch: true,
+        });
 
-      setValue(`items.${itemIndex}.value`, value, {
-        shouldDirty: true,
-        shouldTouch: true,
+        return;
+      }
+
+      /* Create */
+      const { data } = foodGroupQuantityDrawer;
+
+      if (data.foodGroupId !== foodGroupId) {
+        return;
+      }
+
+      append({
+        foodGroupId: data.foodGroupId,
+        imageUrl: data.imageUrl,
+        title: data.title,
+        value,
+        unit: data.unit,
       });
     },
-    [getValues, setValue],
+    [append, foodGroupQuantityDrawer, getValues, setValue],
   );
 
   const indexByFoodGroupId = useMemo(() => {
@@ -446,7 +499,6 @@ const LimitedShoppingPage = () => {
                       {(category.foodGroups || []).map((foodGroup) => (
                         <FoodGroupItem
                           key={foodGroup.id}
-                          name="limited-shopping"
                           foodGroup={foodGroup}
                           itemIndex={indexByFoodGroupId.get(foodGroup.id) ?? -1}
                           value={itemValueByFoodGroupId.get(foodGroup.id)}

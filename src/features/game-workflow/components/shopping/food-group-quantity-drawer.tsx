@@ -7,8 +7,15 @@ import {
 } from "@/shared/base-components/drawer";
 import ImageWithSkeleton from "@/shared/base-components/image-with-skeleton";
 import QuantityPicker from "@/shared/base-components/quantity-picker";
-import { PiXCircle } from "react-icons/pi";
+import {
+  PiAlarm,
+  PiCoins,
+  PiHeartbeat,
+  PiPlant,
+  PiXCircle,
+} from "react-icons/pi";
 import { useCallback, useState } from "react";
+import type { ParametersType } from "../../api/food-group.types";
 
 type FoodGroupQuantityDrawerProps = {
   open: boolean;
@@ -20,6 +27,7 @@ type FoodGroupQuantityDrawerProps = {
     title: string;
     unit: string;
     value: number;
+    cost?: ParametersType;
   };
 };
 
@@ -57,8 +65,7 @@ const FoodGroupQuantityDrawer = ({
         dir="rtl"
         className="
             mx-auto
-            h-[64dvh]
-            max-h-120
+            h-auto
             w-full
             max-w-107.5
             overflow-hidden
@@ -123,7 +130,7 @@ const FoodGroupQuantityDrawer = ({
           </button>
         </header>
 
-        <div className="w-full px-6 py-4">
+        <div className="w-full flex flex-col items-center gap-4 px-6 py-4">
           <QuantityPicker
             value={currentValue}
             onChange={setDraftValue}
@@ -137,13 +144,55 @@ const FoodGroupQuantityDrawer = ({
                     : "number"
             }
           />
+
+          {foodGroupItem.cost && (
+            <div className="w-full flex flex-col justify-start items-start gap-2">
+              <label className="text-white font-peyda font-bold compact:text-lg fold:text-xl laptop:text-2xl">
+                به ازای هر یک کیلو گرم:
+              </label>
+              <ul className="w-full bg-darker-blue-200 border border-dark rounded-2xl py-2 px-6 flex flex-row justify-around items-center gap-2">
+                <li className="w-full flex flex-row justify-center items-center gap-2">
+                  <div className="bg-[#FFB7BC] rounded-full compact:p-1 mobile:p-1 laptop:p-1.5">
+                    <PiHeartbeat className="text-black compact:text-sm mobile:text-lg fold:text-xl laptop:text-2xl" />
+                  </div>
+                  <span className="font-rokh text-green-500 compact:text-sm mobile:text-lg fold:text-xl laptop:text-2xl pt-2">
+                    {foodGroupItem.cost.health}+
+                  </span>
+                </li>
+                <li className="w-full flex flex-row justify-center items-center gap-2">
+                  <div className="bg-[#FCECAD] rounded-full compact:p-1 mobile:p-1 laptop:p-1.5">
+                    <PiCoins className="text-black compact:text-sm mobile:text-lg fold:text-xl laptop:text-2xl" />
+                  </div>
+                  <span className="font-rokh text-red-300 compact:text-sm mobile:text-lg fold:text-xl laptop:text-2xl pt-2">
+                    {foodGroupItem.cost.price}-
+                  </span>
+                </li>
+                <li className="w-full flex flex-row justify-center items-center gap-2">
+                  <div className="bg-[#C8E0FF] rounded-full compact:p-1 mobile:p-1 laptop:p-1.5">
+                    <PiAlarm className="text-black compact:text-sm mobile:text-lg fold:text-xl laptop:text-2xl" />
+                  </div>
+                  <span className="font-rokh text-red-300 compact:text-sm mobile:text-lg fold:text-xl laptop:text-2xl pt-2">
+                    {foodGroupItem.cost.available}-
+                  </span>
+                </li>
+                <li className="w-full flex flex-row justify-center items-center gap-2">
+                  <div className="bg-[#AAFFC9] rounded-full compact:p-0.5 mobile:p-1 laptop:p-1.5">
+                    <PiPlant className="text-black compact:text-sm mobile:text-lg fold:text-xl laptop:text-2xl" />
+                  </div>
+                  <span className="font-rokh text-red-300 compact:text-sm mobile:text-lg fold:text-xl laptop:text-2xl pt-2">
+                    {foodGroupItem.cost.environment}-
+                  </span>
+                </li>
+              </ul>
+            </div>
+          )}
         </div>
 
         <footer className="shrink-0 mt-auto px-3 pt-3 pb-5">
           <Button
             type="button"
-            classes="btn btn-primary-green"
-            title="تایید مقدار"
+            classes="btn btn-primary-green rounded-xs!"
+            title="تأیید مقدار"
             disable={isConfirmDisabled}
             onClick={handleConfirm}
           />

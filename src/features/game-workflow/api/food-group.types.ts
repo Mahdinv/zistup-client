@@ -16,7 +16,7 @@ type FoodGroupProperties = {
   unit: string;
 };
 
-type ParametersType = {
+export type ParametersType = {
   price: number;
   health: number;
   environment: number;

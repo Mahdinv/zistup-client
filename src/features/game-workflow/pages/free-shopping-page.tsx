@@ -152,19 +152,33 @@ const FreeShoppingPage = () => {
   }, [items]);
 
   const onAddFoodGroupHandler = useCallback(
-    function onAddFoodGroupHandler(
+    (
       foodGroupId: number,
       imageUrl: string,
       title: string,
       value: number,
       unit: string,
-    ) {
-      const items = getValues("items") || [];
-      if (!items.find((item) => item.foodGroupId === foodGroupId)) {
-        append({ foodGroupId, imageUrl, title, value, unit });
+    ) => {
+      const currentItem = getValues("items").find(
+        (item) => item.foodGroupId === foodGroupId,
+      );
+
+      if (currentItem) {
+        return;
       }
+
+      setFoodGroupQuantityDrawer({
+        open: true,
+        data: {
+          foodGroupId,
+          imageUrl,
+          title,
+          unit,
+          value,
+        },
+      });
     },
-    [append, getValues],
+    [getValues],
   );
 
   const onOpenFoodGroupQuantityDrawerHandler = useCallback(
@@ -193,18 +207,38 @@ const FreeShoppingPage = () => {
 
   const onConfirmFoodGroupQuantityHandler = useCallback(
     (foodGroupId: number, value: number) => {
-      const itemIndex = getValues("items").findIndex(
+      const currentItems = getValues("items");
+
+      const itemIndex = currentItems.findIndex(
         (item) => item.foodGroupId === foodGroupId,
       );
 
-      if (itemIndex === -1) return;
+      /* Edit */
+      if (itemIndex !== -1) {
+        setValue(`items.${itemIndex}.value`, value, {
+          shouldDirty: true,
+          shouldTouch: true,
+        });
 
-      setValue(`items.${itemIndex}.value`, value, {
-        shouldDirty: true,
-        shouldTouch: true,
+        return;
+      }
+
+      /* Create */
+      const { data } = foodGroupQuantityDrawer;
+
+      if (data.foodGroupId !== foodGroupId) {
+        return;
+      }
+
+      append({
+        foodGroupId: data.foodGroupId,
+        imageUrl: data.imageUrl,
+        title: data.title,
+        value,
+        unit: data.unit,
       });
     },
-    [getValues, setValue],
+    [append, foodGroupQuantityDrawer, getValues, setValue],
   );
 
   const indexByFoodGroupId = useMemo(() => {
@@ -260,7 +294,6 @@ const FreeShoppingPage = () => {
                     {(category.foodGroups || []).map((foodGroup) => (
                       <FoodGroupItem
                         key={foodGroup.id}
-                        name="free-shopping"
                         foodGroup={foodGroup}
                         itemIndex={indexByFoodGroupId.get(foodGroup.id) ?? -1}
                         value={itemValueByFoodGroupId.get(foodGroup.id)}
