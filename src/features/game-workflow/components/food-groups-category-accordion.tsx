@@ -4,8 +4,8 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { HiOutlineChevronDown } from "react-icons/hi";
 import { PiArrowClockwiseFill } from "react-icons/pi";
 
-type PastWeekIntakeProps = {
-  name: "past-week-intake" | "shopping";
+type FoodGroupsCategoryAccordionProps = {
+  name: "past-week-intake" | "shopping" | "optimized-dietary";
   title: string;
   color: string;
   selectedItemCount?: number;
@@ -15,7 +15,7 @@ type PastWeekIntakeProps = {
   onRefreshGroup?: () => void;
 };
 
-const PastWeekIntakeAccordion = ({
+const FoodGroupsCategoryAccordion = ({
   name,
   title,
   color,
@@ -24,13 +24,13 @@ const PastWeekIntakeAccordion = ({
   open = false,
   onToggle,
   onRefreshGroup,
-}: PastWeekIntakeProps) => {
+}: FoodGroupsCategoryAccordionProps) => {
   const shouldReduceMotion = useReducedMotion();
 
   const layoutMethodClasses =
-    name === "shopping"
-      ? "flex flex-col items-center"
-      : "grid compact:grid-cols-2 mobile-lg:grid-cols-3";
+    name === "past-week-intake"
+      ? "grid compact:grid-cols-2 mobile-lg:grid-cols-3"
+      : "flex flex-col items-center";
 
   return (
     <div className="w-full flex flex-col justify-start gap-2">
@@ -176,4 +176,4 @@ const PastWeekIntakeAccordion = ({
   );
 };
 
-export default PastWeekIntakeAccordion;
+export default FoodGroupsCategoryAccordion;

@@ -1,7 +1,6 @@
 import PlaygroundFlowContainer from "@/app/layouts/playground-flow/playground-flow-container";
 import Button from "@/shared/base-components/button";
 import ScrollFade from "@/shared/base-components/scroll-fade";
-import PastWeekIntakeAccordion from "../components/past-week-intake/past-week-intake-accordion";
 import FoodFrequencyHelpBar from "../components/past-week-intake/food-frequency-help-bar";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -28,6 +27,7 @@ import GameCompletedModal from "../components/game-completed-modal";
 import { FaCheck } from "react-icons/fa6";
 import { useLocation, useNavigate } from "react-router-dom";
 import type { PastWeekIntake } from "../api/past-week-intake.types";
+import FoodGroupsCategoryAccordion from "../components/food-groups-category-accordion";
 
 const CHART_CATEGORIES = [
   {
@@ -310,7 +310,7 @@ const PastWeekIntakePage = () => {
                 />
               ) : (
                 (foodGroupsCategories || []).map((category) => (
-                  <PastWeekIntakeAccordion
+                  <FoodGroupsCategoryAccordion
                     name="past-week-intake"
                     key={category.id}
                     title={category.title}
@@ -345,7 +345,7 @@ const PastWeekIntakePage = () => {
                         }
                       />
                     ))}
-                  </PastWeekIntakeAccordion>
+                  </FoodGroupsCategoryAccordion>
                 ))
               )}
               <div

@@ -19,8 +19,7 @@ import PlaygroundFlowContainer from "@/app/layouts/playground-flow/playground-fl
 import GameCompletedModal from "../components/game-completed-modal";
 import ScrollFade from "@/shared/base-components/scroll-fade";
 import Skeleton from "react-loading-skeleton";
-import PastWeekIntakeAccordion from "../components/past-week-intake/past-week-intake-accordion";
-import FoodGroupItem from "../components/shopping/food-group-item";
+import FoodGroupItem from "../components/food-group-item";
 import Button from "@/shared/base-components/button";
 import { HiOutlineShoppingBag } from "react-icons/hi";
 import { FaCheck } from "react-icons/fa6";
@@ -31,6 +30,7 @@ import type { FreeShopping, LimitedShopping } from "../api/shopping.types";
 import ShoppingCardDrawer from "../components/shopping/shopping-card-drawer";
 import FoodGroupQuantityDrawer from "../components/shopping/food-group-quantity-drawer";
 import type { ParametersType } from "../api/food-group.types";
+import FoodGroupsCategoryAccordion from "../components/food-groups-category-accordion";
 
 const Dmax = {
   price: 8.582970188,
@@ -479,7 +479,7 @@ const LimitedShoppingPage = () => {
                   />
                 ) : (
                   (foodGroupsCategories || []).map((category) => (
-                    <PastWeekIntakeAccordion
+                    <FoodGroupsCategoryAccordion
                       name="shopping"
                       key={category.id}
                       title={category.title}
@@ -499,6 +499,7 @@ const LimitedShoppingPage = () => {
                       {(category.foodGroups || []).map((foodGroup) => (
                         <FoodGroupItem
                           key={foodGroup.id}
+                          name="shopping"
                           foodGroup={foodGroup}
                           itemIndex={indexByFoodGroupId.get(foodGroup.id) ?? -1}
                           value={itemValueByFoodGroupId.get(foodGroup.id)}
@@ -508,7 +509,7 @@ const LimitedShoppingPage = () => {
                           }
                         />
                       ))}
-                    </PastWeekIntakeAccordion>
+                    </FoodGroupsCategoryAccordion>
                   ))
                 )}
               </div>
