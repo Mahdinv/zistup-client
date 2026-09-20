@@ -2,10 +2,9 @@ import { Suspense, useCallback, useState } from "react";
 
 import { Outlet, useLocation, useMatches, useNavigate } from "react-router-dom";
 
-import type {
-  PlaygroundFlowHeaderOverride,
-  PlaygroundFlowRouteHandle,
-} from "./playground-flow-types";
+import type { PlaygroundFlowHeaderOverride } from "./playground-flow-types";
+
+import { hasPlaygroundFlowHeaderSetting } from "./playground-flow-route";
 
 import PlaygroundFlowHeader from "./playground-flow-header";
 
@@ -13,7 +12,6 @@ import AppLoader from "@/shared/base-components/app-loader";
 
 type HeaderOverrideState = {
   pathname: string;
-
   value: PlaygroundFlowHeaderOverride;
 };
 
@@ -27,7 +25,6 @@ const PlaygroundFlowLayout = () => {
   const [headerOverrideState, setHeaderOverrideState] =
     useState<HeaderOverrideState>({
       pathname: "",
-
       value: {},
     });
 
@@ -35,7 +32,6 @@ const PlaygroundFlowLayout = () => {
     (config: PlaygroundFlowHeaderOverride) => {
       setHeaderOverrideState({
         pathname: location.pathname,
-
         value: config,
       });
     },
@@ -47,18 +43,20 @@ const PlaygroundFlowLayout = () => {
       ? headerOverrideState.value
       : {};
 
+  const closestHandle = [...matches]
+    .reverse()
+    .map((match) => match.handle)
+    .find(hasPlaygroundFlowHeaderSetting);
+
+  const routeHeaderSetting = closestHandle?.header;
+
+  const showHeader = routeHeaderSetting !== false;
+
   const routeHeader =
-    [...matches]
-      .reverse()
-      .map(
-        (match) =>
-          (match.handle as PlaygroundFlowRouteHandle | undefined)?.header,
-      )
-      .find(Boolean) ?? {};
+    typeof routeHeaderSetting === "object" ? routeHeaderSetting : {};
 
   const header = {
     title: headerOverride.title ?? routeHeader.title,
-
     subTitle: headerOverride.subTitle ?? routeHeader.subTitle,
   };
 
@@ -70,16 +68,13 @@ const PlaygroundFlowLayout = () => {
     }
 
     if (routeHeader.backTo) {
-      navigate(routeHeader.backTo, {
-        replace: true,
-      });
+      navigate(routeHeader.backTo);
     }
   };
 
   return (
     <div
       className="
-        relative
         compact:w-full
         tablet:w-3/5
         laptop:w-2/5
@@ -94,13 +89,15 @@ const PlaygroundFlowLayout = () => {
         bg-darker-blue-200
       "
     >
-      <PlaygroundFlowHeader
-        title={header.title}
-        subTitle={header.subTitle}
-        onBack={
-          headerOverride.onBack || routeHeader.backTo ? handleBack : undefined
-        }
-      />
+      {showHeader && (
+        <PlaygroundFlowHeader
+          title={header.title}
+          subTitle={header.subTitle}
+          onBack={
+            headerOverride.onBack || routeHeader.backTo ? handleBack : undefined
+          }
+        />
+      )}
 
       <main
         className="

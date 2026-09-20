@@ -13,7 +13,7 @@ export type PlaygroundFlowHeaderOverride = {
 };
 
 export type PlaygroundFlowRouteHandle = {
-  header?: PlaygroundFlowHeaderConfig;
+  header?: PlaygroundFlowHeaderConfig | false;
 };
 
 export type PlaygroundFlowStepHeader = {
