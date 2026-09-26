@@ -116,7 +116,7 @@ const DemographicInformationPage = () => {
         <GameCompletedModal
           open={modal}
           step={1}
-          nextGameLink="/game-workflow/tablemates"
+          nextGameLink="/game-workflow/past-week-intake"
         />
       )}
       <form

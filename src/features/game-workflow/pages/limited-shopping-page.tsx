@@ -451,7 +451,7 @@ const LimitedShoppingPage = () => {
       {modal && actionType === "create" && (
         <GameCompletedModal
           open={modal}
-          step={6}
+          step={5}
           nextGameLink="/game-workflow/social-alignment"
         />
       )}

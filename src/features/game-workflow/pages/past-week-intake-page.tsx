@@ -291,7 +291,7 @@ const PastWeekIntakePage = () => {
       {modal && actionType === "create" && (
         <GameCompletedModal
           open={modal}
-          step={3}
+          step={2}
           nextGameLink="/game-workflow/preferred-food"
         />
       )}

@@ -272,7 +272,7 @@ const SocialAlignmentPage = () => {
       {modal && actionType === "create" && (
         <GameCompletedModal
           open={modal}
-          step={7}
+          step={6}
           nextGameLink="/game-workflow/limited-shopping"
         />
       )}

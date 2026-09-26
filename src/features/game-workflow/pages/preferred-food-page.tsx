@@ -236,7 +236,7 @@ const PreferredFoodPage = () => {
       {modal && actionType === "create" && (
         <GameCompletedModal
           open={modal}
-          step={4}
+          step={3}
           nextGameLink="/game-workflow/free-shopping"
         />
       )}

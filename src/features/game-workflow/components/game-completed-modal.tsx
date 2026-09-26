@@ -16,7 +16,7 @@ const GameCompletedModal = ({
   open = false,
 }: GameCompletedModalProps) => {
   const navigate = useNavigate();
-  const percent = (step * 100) / 7;
+  const percent = (step * 100) / 6;
   const radius = 45;
   const strokeWidth = 10;
   const circumference = 2 * Math.PI * radius;
@@ -87,7 +87,7 @@ const GameCompletedModal = ({
                 />
               </svg>
               <span className="text-green-400 absolute compact:text-5xl fold:text-7xl laptop:text-8xl font-extrabold font-rokh mt-1.5">
-                {step}/7
+                {step}/6
               </span>
             </div>
             <div className="compact:text-xl fold:text-2xl laptop:text-3xl text-center">
@@ -95,7 +95,7 @@ const GameCompletedModal = ({
                 {" "}
                 مرحله {stepTitles[step - 1]} تکمیل شد!
               </h3>
-              {step === 7 && (
+              {step === 6 && (
                 <p className="compact:text-sm fold:text-base laptop:text-lg text-blue-900 font-medium mt-1">
                   انتخاب‌هات ثبت شدن، حالا زیستاپ داره برنامه اختصاصیت رو
                   می‌سازه
@@ -106,12 +106,12 @@ const GameCompletedModal = ({
               <Button
                 classes="btn btn-primary-green compact:text-base! fold:text-lg! laptop:text-xl! rounded-lg!"
                 title={
-                  step === 7
+                  step === 6
                     ? "شروع محاسبه و ساخت برنامه"
                     : `شروع مرحله ${stepTitles[step]}`
                 }
                 icon={
-                  step === 7 ? (
+                  step === 6 ? (
                     <PiCaretLeftBold className="text-black compact:text-4xl fold:text-5xl laptop:text-6xl" />
                   ) : undefined
                 }

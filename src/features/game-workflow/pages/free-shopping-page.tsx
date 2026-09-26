@@ -255,7 +255,7 @@ const FreeShoppingPage = () => {
       {modal && actionType === "create" && (
         <GameCompletedModal
           open={modal}
-          step={5}
+          step={4}
           nextGameLink="/game-workflow/limited-shopping"
         />
       )}
