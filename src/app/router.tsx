@@ -64,6 +64,10 @@ const SocialAlignmentPage = lazy(
   () => import("@/features/game-workflow/pages/social-alignment-page"),
 );
 
+const OptimizedDietaryPage = lazy(
+  () => import("@/features/game-workflow/pages/optimized-dietary-page"),
+);
+
 const router = createBrowserRouter([
   {
     element: <AccountFlowLayout />,
@@ -231,6 +235,13 @@ const router = createBrowserRouter([
                   "این فقط یک مقایسه آماریه؛ انتخاب درست یا غلطی وجود نداره. می‌تونی بدون هیچ تغییری ادامه بدی یا اولویت‌ها رو جابه‌جا کنی",
                 backTo: "/game-workflow",
               },
+            } satisfies PlaygroundFlowRouteHandle,
+          },
+          {
+            path: "optimized-dietary",
+            element: <OptimizedDietaryPage />,
+            handle: {
+              header: false,
             } satisfies PlaygroundFlowRouteHandle,
           },
         ],
