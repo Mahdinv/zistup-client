@@ -13,16 +13,13 @@ const useDietLoader = ({
   isRequestDone,
 }: UseDietLoaderProps) => {
   const [activeStepIndex, setActiveStepIndex] = useState(0);
-
   const lastStepIndex = steps.length - 1;
 
   useEffect(() => {
     if (activeStepIndex >= lastStepIndex) return;
-
     const timeoutId = window.setTimeout(() => {
-      setActiveStepIndex((prev) => prev + 1);
+      setActiveStepIndex((prev) => Math.min(prev + 1, lastStepIndex));
     }, durations[activeStepIndex]);
-
     return () => window.clearTimeout(timeoutId);
   }, [activeStepIndex, durations, lastStepIndex]);
 
@@ -36,20 +33,21 @@ const useDietLoader = ({
           status: "completed",
         };
       }
-
       if (index === activeStepIndex) {
         return {
           ...step,
-          status: isLoaderCompleted ? "completed" : "in-progress",
+          status:
+            index === lastStepIndex && isRequestDone
+              ? "completed"
+              : "in-progress",
         };
       }
-
       return {
         ...step,
         status: "pending",
       };
     });
-  }, [steps, activeStepIndex, isLoaderCompleted]);
+  }, [steps, activeStepIndex, lastStepIndex, isRequestDone]);
 
   return {
     loaderSteps,

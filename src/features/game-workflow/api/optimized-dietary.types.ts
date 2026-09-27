@@ -11,6 +11,6 @@ export type DietResponse = {
 };
 
 export type OptimizedDietaryResponse = {
-  status: boolean;
+  success: boolean;
   data: unknown;
 };

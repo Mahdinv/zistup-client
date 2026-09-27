@@ -6,13 +6,10 @@ const useOptimizedDietaryQuery = (enabled: boolean) => {
     queryKey: ["optimized-dietary-result"],
     queryFn: getOptimizedDietary,
     enabled,
-
     refetchInterval: (query) => {
-      const status = query.state.data?.status;
-
+      const status = query.state.data?.success;
       return status === false ? 5_000 : false;
     },
-
     retry: false,
     refetchOnWindowFocus: false,
     refetchIntervalInBackground: true,
