@@ -50,7 +50,7 @@ const RoadMap = ({ step }: RoadMapProps) => {
           )}
         </div>
         <div
-          className={`${step.key === "personalized_diet" && "hidden"} bg-darker-blue-100 w-0.5 h-[130%]`}
+          className={`${step.key === "optimized_dietary" && "hidden"} bg-darker-blue-100 w-0.5 h-[130%]`}
         ></div>
       </div>
       <div
