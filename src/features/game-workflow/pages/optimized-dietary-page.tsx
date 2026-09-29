@@ -50,43 +50,43 @@ const initialLoaderSteps: LoaderStepType[] = [
   {
     id: 1,
     title: "شناخت اطلاعات پایه",
-    description: "تحلیل داده‌های پایه و شاخص‌های فردی.",
+    description: "تحلیل داده‌های پایه و شاخص‌های فردی",
     status: "in-progress",
   },
   {
     id: 2,
     title: "ارزیابی الگوی مصرف",
-    description: "بررسی سوابق تغذیه‌ای هفته گذشته.",
+    description: "بررسی سوابق تغذیه‌ای هفته گذشته",
     status: "pending",
   },
   {
     id: 3,
     title: "همگام‌سازی ذائقه",
-    description: "اعمال ترجیحات و علاقه‌مندی‌های غذایی.",
+    description: "اعمال ترجیحات و علاقه‌مندی‌های غذایی",
     status: "pending",
   },
   {
     id: 4,
     title: "تولید اولیه سبد",
-    description: "چیدمان مواد اولیه متناسب با نیاز شما.",
+    description: "چیدمان مواد اولیه متناسب با نیاز شما",
     status: "pending",
   },
   {
     id: 5,
     title: "توازن چهار شاخص اصلی",
-    description: "تنظیم هم‌زمان سلامت، هزینه، زمان و محیط‌زیست.",
+    description: "تنظیم هم‌زمان سلامت، هزینه، زمان و محیط‌زیست",
     status: "pending",
   },
   {
     id: 6,
     title: "تطبیق هوشمند با هدف",
-    description: "بیشترین میزان سازگاری با هدف انتخابی.",
+    description: "بیشترین میزان سازگاری با هدف انتخابی",
     status: "pending",
   },
   {
     id: 7,
     title: "آماده‌سازی برنامه اختصاصی و خروجی نهایی",
-    description: "پردازش نهایی داده‌ها توسط الگوریتم زیستاپ.",
+    description: "پردازش نهایی داده‌ها توسط الگوریتم زیستاپ",
     status: "pending",
   },
 ];
@@ -237,9 +237,21 @@ const OptimizedDietaryPage = () => {
             </div>
           </motion.div>
 
-          {/* بدون px-6 => تمام عرض */}
           <motion.div variants={resultItemVariants} className="w-full">
             <DietSlider items={sliderItems} autoplayDelay={5000} />
+          </motion.div>
+
+          <motion.div
+            variants={resultItemVariants}
+            className="w-full px-6 flex flex-col items-center gap-1"
+          >
+            <h2 className="text-white font-yekan font-extrabold compact:text-2xl fold:text-3xl laptop:text-4xl">
+              پایه و سوخت وعده‌های هفته تو!
+            </h2>
+            <p className="text-blue-700 font-peyda font-medium leading-[140%] text-center compact:text-sm fold:text-base laptop:text-lg">
+              این لیست مواد اولیه برای اجرای برنامه‌ته؛ جزئیات دقیق وعده‌ها و
+              پیگیری روزانه‌ت رو توی داشبورد می‌بینی
+            </p>
           </motion.div>
         </div>
       </ScrollFade>

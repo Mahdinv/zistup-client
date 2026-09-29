@@ -138,7 +138,7 @@ const DietSlider = ({ items, autoplayDelay = 3500 }: DietSliderProps) => {
               onClick={() => handleDotClick(index)}
               initial={false}
               animate={{
-                width: isActive ? 28 : 8,
+                width: isActive ? 16 : 4,
               }}
               transition={{
                 width: {
@@ -151,7 +151,7 @@ const DietSlider = ({ items, autoplayDelay = 3500 }: DietSliderProps) => {
                 },
               }}
               className="
-                        h-2 shrink-0
+                        h-1 shrink-0
                         rounded-full
                         bg-blue-800
                     "
