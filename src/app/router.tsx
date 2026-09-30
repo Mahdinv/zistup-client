@@ -68,6 +68,11 @@ const OptimizedDietaryPage = lazy(
   () => import("@/features/game-workflow/pages/optimized-dietary-page"),
 );
 
+/* Dashboard */
+const DashboardPage = lazy(
+  () => import("@/features/dashboard/pages/dashboard-page"),
+);
+
 const router = createBrowserRouter([
   {
     element: <AccountFlowLayout />,
@@ -250,7 +255,13 @@ const router = createBrowserRouter([
   },
   {
     loader: requireAuth,
-    children: [{ path: "/dashboard", element: <DashboardFlowLayout /> }],
+    children: [
+      {
+        path: "/dashboard",
+        element: <DashboardFlowLayout />,
+        children: [{ index: true, element: <DashboardPage /> }],
+      },
+    ],
   },
   {
     path: "*",

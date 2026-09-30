@@ -55,11 +55,6 @@ const waitForNextPaint = () =>
     });
   });
 
-const delay = (ms: number) =>
-  new Promise<void>((resolve) => {
-    window.setTimeout(resolve, ms);
-  });
-
 const hideStartupScreen = async () => {
   const startupScreen = document.getElementById("startup-screen");
   if (!startupScreen) {
@@ -69,12 +64,12 @@ const hideStartupScreen = async () => {
   try {
     await document.fonts.ready;
     await waitForNextPaint();
-    await delay(500);
   } finally {
     startupScreen.classList.add("startup-screen--hide");
-    window.setTimeout(() => {
-      startupScreen.remove();
-    }, 320);
+    await Promise.allSettled(
+      startupScreen.getAnimations().map((animation) => animation.finished),
+    );
+    startupScreen.remove();
   }
 };
 

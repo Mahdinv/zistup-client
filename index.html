@@ -3,6 +3,22 @@
 <html lang="fa" dir="rtl">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      (() => {
+        if (!/^\/dashboard(?:\/|$)/.test(window.location.pathname)) return;
+
+        // Match DashboardThemeProvider before the first paint.
+        let theme = "light";
+        try {
+          if (localStorage.getItem("zistup-dashboard-theme") === "dark") {
+            theme = "dark";
+          }
+        } catch {
+          // Use the same light fallback when storage is unavailable.
+        }
+        document.documentElement.dataset.dashboardTheme = theme;
+      })();
+    </script>
     <!-- Browser favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <!-- PWA icon for Apple devices -->

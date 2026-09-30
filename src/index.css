@@ -3,6 +3,8 @@
 @import "shadcn/tailwind.css";
 @import "./assets/fonts/fonts.css";
 
+@custom-variant dark (&:where([data-dashboard-theme="dark"], [data-dashboard-theme="dark"] *));
+
 @theme {
   /* Size Variables */
   --size-xxs: 0.5rem;
