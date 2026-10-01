@@ -40,7 +40,7 @@ const NotFoundPage = () => {
           <PiHouse className="text-black compact:text-4xl fold:text-5xl laptop:text-6xl" />
         }
         itemsGap={12}
-        onClick={() => navigate("/dashboard")}
+        onClick={() => navigate("/app/dashboard")}
       />
     </div>
   );

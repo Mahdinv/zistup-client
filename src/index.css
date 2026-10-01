@@ -5,6 +5,17 @@
 
 @custom-variant dark (&:where([data-dashboard-theme="dark"], [data-dashboard-theme="dark"] *));
 
+@layer base {
+  @media (prefers-reduced-motion: no-preference) {
+    :where(.dashboard-theme, .dashboard-theme *):where(:not([style])) {
+      transition-property:
+        color, background-color, border-color, outline-color,
+        text-decoration-color, fill, stroke;
+      transition-duration: 150ms;
+      transition-timing-function: ease;
+    }
+  }
+}
 @theme {
   /* Size Variables */
   --size-xxs: 0.5rem;

@@ -73,6 +73,16 @@ const DashboardPage = lazy(
   () => import("@/features/dashboard/pages/dashboard-page"),
 );
 
+const DietPage = lazy(() => import("@/features/dashboard/pages/diet-page"));
+
+const ZistyarPage = lazy(
+  () => import("@/features/dashboard/pages/zistyar-page"),
+);
+
+const ProfilePage = lazy(
+  () => import("@/features/dashboard/pages/profile-page"),
+);
+
 const router = createBrowserRouter([
   {
     element: <AccountFlowLayout />,
@@ -257,9 +267,30 @@ const router = createBrowserRouter([
     loader: requireAuth,
     children: [
       {
-        path: "/dashboard",
+        path: "/app",
         element: <DashboardFlowLayout />,
-        children: [{ index: true, element: <DashboardPage /> }],
+        children: [
+          {
+            index: true,
+            element: <Navigate to="dashboard" replace />,
+          },
+          {
+            path: "dashboard",
+            element: <DashboardPage />,
+          },
+          {
+            path: "diet",
+            element: <DietPage />,
+          },
+          {
+            path: "zistyar",
+            element: <ZistyarPage />,
+          },
+          {
+            path: "profile",
+            element: <ProfilePage />,
+          },
+        ],
       },
     ],
   },

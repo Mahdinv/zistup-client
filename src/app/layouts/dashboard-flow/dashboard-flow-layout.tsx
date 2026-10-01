@@ -1,28 +1,33 @@
 import DashboardThemeProvider from "@/features/dashboard/context/dashboard-theme-context";
-import { logout } from "@/features/auth/api/auth.api";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import DashboardFlowHeader from "./dashboard-flow-header";
+import DashboardFlowBottomNav from "./dashboard-flow-bottom-nav";
 
 const DashboardFlowContent = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  const logoutHandler = () => {
-    logout();
-    navigate("/auth/login", { replace: true });
-  };
+  // const logoutHandler = () => {
+  //   logout();
+  //   navigate("/auth/login", { replace: true });
+  // };
   return (
-    <div className="relative w-full h-svh flex flex-col justify-start items-center bg-white text-dark scheme-light dark:bg-darker-blue-500 dark:text-white dark:scheme-dark transition-colors duration-150 motion-reduce:transition-none">
+    <div
+      className="dashboard-theme relative 
+        compact:w-full tablet:w-3/5 laptop:w-2/5 desktop:w-1/3
+        mx-auto h-svh flex flex-col justify-start items-center bg-blue-300 dark:bg-darker-blue-500 text-dark scheme-light dark:text-white dark:scheme-dark overflow-hidden"
+    >
       <DashboardFlowHeader />
-      <div className="flex-1 min-h-0 overflow-y-auto w-full bg-green-300 dark:bg-darker-blue-300 transition-colors duration-150 motion-reduce:transition-none">
+      <div className="flex-1 min-h-0 overflow-y-auto w-full">
         <Outlet />
       </div>
-      <button
+      {/* <button
         type="button"
-        className="text-red-400 dark:text-red-200 transition-colors duration-150 motion-reduce:transition-none cursor-pointer px-3 py-2 focus-visible:outline-2 focus-visible:outline-offset-2"
+        className="text-red-400 dark:text-red-200 cursor-pointer px-3 py-2 focus-visible:outline-2 focus-visible:outline-offset-2"
         onClick={logoutHandler}
       >
         خروج
-      </button>
+      </button> */}
+      <DashboardFlowBottomNav />
     </div>
   );
 };
