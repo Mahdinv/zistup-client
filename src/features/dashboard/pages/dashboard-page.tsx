@@ -1,5 +1,6 @@
 import Calendar from "../components/dashboard/calendar";
-import DietAdherence from "../components/dashboard/diet-adherence/diet-adherence";
+import DietAdherence from "../components/dashboard/diet-adherence";
+import DietGoalMealSuggestions from "../components/dashboard/diet-goal-meal-suggestions";
 import WeeklyProgress from "../components/dashboard/weekly-progress";
 
 const DashboardPage = () => {
@@ -8,6 +9,7 @@ const DashboardPage = () => {
       <WeeklyProgress />
       <Calendar />
       <DietAdherence />
+      <DietGoalMealSuggestions />
     </div>
   );
 };

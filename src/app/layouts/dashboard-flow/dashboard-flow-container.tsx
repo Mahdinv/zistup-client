@@ -67,7 +67,7 @@ const DashboardFlowContainer = ({
           duration: shouldReduceMotion ? 0 : 0.28,
           ease: [0.22, 1, 0.36, 1],
         }}
-        className="h-full min-h-0 w-full min-w-0 overflow-x-hidden overflow-y-auto overscroll-contain compact:px-4 fold:px-6 py-3"
+        className="h-full min-h-0 w-full min-w-0 overflow-x-hidden overflow-y-auto overscroll-contain compact:px-4 fold:px-6 pt-3 pb-(--dashboard-bottom-space) scroll-pb-(--dashboard-bottom-space)"
       >
         <Suspense
           fallback={

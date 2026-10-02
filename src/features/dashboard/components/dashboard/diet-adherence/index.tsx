@@ -29,7 +29,7 @@ const DietAdherenceScore = () => {
       </div>
       <DietAdherenceCircularScore value={60} />
       <div className="w-full border border-blue-300 dark:border-dark text-center rounded-[42px] px-3 py-1.5">
-        <h3 className="font-yekan font-extrabold leading-[135%] text-green-700 compact:text-base fold:text-lg laptop:text-xl">
+        <h3 className="font-yekan font-extrabold leading-[135%] text-green-700 compact:text-sm mobile:text-base fold:text-lg laptop:text-xl">
           کنترل عالی قند و کربوهیدرات‌های ساده
         </h3>
       </div>
