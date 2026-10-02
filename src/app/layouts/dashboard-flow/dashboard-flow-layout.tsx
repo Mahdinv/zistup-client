@@ -1,9 +1,13 @@
 import DashboardThemeProvider from "@/features/dashboard/context/dashboard-theme-context";
-import { Outlet } from "react-router-dom";
+import { useLocation, useOutlet } from "react-router-dom";
 import DashboardFlowHeader from "./dashboard-flow-header";
 import DashboardFlowBottomNav from "./dashboard-flow-bottom-nav";
+import DashboardFlowContainer from "./dashboard-flow-container";
 
 const DashboardFlowContent = () => {
+  const { pathname } = useLocation();
+  const outlet = useOutlet();
+
   // const navigate = useNavigate();
 
   // const logoutHandler = () => {
@@ -17,8 +21,10 @@ const DashboardFlowContent = () => {
         mx-auto h-svh flex flex-col justify-start items-center bg-blue-300 dark:bg-darker-blue-500 text-dark scheme-light dark:text-white dark:scheme-dark overflow-hidden"
     >
       <DashboardFlowHeader />
-      <div className="flex-1 min-h-0 overflow-y-auto w-full">
-        <Outlet />
+      <div className="flex-1 min-h-0 overflow-hidden w-full">
+        <DashboardFlowContainer pageKey={pathname}>
+          {outlet}
+        </DashboardFlowContainer>
       </div>
       {/* <button
         type="button"
