@@ -12,7 +12,7 @@ const DashboardPage = () => {
       <Calendar />
       <DietAdherence />
       <DietGoalMealSuggestions />
-      <div className="w-full flex flex-row items-center gap-3">
+      <div className="w-full flex flex-row items-stretch gap-3">
         <DailyCalories />
         <DailyWater />
       </div>

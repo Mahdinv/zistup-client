@@ -77,8 +77,8 @@ const AnimatedWaveCircle = ({ className = "" }: AnimatedWaveCircleProps) => {
     <div
       className={`
         relative shrink-0 overflow-hidden rounded-full
-        compact:size-23
-        mobile:size-24.5
+        compact:size-22.5
+        mobile:size-24
         mobile-lg:size-28
         fold:size-32
         tablet:size-29
