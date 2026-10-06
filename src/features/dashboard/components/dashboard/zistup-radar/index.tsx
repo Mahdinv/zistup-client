@@ -1,5 +1,7 @@
 import { memo } from "react";
 
+import RadarChart from "./radar-chart";
+
 const ZistupRadar = () => {
   return (
     <div
@@ -33,11 +35,11 @@ const ZistupRadar = () => {
             <label className="font-peyda font-bold compact:text-xs fold:text-base laptop:text-lg">
               توازن بهینه
             </label>
-            <div className="bg-transparent border border-dashed border-black compact:size-2 fold:size-3 laptop:size-4 rounded-full"></div>
+            <div className="bg-transparent border border-dashed border-black dark:border-white compact:size-2 fold:size-3 laptop:size-4 rounded-full"></div>
           </div>
         </div>
       </div>
-      {/*Radar Chart */}
+      <RadarChart />
     </div>
   );
 };
