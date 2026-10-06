@@ -43,18 +43,19 @@ const DailyWater = () => {
         className="
           mt-auto w-full
           compact:min-h-8 fold:min-h-10 laptop:min-h-12
-          bg-blue-200 dark:bg-darker-blue-300
+          bg-blue-200 dark:bg-darker-blue-300 hover:bg-blue-300 active:bg-blue-300 dark:hover:bg-darker-blue-400 dark:active:bg-darker-blue-400
+          text-blue-400 hover:text-blue-500 active:text-blue-500
           border-[1.5px] border-blue-300 dark:border-dark
           rounded-[37px]
-          flex flex-row justify-center items-center gap-2
+          flex flex-row justify-center items-center gap-2 cursor-pointer
         "
       >
         <PiPlusBold
-          className="text-blue-400 compact:text-2xl fold:text-3xl laptop:text-4xl"
+          className="compact:text-2xl fold:text-3xl laptop:text-4xl"
           strokeWidth={4}
         />
 
-        <label className="font-peyda font-bold leading-none compact:text-sm fold:text-base laptop:text-lg text-blue-400">
+        <label className="font-peyda font-bold leading-none compact:text-sm fold:text-base laptop:text-lg">
           یک لیوان
         </label>
       </div>

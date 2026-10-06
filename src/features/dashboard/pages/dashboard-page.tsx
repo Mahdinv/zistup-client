@@ -1,5 +1,6 @@
 import Calendar from "../components/dashboard/calendar";
 import DailyCalories from "../components/dashboard/daily-calories";
+import DailyPhysicalActivity from "../components/dashboard/daily-physical-activity";
 import DailyWater from "../components/dashboard/daily-water";
 import DietAdherence from "../components/dashboard/diet-adherence";
 import DietGoalMealSuggestions from "../components/dashboard/diet-goal-meal-suggestions";
@@ -16,6 +17,7 @@ const DashboardPage = () => {
         <DailyCalories />
         <DailyWater />
       </div>
+      <DailyPhysicalActivity />
     </div>
   );
 };
