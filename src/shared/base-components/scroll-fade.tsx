@@ -73,8 +73,8 @@ const ScrollFade = ({
         className={`
         pointer-events-none absolute inset-x-0 top-0 z-20 h-3
         bg-linear-to-b
-        from-darker-blue-200
-        via-darker-blue-200/35
+        from-[var(--scroll-fade-color,var(--color-darker-blue-200))]
+        via-[var(--scroll-fade-color,var(--color-darker-blue-200))]/35
         to-transparent
         transition-opacity duration-150 ease-out
         ${hasContentAbove ? "opacity-100" : "opacity-0"}
@@ -87,8 +87,8 @@ const ScrollFade = ({
           className={`
           pointer-events-none absolute inset-x-0 bottom-0 z-20 h-2.5
           bg-linear-to-t
-          from-darker-blue-200
-          via-darker-blue-200/30
+          from-[var(--scroll-fade-color,var(--color-darker-blue-200))]
+          via-[var(--scroll-fade-color,var(--color-darker-blue-200))]/30
           to-transparent
           transition-opacity duration-150 ease-out
           ${hasContentBelow ? "opacity-100" : "opacity-0"}

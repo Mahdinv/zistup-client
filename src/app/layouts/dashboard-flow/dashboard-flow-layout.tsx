@@ -16,12 +16,12 @@ const DashboardFlowContent = () => {
   // };
   return (
     <div
-      className="dashboard-theme relative 
+      className="dashboard-theme relative [--scroll-fade-color:var(--color-blue-100)] dark:[--scroll-fade-color:var(--color-darker-blue-200)]
         compact:w-full tablet:w-3/5 laptop:w-2/5 desktop:w-1/3
         mx-auto h-svh flex flex-col justify-start items-center bg-blue-300 dark:bg-darker-blue-500 text-dark scheme-light dark:text-white dark:scheme-dark overflow-hidden"
     >
       <DashboardFlowHeader />
-      <div className="flex-1 min-h-0 overflow-hidden w-full">
+      <div className="relative z-0 flex-1 min-h-0 overflow-hidden w-full">
         <DashboardFlowContainer pageKey={pathname}>
           {outlet}
         </DashboardFlowContainer>

@@ -47,7 +47,7 @@ const DashboardFlowBottomNav = () => {
   return (
     <div
       ref={navRef}
-      className="absolute bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] compact:inset-x-4 mobile-lg:inset-x-10 fold:inset-x-14 tablet:inset-x-6
+      className="absolute z-30 bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] compact:inset-x-4 mobile-lg:inset-x-10 fold:inset-x-14 tablet:inset-x-6
                    bg-blue-200 dark:bg-darker-blue-500 border border-green-200 dark:border-dark
                    rounded-4xl shadow-[0_0_20px_0_rgba(0,0,0,0.26)] py-3
                    grid grid-cols-5 items-center justify-items-center
