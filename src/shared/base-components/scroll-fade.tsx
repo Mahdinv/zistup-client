@@ -43,10 +43,22 @@ const ScrollFade = ({
 
     const resizeObserver = new ResizeObserver(updateFadeVisibility);
 
-    resizeObserver.observe(element);
+    const observeContent = () => {
+      resizeObserver.disconnect();
+      resizeObserver.observe(element);
+      // Content can resize while the scroll viewport stays fixed (e.g. accordions).
+      Array.from(element.children).forEach((child) =>
+        resizeObserver.observe(child),
+      );
+      updateFadeVisibility();
+    };
+    observeContent();
+    const mutationObserver = new MutationObserver(observeContent);
+    mutationObserver.observe(element, { childList: true });
 
     return () => {
       resizeObserver.disconnect();
+      mutationObserver.disconnect();
     };
   }, [updateFadeVisibility]);
 
