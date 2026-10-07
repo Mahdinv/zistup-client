@@ -1,5 +1,14 @@
 import ComboBox from "@/shared/base-components/combo-box";
 import { memo, useState } from "react";
+import LineChart from "./line-chart";
+
+// Temporary values until detailed-monitoring API data is available.
+const chartData = {
+  labels: ["زینک", "کلسیم", "منیزیم", "پتاسیم"],
+  currentValues: [13, 17, 5, 20],
+  referenceValues: [13, 20, 12, 25],
+  unit: "mcg",
+};
 
 const chartFilterOptions = [
   { label: "خانواده B", value: "b-family" },
@@ -60,7 +69,7 @@ const DetailedMonitoring = () => {
           onChange={setChartFilter}
         />
       </div>
-      {/*Chart */}
+      <LineChart {...chartData} />
     </div>
   );
 };
