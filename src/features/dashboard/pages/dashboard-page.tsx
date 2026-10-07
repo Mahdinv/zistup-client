@@ -6,6 +6,7 @@ import DietAdherence from "../components/dashboard/diet-adherence";
 import DietGoalMealSuggestions from "../components/dashboard/diet-goal-meal-suggestions";
 import WeeklyProgress from "../components/dashboard/weekly-progress";
 import ZistupRadar from "../components/dashboard/zistup-radar";
+import DetailedMonitoring from "../components/dashboard/detailed-monitoring";
 
 const DashboardPage = () => {
   return (
@@ -20,6 +21,7 @@ const DashboardPage = () => {
       </div>
       <DailyPhysicalActivity />
       <ZistupRadar />
+      <DetailedMonitoring />
     </div>
   );
 };

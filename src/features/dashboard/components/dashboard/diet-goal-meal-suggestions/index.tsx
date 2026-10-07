@@ -39,7 +39,7 @@ const DietGoalMealSuggestions = () => {
             <li
               key={tab.value}
               className={`
-                            font-peyda font-bold leading-[140%] compact:text-xs mobile:text-sm fold:text-base laptop:text-lg whitespace-nowrap
+                            font-peyda font-bold leading-[140%] compact:text-xs mobile:text-sm fold:text-base laptop:text-sm desktop:text-base whitespace-nowrap
                             bg-blue-300 dark:bg-darker-blue-300
                             rounded-[29px] border
                             ${activePlan === tab.value ? "text-blue-900 dark:text-blue-700 border-blue-800 dark:border-blue-400" : "text-blue-500 dark:text-blue-900 border-blue-500 dark:border-dark"}

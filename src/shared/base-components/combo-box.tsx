@@ -3,6 +3,7 @@ import {
   useCallback,
   useEffect,
   useId,
+  useLayoutEffect,
   useRef,
   useState,
   type CSSProperties,
@@ -31,6 +32,7 @@ export type ComboBoxProps<T extends ComboBoxValue> = {
   error?: boolean;
   className?: string;
   name?: string;
+  variant?: "green" | "blue";
 };
 
 type ComboBoxContentProps<T extends ComboBoxValue> = ComboBoxProps<T> & {
@@ -87,8 +89,10 @@ const ComboBoxContent = <T extends ComboBoxValue>({
   error = false,
   className = "",
   name,
+  variant = "green",
   forwardedRef,
 }: ComboBoxContentProps<T>) => {
+  const isBlue = variant === "blue";
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
 
@@ -115,7 +119,10 @@ const ComboBoxContent = <T extends ComboBoxValue>({
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
 
-    const desiredDropdownHeight = getDropdownHeight(options.length);
+    // The blue menu sizes naturally; measure it for viewport placement.
+    const desiredDropdownHeight = isBlue
+      ? (dropdownRef.current?.getBoundingClientRect().height ?? 0)
+      : getDropdownHeight(options.length);
 
     const spaceBelow =
       viewportHeight - rect.bottom - DROPDOWN_GAP - VIEWPORT_PADDING;
@@ -138,10 +145,9 @@ const ComboBoxContent = <T extends ComboBoxValue>({
 
     const availableHeight = placement === "bottom" ? spaceBelow : spaceAbove;
 
-    const height = Math.max(
-      0,
-      Math.min(desiredDropdownHeight, availableHeight),
-    );
+    const height = isBlue
+      ? desiredDropdownHeight
+      : Math.max(0, Math.min(desiredDropdownHeight, availableHeight));
 
     const maxAvailableWidth = Math.max(0, viewportWidth - VIEWPORT_PADDING * 2);
 
@@ -154,10 +160,17 @@ const ComboBoxContent = <T extends ComboBoxValue>({
       Math.max(VIEWPORT_PADDING, maxLeft),
     );
 
-    const top =
+    const preferredTop =
       placement === "bottom"
         ? rect.bottom + DROPDOWN_GAP
         : Math.max(VIEWPORT_PADDING, rect.top - DROPDOWN_GAP - height);
+
+    const top = isBlue
+      ? Math.max(
+          VIEWPORT_PADDING,
+          Math.min(preferredTop, viewportHeight - height - VIEWPORT_PADDING),
+        )
+      : preferredTop;
 
     const nextPosition: DropdownPosition = {
       top,
@@ -180,7 +193,11 @@ const ComboBoxContent = <T extends ComboBoxValue>({
 
       return nextPosition;
     });
-  }, [options.length]);
+  }, [options.length, isBlue]);
+
+  useLayoutEffect(() => {
+    if (isOpen && isBlue) updateDropdownPosition();
+  }, [isOpen, isBlue, updateDropdownPosition]);
 
   const openDropdown = useCallback(() => {
     if (disabled || options.length === 0) {
@@ -400,7 +417,18 @@ const ComboBoxContent = <T extends ComboBoxValue>({
           }
           onClick={toggleDropdown}
           onKeyDown={handleKeyDown}
-          className={`
+          className={
+            isBlue
+              ? `
+            flex h-10 fold:h-11 laptop:h-12 w-full items-center justify-between gap-3
+            rounded-2xl border px-4 py-1 outline-none
+            bg-blue-300 dark:bg-darker-blue-200
+            focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2
+            transition-colors duration-200
+            ${error ? "border-red-500" : "border-blue-500 dark:border-blue-900"}
+            ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:border-blue-400"}
+          `
+              : `
             flex w-full items-center justify-between
             rounded-2xl border-2 px-3 py-2
             bg-darker-blue-400
@@ -418,10 +446,14 @@ const ComboBoxContent = <T extends ComboBoxValue>({
             }
             
             ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"}
-          `}
+          `
+          }
         >
           <span
-            className={`
+            className={
+              isBlue
+                ? "font-peyda compact:text-sm fold:text-base desktop:text-lg font-bold leading-none whitespace-nowrap text-darker-green-200 dark:text-blue-300"
+                : `
               ${
                 disabled
                   ? "text-[#77777f]"
@@ -432,7 +464,8 @@ const ComboBoxContent = <T extends ComboBoxValue>({
                       : "text-green-950"
               }
                     font-peyda compact:text-sm fold:text-base laptop:text-lg font-medium
-            `}
+            `
+            }
           >
             {selectedOption?.label ?? placeholder}
           </span>
@@ -447,7 +480,11 @@ const ComboBoxContent = <T extends ComboBoxValue>({
             className="flex items-center justify-center"
           >
             <HiOutlineChevronDown
-              className={`compact:text-4xl fold:text-5xl laptop:text-6xl ${disabled ? "text-[#34343d]" : isOpen ? "text-green-400" : "text-green-950"}`}
+              className={
+                isBlue
+                  ? "compact:size-5.5 fold:size-6.5 desktop:size-7.5 shrink-0 text-blue-400"
+                  : `compact:text-4xl fold:text-5xl laptop:text-6xl ${disabled ? "text-[#34343d]" : isOpen ? "text-green-400" : "text-green-950"}`
+              }
             />
           </span>
         </button>
@@ -466,21 +503,28 @@ const ComboBoxContent = <T extends ComboBoxValue>({
               top: dropdownPosition.top,
               left: dropdownPosition.left,
               width: dropdownPosition.width,
-              height: dropdownPosition.height,
+              height: isBlue ? undefined : dropdownPosition.height,
             }}
-            className="
+            className={
+              isBlue
+                ? "z-1 overflow-hidden rounded-sm border border-blue-500 dark:border-blue-900 bg-blue-300 dark:bg-darker-blue-200"
+                : `
               z-9999
               overflow-hidden
               rounded-[22px]
               border border-[#292833]
               bg-darker-blue-300
               shadow-[0_16px_40px_rgba(0,0,0,0.22)]
-            "
+            `
+            }
           >
             <div
               id={listboxId}
               role="listbox"
-              className="
+              className={
+                isBlue
+                  ? "overflow-visible"
+                  : `
                 h-full
                 overflow-y-auto
                 py-2
@@ -491,13 +535,12 @@ const ComboBoxContent = <T extends ComboBoxValue>({
                 [&::-webkit-scrollbar-track]:bg-transparent
                 [&::-webkit-scrollbar-thumb]:rounded-full
                 [&::-webkit-scrollbar-thumb]:bg-[#34333e]
-              "
+              `
+              }
             >
               {options.map((option, index) => {
                 const isSelected = option.value === value;
-
                 const isActive = index === activeIndex;
-
                 return (
                   <button
                     id={`${listboxId}-option-${index}`}
@@ -510,7 +553,18 @@ const ComboBoxContent = <T extends ComboBoxValue>({
                     aria-selected={isSelected}
                     onMouseEnter={() => setActiveIndex(index)}
                     onClick={() => selectOption(option)}
-                    className={`
+                    className={
+                      isBlue
+                        ? `
+                        flex w-full shrink-0 items-center justify-start p-2.5
+                        text-right font-peyda compact:text-xs fold:text-sm laptop:text-base font-medium leading-none
+                        text-darker-green-200 dark:text-blue-300 whitespace-nowrap
+                        cursor-pointer transition-colors duration-150
+                        hover:bg-blue-400/35 dark:hover:bg-blue-400/15
+                        focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-400
+                        ${isSelected || isActive ? "bg-blue-400/35 dark:bg-blue-400/15" : "bg-transparent"}
+                      `
+                        : `
                         flex w-full shrink-0
                         items-center justify-start
                         p-2.5
@@ -519,7 +573,8 @@ const ComboBoxContent = <T extends ComboBoxValue>({
                         ${isSelected ? "text-green-400" : "text-[#f4f4f5]"}
                         ${isActive ? "bg-white/4.5" : "bg-transparent"}
                         whitespace-nowrap
-                      `}
+                      `
+                    }
                   >
                     {option.label}
                   </button>
