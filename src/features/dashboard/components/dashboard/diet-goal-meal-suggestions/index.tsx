@@ -51,7 +51,7 @@ const DietGoalMealSuggestions = () => {
             </li>
           ))}
         </ol>
-        <div className="w-full min-w-0 max-w-[calc(var(--meal-card-width)*2.5+16px)]">
+        <div className="w-full min-w-0 max-w-[calc(var(--meal-card-width)*2.5+16px)] laptop:max-desktop:max-w-none">
           <Slider
             slides={{ origin: "auto", perView: "auto", spacing: 8 }}
             slideClassName="w-(--meal-card-width) min-w-(--meal-card-width) max-w-(--meal-card-width) shrink-0"
