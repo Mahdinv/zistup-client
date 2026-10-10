@@ -8,6 +8,7 @@ import WeeklyProgress from "../components/dashboard/weekly-progress";
 import ZistupRadar from "../components/dashboard/zistup-radar";
 import DetailedMonitoring from "../components/dashboard/detailed-monitoring";
 import ZistupRecommendation from "../components/dashboard/zistup-recommendation";
+import TodayLoggedMeals from "../components/dashboard/today-logged-meals";
 
 const DashboardPage = () => {
   return (
@@ -24,6 +25,7 @@ const DashboardPage = () => {
       <ZistupRadar />
       <DetailedMonitoring />
       <ZistupRecommendation />
+      <TodayLoggedMeals />
     </div>
   );
 };
