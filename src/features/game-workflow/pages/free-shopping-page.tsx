@@ -294,7 +294,6 @@ const FreeShoppingPage = () => {
                     {(category.foodGroups || []).map((foodGroup) => (
                       <FoodGroupItem
                         key={foodGroup.id}
-                        name="shopping"
                         foodGroup={foodGroup}
                         itemIndex={indexByFoodGroupId.get(foodGroup.id) ?? -1}
                         value={itemValueByFoodGroupId.get(foodGroup.id)}

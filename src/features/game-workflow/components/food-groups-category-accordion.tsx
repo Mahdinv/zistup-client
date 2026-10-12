@@ -7,7 +7,7 @@ import { PiArrowClockwiseFill } from "react-icons/pi";
 type FoodGroupsCategoryAccordionProps = {
   name: "past-week-intake" | "shopping" | "optimized-dietary";
   title: string;
-  color: string;
+  color?: string;
   selectedItemCount?: number;
   children: ReactNode;
   open: boolean;

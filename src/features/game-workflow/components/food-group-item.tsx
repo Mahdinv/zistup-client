@@ -8,9 +8,8 @@ import ImageWithSkeleton from "@/shared/base-components/image-with-skeleton";
 import { getDisplayQuantity } from "@/shared/lib/utils";
 
 type FoodGroupItemProps = {
-  name: "shopping" | "optimized-dietary";
   foodGroup: FoodGroup;
-  itemIndex: number | -1;
+  itemIndex?: number | -1;
   value?: number;
   handleAddFoodGroup: (
     foodGroupId: number,
@@ -30,7 +29,6 @@ type FoodGroupItemProps = {
 };
 
 const FoodGroupItem = ({
-  name,
   foodGroup,
   itemIndex,
   value,
@@ -54,118 +52,106 @@ const FoodGroupItem = ({
           {foodGroup.title}
         </h3>
         <AnimatePresence mode="wait" initial={false}>
-          {name === "shopping" &&
-            (itemIndex !== -1 ? (
-              <motion.div
-                key="counter"
-                initial={{
-                  opacity: 0,
-                  scale: 0.85,
-                  x: 10,
-                }}
-                animate={{
-                  opacity: 1,
-                  scale: 1,
-                  x: 0,
-                }}
-                exit={{
-                  opacity: 0,
-                  scale: 0.85,
-                  x: -10,
-                }}
-                transition={{
-                  duration: 0.2,
-                  ease: [0.4, 0, 0.2, 1],
-                }}
-                className="flex flex-row items-center gap-3"
-              >
-                <div className="flex flex-row items-center gap-0.5">
-                  <label className="font-rokh compact:text-2xl fold:text-3xl laptop:text-4xl text-green-400 mt-1">
-                    {displayQuantity.value}
-                  </label>
-                  <small className="text-white font-peyda compact:text-xs fold:text-sm laptop:text-base">
-                    {displayQuantity.unit}
-                  </small>
-                </div>
-                <Button
-                  classes="btn btn-outline-green compact:size-7! fold:size-8! laptop:size-9! rounded-xxs!"
-                  icon={
-                    <PiPencilSimpleBold
-                      className="compact:text-xl fold:text-2xl laptop:text-3xl"
-                      strokeWidth={2}
-                    />
-                  }
-                  onClick={() =>
-                    handleOpenFoodGroupQuantityDrawer(
-                      foodGroup.id,
-                      foodGroup.properties.imageUrl,
-                      foodGroup.title,
-                      foodGroup.properties.unit,
-                      foodGroup.properties.cost,
-                    )
-                  }
+          (itemIndex !== -1 ? (
+          <motion.div
+            key="counter"
+            initial={{
+              opacity: 0,
+              scale: 0.85,
+              x: 10,
+            }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+              x: 0,
+            }}
+            exit={{
+              opacity: 0,
+              scale: 0.85,
+              x: -10,
+            }}
+            transition={{
+              duration: 0.2,
+              ease: [0.4, 0, 0.2, 1],
+            }}
+            className="flex flex-row items-center gap-3"
+          >
+            <div className="flex flex-row items-center gap-0.5">
+              <label className="font-rokh compact:text-2xl fold:text-3xl laptop:text-4xl text-green-400 mt-1">
+                {displayQuantity.value}
+              </label>
+              <small className="text-white font-peyda compact:text-xs fold:text-sm laptop:text-base">
+                {displayQuantity.unit}
+              </small>
+            </div>
+            <Button
+              classes="btn btn-outline-green compact:size-7! fold:size-8! laptop:size-9! rounded-xxs!"
+              icon={
+                <PiPencilSimpleBold
+                  className="compact:text-xl fold:text-2xl laptop:text-3xl"
+                  strokeWidth={2}
                 />
-              </motion.div>
-            ) : (
-              <motion.div
-                key="button"
-                initial={{
-                  opacity: 0,
-                  scale: 0.85,
-                  x: -10,
-                }}
-                animate={{
-                  opacity: 1,
-                  scale: 1,
-                  x: 0,
-                }}
-                exit={{
-                  opacity: 0,
-                  scale: 0.85,
-                  x: 10,
-                }}
-                transition={{
-                  duration: 0.2,
-                  ease: [0.4, 0, 0.2, 1],
-                }}
-              >
-                <Button
-                  classes="btn btn-primary-green compact:size-7! fold:size-8! laptop:size-9! rounded-xxs!"
-                  icon={
-                    <HiOutlineShoppingBag
-                      className="compact:text-xl fold:text-2xl laptop:text-3xl"
-                      strokeWidth={2}
-                    />
-                  }
-                  onClick={() =>
-                    handleAddFoodGroup(
-                      foodGroup.id,
-                      foodGroup.properties.imageUrl,
-                      foodGroup.title,
-                      foodGroup.properties.unit === "گرم"
-                        ? 50
-                        : foodGroup.properties.unit === "عدد" ||
-                            foodGroup.properties.unit === "لیتر"
-                          ? 1
-                          : 0,
-                      foodGroup.properties.unit,
-                      foodGroup.properties.cost,
-                    )
-                  }
+              }
+              onClick={() =>
+                handleOpenFoodGroupQuantityDrawer(
+                  foodGroup.id,
+                  foodGroup.properties.imageUrl,
+                  foodGroup.title,
+                  foodGroup.properties.unit,
+                  foodGroup.properties.cost,
+                )
+              }
+            />
+          </motion.div>
+          ) : (
+          <motion.div
+            key="button"
+            initial={{
+              opacity: 0,
+              scale: 0.85,
+              x: -10,
+            }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+              x: 0,
+            }}
+            exit={{
+              opacity: 0,
+              scale: 0.85,
+              x: 10,
+            }}
+            transition={{
+              duration: 0.2,
+              ease: [0.4, 0, 0.2, 1],
+            }}
+          >
+            <Button
+              classes="btn btn-primary-green compact:size-7! fold:size-8! laptop:size-9! rounded-xxs!"
+              icon={
+                <HiOutlineShoppingBag
+                  className="compact:text-xl fold:text-2xl laptop:text-3xl"
+                  strokeWidth={2}
                 />
-              </motion.div>
-            ))}
+              }
+              onClick={() =>
+                handleAddFoodGroup(
+                  foodGroup.id,
+                  foodGroup.properties.imageUrl,
+                  foodGroup.title,
+                  foodGroup.properties.unit === "گرم"
+                    ? 50
+                    : foodGroup.properties.unit === "عدد" ||
+                        foodGroup.properties.unit === "لیتر"
+                      ? 1
+                      : 0,
+                  foodGroup.properties.unit,
+                  foodGroup.properties.cost,
+                )
+              }
+            />
+          </motion.div>
         </AnimatePresence>
-        {name === "optimized-dietary" && (
-          <div className="bg-darker-blue-200 text-green-400 rounded-xs px-2 flex flex-row items-center gap-2">
-            <span className="font-rokh compact:text-xl fold:text-2xl laptop:text-3xl pt-1">
-              {displayQuantity.value}
-            </span>
-            <label className="font-peyda compact:text-sm fold:text-base laptop:text-lg font-bold">
-              {displayQuantity.unit}
-            </label>
-          </div>
-        )}
       </div>
       {/* <AnimatePresence initial={false}>
         {name === "limited-shopping" && itemIndex !== -1 && (
