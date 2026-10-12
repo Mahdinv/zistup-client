@@ -1,17 +1,10 @@
+import type { WeeklyProgressDay } from "../../lib/plan-date.utils";
 import { memo } from "react";
 import { PiCheckFatFill } from "react-icons/pi";
 
-const dayStatus = [
-  { day: "ش", status: "completed" },
-  { day: "ی", status: "completed" },
-  { day: "د", status: "completed" },
-  { day: "س", status: "in-progress" },
-  { day: "چ", status: "pending" },
-  { day: "پ", status: "pending" },
-  { day: "ج", status: "pending" },
-];
+type WeeklyProgressProps = { days: WeeklyProgressDay[] };
 
-const WeeklyProgress = () => {
+const WeeklyProgress = ({ days }: WeeklyProgressProps) => {
   return (
     <div
       className="w-full
@@ -31,10 +24,17 @@ const WeeklyProgress = () => {
         </p>
       </div>
       <div className="w-full grid grid-cols-7 items-center place-items-center">
-        {dayStatus.map((dayStatus, index) => (
-          <div className="w-full flex flex-col items-center gap-1">
+        {days.map((dayStatus) => (
+          <div
+            key={dayStatus.date}
+            className="w-full flex flex-col items-center gap-1"
+            aria-label={dayStatus.label}
+            aria-current={
+              dayStatus.status === "in-progress" ? "date" : undefined
+            }
+            data-diet-day-index={dayStatus.dietDayIndex ?? undefined}
+          >
             <div
-              key={index}
               className={`
                             relative
                             compact:size-8

@@ -31,7 +31,7 @@ const DietGoalMealSuggestions = () => {
                 "
     >
       <h2 className="font-yekan font-extrabold leading-[135%] compact:text-lg fold:text-xl laptop:text-2xl">
-        امتیاز پایبندی به رژیم
+        وعده‌های پیشنهادی هدف رژیمی شما
       </h2>
       <div className="w-full min-w-0 flex flex-col items-start gap-3 [--meal-card-width:13rem] mobile:[--meal-card-width:14rem] fold:[--meal-card-width:15rem] laptop:[--meal-card-width:16rem] desktop:[--meal-card-width:17rem]">
         <ol className="w-full flex flex-row justify-self-auto items-center gap-1">

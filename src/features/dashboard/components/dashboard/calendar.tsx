@@ -1,8 +1,26 @@
+import {
+  formatPlanDate,
+  isWithinPlan,
+  type PlanDateRange,
+} from "../../lib/plan-date.utils";
 import { memo } from "react";
 import { HiOutlineChevronLeft, HiOutlineChevronRight } from "react-icons/hi";
 import { LuCalendarDays } from "react-icons/lu";
 
-const Calendar = () => {
+type CalendarProps = {
+  selectedDate: number;
+  range: PlanDateRange;
+  onSelectDate: (date: number) => void;
+};
+
+const Calendar = ({ selectedDate, range, onSelectDate }: CalendarProps) => {
+  const formatted = formatPlanDate(selectedDate);
+  const canGoBack = isWithinPlan(selectedDate - 1, range);
+  const canGoForward = isWithinPlan(selectedDate + 1, range);
+  const navigate = (offset: -1 | 1) => {
+    const nextDate = selectedDate + offset;
+    if (isWithinPlan(nextDate, range)) onSelectDate(nextDate);
+  };
   return (
     <div
       className="
@@ -13,29 +31,52 @@ const Calendar = () => {
                     flex flex-row justify-between items-center
                 "
     >
-      <HiOutlineChevronRight
-        className="compact:text-7xl fold:text-[36px] laptop:text-8xl cursor-pointer"
-        strokeWidth={1.5}
-      />
-      <div className="flex-1 flex flex-row justify-center items-center gap-1.5">
+      <button
+        type="button"
+        aria-label="روز قبل"
+        disabled={!canGoBack}
+        onClick={() => navigate(-1)}
+        className="disabled:opacity-40 disabled:cursor-not-allowed enabled:cursor-pointer"
+      >
+        <HiOutlineChevronRight
+          className="compact:text-7xl fold:text-[36px] laptop:text-8xl"
+          strokeWidth={1.5}
+          aria-hidden="true"
+        />
+      </button>
+      <div
+        className="flex-1 flex flex-row justify-center items-center gap-1.5"
+        aria-live="polite"
+        aria-atomic="true"
+        aria-label={formatted.label}
+      >
         <LuCalendarDays
           className="compact:text-4xl fold:text-5xl laptop:text-6xl"
           strokeWidth={1.5}
         />
         <label className="font-peyda font-bold leading-[140%] compact:text-base fold:text-lg laptop:text-xl">
-          سه شنبه
+          {formatted.weekday}
         </label>
         <label className="font-rokh font-bold leading-[140%] compact:text-lg fold:text-xl laptop:text-2xl mt-1">
-          19
+          {formatted.day}
         </label>
         <label className="font-peyda font-bold leading-[140%] compact:text-base fold:text-lg laptop:text-xl">
-          بهمن
+          {formatted.month}
         </label>
       </div>
-      <HiOutlineChevronLeft
-        className="compact:text-7xl fold:text-[36px] laptop:text-8xl cursor-pointer"
-        strokeWidth={1.5}
-      />
+      <button
+        type="button"
+        aria-label="روز بعد"
+        disabled={!canGoForward}
+        onClick={() => navigate(1)}
+        className="disabled:opacity-40 disabled:cursor-not-allowed enabled:cursor-pointer"
+      >
+        <HiOutlineChevronLeft
+          className="compact:text-7xl fold:text-[36px] laptop:text-8xl"
+          strokeWidth={1.5}
+          aria-hidden="true"
+        />
+      </button>
     </div>
   );
 };

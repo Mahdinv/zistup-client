@@ -1,7 +1,15 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 import { getOptimizedDietary } from "../api/optimized-dietary.api";
 
-const useOptimizedDietaryQuery = (enabled: boolean) => {
+type QueryOptions = Pick<
+  UseQueryOptions<Awaited<ReturnType<typeof getOptimizedDietary>>>,
+  "staleTime" | "gcTime" | "refetchOnMount"
+>;
+
+const useOptimizedDietaryQuery = (
+  enabled: boolean,
+  options: QueryOptions = {},
+) => {
   return useQuery({
     queryKey: ["optimized-dietary-result"],
     queryFn: getOptimizedDietary,
@@ -13,6 +21,7 @@ const useOptimizedDietaryQuery = (enabled: boolean) => {
     retry: false,
     refetchOnWindowFocus: false,
     refetchIntervalInBackground: true,
+    ...options,
   });
 };
 
