@@ -1,3 +1,5 @@
+import type { DietResponse } from "@/features/dashboard/api/types/diet-response.types";
+
 export type LoaderStepType = {
   id: number;
   title: string;
@@ -5,12 +7,7 @@ export type LoaderStepType = {
   status: "in-progress" | "pending" | "completed";
 };
 
-export type DietResponse = {
-  id: number;
-  title: string;
-};
-
 export type OptimizedDietaryResponse = {
   success: boolean;
-  data: unknown;
+  data: DietResponse;
 };
