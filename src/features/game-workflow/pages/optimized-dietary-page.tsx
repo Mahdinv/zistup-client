@@ -18,6 +18,8 @@ import LoaderStep from "../components/optimized-dietary/loader-step";
 import type { LoaderStepType } from "../api/optimized-dietary.types";
 import useDietLoader from "../hooks/use-diet-loader.hook";
 import useOptimizedDietaryQuery from "../hooks/use-optimized-dietary-query.hook";
+import FoodGroupsCategoryAccordion from "../components/food-groups-category-accordion";
+import FoodGroupItemSelection from "@/shared/base-components/food-group-item-selection";
 
 const sliderItems = [
   {
@@ -125,9 +127,19 @@ const resultItemVariants = {
   },
 };
 
+const groupsColor = [
+  { id: "protein", color: "#FF7878" },
+  { id: "carbohydrate", color: "#FF9F45" },
+  { id: "fiber", color: "#2CE57F" },
+  { id: "nuts", color: "#7EBBD0" },
+  { id: "oils", color: "#FFEE80" },
+  { id: "stimulant", color: "#BB6BD9" },
+];
+
 const OptimizedDietaryPage = () => {
   const [canStartPolling, setCanStartPolling] = useState(false);
   const [showResult, setShowResult] = useState(false);
+  const [accordionOpen, setAccordionOpen] = useState<string | null>(null);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -138,7 +150,6 @@ const OptimizedDietaryPage = () => {
   }, []);
 
   const optimizedDietQuery = useOptimizedDietaryQuery(canStartPolling);
-
   const isRequestDone = optimizedDietQuery.data?.success === true;
 
   const { loaderSteps, isLoaderCompleted } = useDietLoader({
@@ -252,6 +263,39 @@ const OptimizedDietaryPage = () => {
               این لیست مواد اولیه برای اجرای برنامه‌ته؛ جزئیات دقیق وعده‌ها و
               پیگیری روزانه‌ت رو توی داشبورد می‌بینی
             </p>
+          </motion.div>
+          <motion.div
+            variants={resultItemVariants}
+            className="w-full flex flex-col items-center gap-3 mt-2 px-6"
+          >
+            {(optimizedDietQuery.data?.data.shopping.groups ?? []).map(
+              (group) => {
+                if (!group.items || group.items.length === 0) return;
+                return (
+                  <FoodGroupsCategoryAccordion
+                    name="optimized-dietary"
+                    key={group.id}
+                    title={group.title}
+                    color={
+                      groupsColor.find(
+                        (groupColor) => groupColor.id === group.id,
+                      )?.color
+                    }
+                    selectedItemCount={group.itemCount}
+                    open={accordionOpen === group.id}
+                    onToggle={() =>
+                      setAccordionOpen((prev) =>
+                        prev === group.id ? null : group.id,
+                      )
+                    }
+                  >
+                    {(group.items || []).map((item) => (
+                      <FoodGroupItemSelection key={item.id} item={item} />
+                    ))}
+                  </FoodGroupsCategoryAccordion>
+                );
+              },
+            )}
           </motion.div>
         </div>
       </ScrollFade>
