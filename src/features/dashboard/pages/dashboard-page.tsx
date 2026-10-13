@@ -14,6 +14,7 @@ import ZistupRadar from "../components/dashboard/zistup-radar";
 import DetailedMonitoring from "../components/dashboard/detailed-monitoring";
 import ZistupRecommendation from "../components/dashboard/zistup-recommendation";
 import TodayLoggedMeals from "../components/dashboard/today-logged-meals";
+import { useMemo } from "react";
 
 const DashboardPage = () => {
   const dietQuery = useOptimizedDietaryQuery(true, {
@@ -27,6 +28,12 @@ const DashboardPage = () => {
       ? dietQuery.data.data
       : undefined,
   );
+
+  const meals = useMemo(() => {
+    return dietQuery.data?.data.days.find(
+      (day) => day.day === planDates.activeDietDayIndex,
+    )?.meals;
+  }, [dietQuery.data?.data.days, planDates.activeDietDayIndex]);
 
   if (dietQuery.isError) {
     return (
@@ -72,7 +79,7 @@ const DashboardPage = () => {
         onSelectDate={planDates.selectDate}
       />
       <DietAdherence />
-      <DietGoalMealSuggestions />
+      <DietGoalMealSuggestions meals={meals} />
       <div className="w-full flex flex-row items-stretch gap-3">
         <DailyCalories />
         <DailyWater />

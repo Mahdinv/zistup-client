@@ -3,7 +3,23 @@ import { LuArrowUpLeft } from "react-icons/lu";
 import { PiFireSimpleFill } from "react-icons/pi";
 
 type SuggestedMealsCardProps = {
-  item: { id: number; type: string; title: string; callory: number };
+  item: {
+    mealTitle: string;
+    mealColor?: string;
+    id: string;
+    title: string;
+    source: string;
+    category: string;
+    imageUrl?: string | null;
+    quantity: { grams: number; servings: number; unit: string };
+    ingredients: string[];
+    nutrition: {
+      caloriesKcal: number;
+      proteinG: number;
+      carbohydrateG: number;
+      fiberG: number;
+    };
+  };
 };
 
 const SuggestedMealsCard = ({ item }: SuggestedMealsCardProps) => {
@@ -18,8 +34,14 @@ const SuggestedMealsCard = ({ item }: SuggestedMealsCardProps) => {
                 "
     >
       <div className="w-full flex flex-row justify-between items-start">
-        <label className="bg-transparent border border-yellow-500 text-yellow-500 rounded-lg py-0.5 px-3 font-peyda font-bold compact:text-sm fold:text-base laptop:text-lg">
-          {item.type}
+        <label
+          className="bg-transparent text-yellow-500 rounded-lg py-0.5 px-3 font-peyda font-bold compact:text-sm fold:text-base laptop:text-lg"
+          style={{
+            border: `1px solid ${item.mealColor}`,
+            color: item.mealColor,
+          }}
+        >
+          {item.mealTitle}
         </label>
         <div className="compact:size-8 fold:size-9 laptop:size-10 rounded-full bg-green-400 hover:bg-green-500 active:bg-green-500 cursor-pointer flex justify-center items-center">
           <LuArrowUpLeft
@@ -49,7 +71,7 @@ const SuggestedMealsCard = ({ item }: SuggestedMealsCardProps) => {
             kcal
           </small>
           <label className="font-rokh font-semibold leading-[150%] compact:text-2xl fold:text-3xl laptop:text-4xl pt-1">
-            {item.callory}
+            {item.nutrition.caloriesKcal.toFixed()}
           </label>
         </div>
       </div>

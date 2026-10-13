@@ -1,6 +1,7 @@
 import Slider from "@/shared/base-components/slider";
-import { memo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import SuggestedMealsCard from "./suggested-meals-card";
+import type { DietMeal } from "@/features/dashboard/api/types/diet-day.types";
 
 type PlanType = "primary" | "alternative-1" | "alternative-2";
 
@@ -10,16 +11,48 @@ const tabs = [
   { value: "alternative-2", title: "جایگزین دوم" },
 ] satisfies { value: PlanType; title: string }[];
 
-const dietSuggestions = [
-  { id: 1, type: "صبحانه", title: "خوراک عدسی گرم با سنگک", callory: 250 },
-  { id: 2, type: "ناهار", title: "خوراک عدسی گرم با سنگک", callory: 250 },
-  { id: 3, type: "شام", title: "خوراک عدسی گرم با سنگک", callory: 250 },
-  { id: 4, type: "میان‌وعده", title: "خوراک عدسی گرم با سنگک", callory: 250 },
+const mealColors = [
+  { title: "صبحانه", value: "#FFEB66" },
+  { title: "میان‌وعده صبح", value: "#06B6D4" },
+  { title: "ناهار", value: "#FF9F45" },
+  { title: "میان‌وعده عصر", value: "#F97316" },
+  { title: "شام", value: "#7EBBD0" },
+  { title: "۲ ساعت قبل خواب", value: "#7C3AED" },
 ];
 
-const DietGoalMealSuggestions = () => {
+type DietGoalMealSuggestionsProps = {
+  meals: DietMeal[] | undefined;
+};
+
+const DietGoalMealSuggestions = ({ meals }: DietGoalMealSuggestionsProps) => {
   const [activePlan, setActivePlan] = useState<PlanType>("primary");
 
+  const displayDiets = useMemo(() => {
+    return (meals ?? []).flatMap((meal) => {
+      const selectedMeal =
+        activePlan === "primary"
+          ? meal.main
+          : meal.alternatives[activePlan === "alternative-1" ? 0 : 1];
+      const mealColor = mealColors.find(
+        (mealColor) => mealColor.title === meal.title,
+      )?.value;
+      return selectedMeal
+        ? [
+            {
+              ...selectedMeal,
+              mealId: meal.id,
+              mealTitle: meal.title,
+              mealColor,
+            },
+          ]
+        : [];
+    });
+  }, [meals, activePlan]);
+  // Keen caches slide elements. A new plan/meal set needs a fresh track at index 0.
+  const sliderKey = JSON.stringify([
+    activePlan,
+    displayDiets.map(({ mealId, id }) => [mealId, id]),
+  ]);
   return (
     <div
       className="
@@ -53,10 +86,11 @@ const DietGoalMealSuggestions = () => {
         </ol>
         <div className="w-full min-w-0 max-w-[calc(var(--meal-card-width)*2.5+16px)] laptop:max-desktop:max-w-none">
           <Slider
+            key={sliderKey}
             slides={{ origin: "auto", perView: "auto", spacing: 8 }}
             slideClassName="w-(--meal-card-width) min-w-(--meal-card-width) max-w-(--meal-card-width) shrink-0"
-            getKey={(item) => item.id.toString()}
-            items={dietSuggestions}
+            getKey={(item) => item.mealId}
+            items={displayDiets}
             renderItem={(item) => <SuggestedMealsCard item={item} />}
           />
         </div>
