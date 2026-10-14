@@ -1,3 +1,4 @@
+import { cn } from "../lib/utils";
 import {
   useCallback,
   useEffect,
@@ -9,12 +10,14 @@ import {
 type ScrollFadeProps = {
   children: ReactNode;
   className?: string;
+  wrapperClassName?: string;
   showBottomFade?: boolean;
 };
 
 const ScrollFade = ({
   children,
   className = "",
+  wrapperClassName,
   showBottomFade = true,
 }: ScrollFadeProps) => {
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -63,19 +66,26 @@ const ScrollFade = ({
   }, [updateFadeVisibility]);
 
   return (
-    <div className="relative h-full min-h-0 w-full overflow-hidden">
+    <div
+      className={cn(
+        "relative h-full min-h-0 w-full overflow-hidden",
+        wrapperClassName,
+      )}
+    >
       <div
         ref={scrollRef}
         onScroll={updateFadeVisibility}
-        className={`
+        className={cn(
+          `
                     h-full
                     min-w-0
                     overflow-x-hidden
                     overflow-y-auto
                     scrollbar-none
                     [&::-webkit-scrollbar]:hidden
-                    ${className}
-                  `}
+                  `,
+          className,
+        )}
       >
         {children}
       </div>
