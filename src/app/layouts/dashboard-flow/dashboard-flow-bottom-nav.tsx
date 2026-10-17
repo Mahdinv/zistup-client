@@ -1,4 +1,6 @@
-import { memo, useLayoutEffect, useRef } from "react";
+import BaseDrawer from "@/shared/base-components/base-drawer";
+import Button from "@/shared/base-components/button";
+import { memo, useLayoutEffect, useRef, useState } from "react";
 import {
   PiBookOpen,
   PiBookOpenFill,
@@ -13,8 +15,9 @@ import {
 import { NavLink } from "react-router-dom";
 
 const DashboardFlowBottomNav = () => {
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
-  const plusRef = useRef<HTMLDivElement>(null);
+  const plusRef = useRef<HTMLButtonElement>(null);
 
   useLayoutEffect(() => {
     const nav = navRef.current;
@@ -45,117 +48,143 @@ const DashboardFlowBottomNav = () => {
     };
   }, []);
   return (
-    <div
-      ref={navRef}
-      className="absolute z-30 bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] compact:inset-x-4 mobile-lg:inset-x-10 fold:inset-x-14 tablet:inset-x-6
+    <>
+      <div
+        ref={navRef}
+        className="absolute z-30 bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] compact:inset-x-4 mobile-lg:inset-x-10 fold:inset-x-14 tablet:inset-x-6
                    bg-blue-200 dark:bg-darker-blue-500 border border-green-200 dark:border-dark
                    rounded-4xl shadow-[0_0_20px_0_rgba(0,0,0,0.26)] py-3
                    grid grid-cols-5 items-center justify-items-center
        "
-    >
-      <div
-        ref={plusRef}
-        className="absolute -top-1/2 translate-y-1/5 cursor-pointer
+      >
+        <button
+          type="button"
+          aria-label="افزودن وعده"
+          aria-haspopup="dialog"
+          aria-expanded={drawerOpen}
+          onClick={() => setDrawerOpen(true)}
+          ref={plusRef}
+          className="absolute -top-1/2 translate-y-1/5 cursor-pointer
                        bg-green-400 active:bg-green-500 hover:bg-green-500 shadow-[0_4px_12px_0_rgba(44,229,127,0.3)]
                        compact:size-14 mobile:size-16 fold:size-17 laptop:size-18
-                       rounded-full flex justify-center items-center"
-      >
-        <PiPlus className="text-black compact:text-7xl fold:text-[34px] laptop:text-8xl" />
-      </div>
-      <NavLink
-        to="/app/dashboard"
-        className="w-full flex flex-col items-center justify-center gap-1 cursor-pointer"
-      >
-        {({ isActive }) => (
-          <>
-            {isActive ? (
-              <PiSquaresFourFill className="text-green-400 compact:text-7xl fold:text-[34px] laptop:text-8xl" />
-            ) : (
-              <PiSquaresFour className="text-black dark:text-white compact:text-7xl fold:text-[34px] laptop:text-8xl" />
-            )}
+                       rounded-full flex justify-center items-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+        >
+          <PiPlus
+            aria-hidden="true"
+            className="text-black compact:text-7xl fold:text-[34px] laptop:text-8xl"
+          />
+        </button>
+        <NavLink
+          to="/app/dashboard"
+          className="w-full flex flex-col items-center justify-center gap-1 cursor-pointer"
+        >
+          {({ isActive }) => (
+            <>
+              {isActive ? (
+                <PiSquaresFourFill className="text-green-400 compact:text-7xl fold:text-[34px] laptop:text-8xl" />
+              ) : (
+                <PiSquaresFour className="text-black dark:text-white compact:text-7xl fold:text-[34px] laptop:text-8xl" />
+              )}
 
-            <small
-              className={`font-peyda font-bold leading-[120%]
+              <small
+                className={`font-peyda font-bold leading-[120%]
                          ${isActive ? "text-green-400" : "text-black dark:text-white"}
                          compact:text-xs fold:text-sm laptop:text-base
                     `}
-            >
-              داشبورد
-            </small>
-          </>
-        )}
-      </NavLink>
-      <NavLink
-        to="/app/diet"
-        className="w-full flex flex-col items-center justify-center gap-1 cursor-pointer"
-      >
-        {({ isActive }) => (
-          <>
-            {isActive ? (
-              <PiBookOpenFill className="text-green-400 compact:text-7xl fold:text-[34px] laptop:text-8xl" />
-            ) : (
-              <PiBookOpen className="text-black dark:text-white compact:text-7xl fold:text-[34px] laptop:text-8xl" />
-            )}
+              >
+                داشبورد
+              </small>
+            </>
+          )}
+        </NavLink>
+        <NavLink
+          to="/app/diet"
+          className="w-full flex flex-col items-center justify-center gap-1 cursor-pointer"
+        >
+          {({ isActive }) => (
+            <>
+              {isActive ? (
+                <PiBookOpenFill className="text-green-400 compact:text-7xl fold:text-[34px] laptop:text-8xl" />
+              ) : (
+                <PiBookOpen className="text-black dark:text-white compact:text-7xl fold:text-[34px] laptop:text-8xl" />
+              )}
 
-            <small
-              className={`font-peyda font-bold leading-[120%] 
+              <small
+                className={`font-peyda font-bold leading-[120%]
                           ${isActive ? "text-green-400" : "text-black dark:text-white"}
                           compact:text-xs fold:text-sm laptop:text-base
                         `}
-            >
-              رژیم
-            </small>
-          </>
-        )}
-      </NavLink>
-      <div></div>
-      <NavLink
-        to="/app/zistyar"
-        className="w-full flex flex-col items-center justify-center gap-1 cursor-pointer"
-      >
-        {({ isActive }) => (
-          <>
-            {isActive ? (
-              <PiStarFourFill className="text-green-400 compact:text-7xl fold:text-[34px] laptop:text-8xl" />
-            ) : (
-              <PiStarFour className="text-black dark:text-white compact:text-7xl fold:text-[34px] laptop:text-8xl" />
-            )}
+              >
+                رژیم
+              </small>
+            </>
+          )}
+        </NavLink>
+        <div></div>
+        <NavLink
+          to="/app/zistyar"
+          className="w-full flex flex-col items-center justify-center gap-1 cursor-pointer"
+        >
+          {({ isActive }) => (
+            <>
+              {isActive ? (
+                <PiStarFourFill className="text-green-400 compact:text-7xl fold:text-[34px] laptop:text-8xl" />
+              ) : (
+                <PiStarFour className="text-black dark:text-white compact:text-7xl fold:text-[34px] laptop:text-8xl" />
+              )}
 
-            <small
-              className={`font-peyda font-bold leading-[120%] 
+              <small
+                className={`font-peyda font-bold leading-[120%]
                           ${isActive ? "text-green-400" : "text-black dark:text-white"}
                           compact:text-xs fold:text-sm laptop:text-base
                         `}
-            >
-              زیست‌یار
-            </small>
-          </>
-        )}
-      </NavLink>
-      <NavLink
-        to="/app/profile"
-        className="w-full flex flex-col items-center justify-center gap-1 cursor-pointer"
-      >
-        {({ isActive }) => (
-          <>
-            {isActive ? (
-              <PiUserFill className="text-green-400 compact:text-7xl fold:text-[34px] laptop:text-8xl" />
-            ) : (
-              <PiUser className="text-black dark:text-white compact:text-7xl fold:text-[34px] laptop:text-8xl" />
-            )}
+              >
+                زیست‌یار
+              </small>
+            </>
+          )}
+        </NavLink>
+        <NavLink
+          to="/app/profile"
+          className="w-full flex flex-col items-center justify-center gap-1 cursor-pointer"
+        >
+          {({ isActive }) => (
+            <>
+              {isActive ? (
+                <PiUserFill className="text-green-400 compact:text-7xl fold:text-[34px] laptop:text-8xl" />
+              ) : (
+                <PiUser className="text-black dark:text-white compact:text-7xl fold:text-[34px] laptop:text-8xl" />
+              )}
 
-            <small
-              className={`font-peyda font-bold leading-[120%] 
+              <small
+                className={`font-peyda font-bold leading-[120%]
                           ${isActive ? "text-green-400" : "text-black dark:text-white"}
                           compact:text-xs fold:text-sm laptop:text-base
                         `}
-            >
-              پروفایل
-            </small>
-          </>
-        )}
-      </NavLink>
-    </div>
+              >
+                پروفایل
+              </small>
+            </>
+          )}
+        </NavLink>
+      </div>
+      <BaseDrawer
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+        title="افزودن وعده"
+        footer={false}
+        height="content"
+      >
+        <section className="rounded-2xl bg-blue-200 dark:bg-darker-blue-400 p-4 fold:p-5 font-peyda">
+          <h2 className="font-bold compact:text-lg fold:text-xl">
+            ثبت وعده جدید
+          </h2>
+          <p className="mt-2 leading-relaxed text-blue-900 dark:text-blue-500">
+            این بخش نمونه است؛ محتوای ثبت وعده در اینجا نمایش داده خواهد شد.
+          </p>
+        </section>
+      </BaseDrawer>
+    </>
   );
 };
 

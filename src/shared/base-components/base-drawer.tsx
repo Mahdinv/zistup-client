@@ -21,6 +21,7 @@ type BaseDrawerProps = {
   children: ReactNode;
   footer?: ReactNode;
   stickyFooter?: boolean;
+  height?: "content" | "half" | "full";
   theme?: "light" | "dark";
   className?: string;
 };
@@ -35,14 +36,15 @@ const BaseDrawer = ({
   children,
   footer,
   stickyFooter = true,
+  height = "content",
   theme,
   className,
 }: BaseDrawerProps) => {
   const footerContent =
-    footer != null ? (
+    footer != null && typeof footer !== "boolean" ? (
       <footer
         data-slot="base-drawer-footer"
-        className="shrink-0 border-t border-blue-500/40 dark:border-darker-blue-100 px-4 fold:px-6 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]"
+        className="shrink-0 border-t border-blue-500/60 dark:border-darker-blue-100 px-4 fold:px-6 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]"
       >
         {footer}
       </footer>
@@ -54,7 +56,12 @@ const BaseDrawer = ({
         dir="rtl"
         data-dashboard-theme={theme}
         className={cn(
-          "dashboard-theme mx-auto h-auto max-h-[calc(100dvh-2rem-env(safe-area-inset-top,0px))] w-full tablet:w-3/5 desktop:w-1/3 overflow-hidden border-blue-500/40 bg-blue-100 text-dark scheme-light dark:border-darker-blue-100 dark:bg-darker-blue-200 dark:text-white dark:scheme-dark data-[swipe-direction=down]:rounded-t-3xl after:bg-inherit motion-reduce:transition-none [--scroll-fade-color:var(--color-blue-100)] dark:[--scroll-fade-color:var(--color-darker-blue-200)]",
+          "dashboard-theme mx-auto w-full max-w-107.5 overflow-hidden border-blue-500/60 bg-blue-300 text-dark scheme-light dark:border-darker-blue-100 dark:bg-darker-blue-200 dark:text-white dark:scheme-dark data-[swipe-direction=down]:rounded-t-3xl after:bg-inherit motion-reduce:transition-none [--scroll-fade-color:var(--color-blue-300)] dark:[--scroll-fade-color:var(--color-darker-blue-200)]",
+          height === "full"
+            ? "h-[calc(100dvh-env(safe-area-inset-top,0px))] max-h-[calc(100dvh-env(safe-area-inset-top,0px))]"
+            : "max-h-[calc(100dvh-2rem-env(safe-area-inset-top,0px))]",
+          height === "half" && "h-[50dvh]",
+          height === "content" && "h-auto",
           className,
         )}
       >
@@ -66,8 +73,8 @@ const BaseDrawer = ({
             {description}
           </DrawerDescription>
         )}
-        <DrawerSwipeHandle className="group-data-[swipe-axis=y]/drawer-popup:h-5 group-data-[swipe-axis=y]/drawer-popup:items-center group-data-[swipe-axis=y]/drawer-popup:after:w-14 after:bg-blue-500/40 dark:after:bg-dark" />
-        <header className="shrink-0 border-b border-blue-500/40 dark:border-darker-blue-100 px-4 fold:px-6 pb-3">
+        <DrawerSwipeHandle className="group-data-[swipe-axis=y]/drawer-popup:h-5 group-data-[swipe-axis=y]/drawer-popup:items-center group-data-[swipe-axis=y]/drawer-popup:after:w-14 after:bg-blue-500 dark:after:bg-dark" />
+        <header className="shrink-0 border-b border-blue-500/60 dark:border-darker-blue-100 px-4 fold:px-6 pb-3">
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0 flex-1">
               {header !== undefined ? (
@@ -80,7 +87,7 @@ const BaseDrawer = ({
             </div>
             <DrawerClose
               aria-label={`بستن ${title}`}
-              className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full text-blue-800 dark:text-blue-700 hover:bg-blue-300 dark:hover:bg-darker-blue-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+              className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full text-blue-800 dark:text-blue-700 hover:bg-blue-200 dark:hover:bg-darker-blue-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
             >
               <PiXCircle
                 className="compact:text-3xl fold:text-4xl laptop:text-5xl"
