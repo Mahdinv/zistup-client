@@ -1,5 +1,4 @@
 import BaseDrawer from "@/shared/base-components/base-drawer";
-import Button from "@/shared/base-components/button";
 import { memo, useLayoutEffect, useRef, useState } from "react";
 import {
   PiBookOpen,
