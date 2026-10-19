@@ -1,8 +1,21 @@
-import { forwardRef, useEffect, useRef } from "react";
+import { forwardRef, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 
 type Unit = "kilogram" | "gram" | "liter" | "number";
 
+export interface CustomQuantityUnit {
+  label: string;
+  values: readonly number[];
+}
+interface UnitWheel {
+  options: readonly { id: string; label: string; description?: string }[];
+  value: string;
+  onChange: (id: string) => void;
+}
 interface QuantityPickerProps {
+  customUnit?: CustomQuantityUnit;
+  unitWheel?: UnitWheel;
+  label?: string;
+  appearance?: "default" | "dashboard";
   value?: number;
   onChange?: (value: number) => void;
   onBlur?: () => void;
@@ -83,13 +96,24 @@ function normalizeStep(value: number, min: number, max: number, step: number) {
 }
 
 interface WheelColumnProps {
+  label?: string;
+  textColumn?: boolean;
+  dimInactive?: boolean;
   values: readonly number[];
   selected: number;
   onSelect: (value: number) => void;
   format?: (value: number) => string;
 }
 
-function WheelColumn({ values, selected, onSelect, format }: WheelColumnProps) {
+function WheelColumn({
+  values,
+  selected,
+  onSelect,
+  format,
+  label = "مقدار",
+  textColumn = false,
+  dimInactive = false,
+}: WheelColumnProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   const frameRef = useRef<number | null>(null);
@@ -112,7 +136,7 @@ function WheelColumn({ values, selected, onSelect, format }: WheelColumnProps) {
     selectedRef.current = selected;
   }, [selected]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const element = ref.current;
 
     if (!element) return;
@@ -208,37 +232,38 @@ function WheelColumn({ values, selected, onSelect, format }: WheelColumnProps) {
   return (
     <div
       ref={ref}
-      className="
-        h-36
-        w-14.5
-        shrink-0
-        overflow-y-scroll
-        overscroll-contain
-        snap-y
-        snap-mandatory
-        no-scrollbar
-        select-none
-      "
+      role="spinbutton"
+      tabIndex={0}
+      aria-label={label}
+      aria-valuemin={values[0]}
+      aria-valuemax={values[values.length - 1]}
+      aria-valuenow={selected}
+      aria-valuetext={format ? format(selected) : String(selected)}
+      onKeyDown={(event) => {
+        const index = values.indexOf(selected);
+        const next =
+          event.key === "ArrowUp"
+            ? index + 1
+            : event.key === "ArrowDown"
+              ? index - 1
+              : event.key === "Home"
+                ? 0
+                : event.key === "End"
+                  ? values.length - 1
+                  : null;
+        if (next === null || !values.length) return;
+        event.preventDefault();
+        onSelect(values[clamp(next, 0, values.length - 1)]);
+      }}
+      className={`h-36 overflow-y-scroll overscroll-contain snap-y snap-mandatory touch-pan-y [scrollbar-width:none] [&::-webkit-scrollbar]:hidden select-none focus-visible:outline-2 focus-visible:outline-blue-400 ${textColumn ? "min-w-0 flex-1 font-peyda" : "w-16 shrink-0 font-rokh"}`}
     >
       <div className="h-12 shrink-0" />
 
       {values.map((item) => (
         <div
           key={item}
-          className="
-            flex
-            h-12
-            shrink-0
-            snap-center
-            items-center
-            justify-center
-            pt-2
-            font-rokh
-            text-5xl
-            font-medium
-            leading-none
-            text-white
-          "
+          onClick={() => onSelect(item)}
+          className={`flex h-12 shrink-0 snap-center items-center justify-center cursor-pointer px-1 leading-none ${textColumn ? "text-base font-bold" : "pt-2 text-5xl font-medium"} ${(!dimInactive && !textColumn) || item === selected ? (textColumn ? "text-blue-400" : "text-white") : textColumn ? "text-blue-800" : "text-white/40"}`}
         >
           {format ? format(item) : item}
         </div>
@@ -250,14 +275,44 @@ function WheelColumn({ values, selected, onSelect, format }: WheelColumnProps) {
 }
 
 const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
-  ({ value, onChange, onBlur, unit = "kilogram" }, ref) => {
+  (
+    {
+      value,
+      onChange,
+      onBlur,
+      unit = "kilogram",
+      customUnit,
+      unitWheel,
+      label = "می‌خوای چه مقداری از این مورد توی سبدت باشه؟",
+      appearance = "default",
+    },
+    ref,
+  ) => {
+    const unitIndexes = useMemo(
+      () =>
+        Array.from(
+          { length: unitWheel?.options.length ?? 0 },
+          (_, index) => index,
+        ),
+      [unitWheel?.options.length],
+    );
     const defaultValue = UNIT_CONFIG[unit].defaultValue;
 
     const currentValue = value ?? defaultValue;
 
     let columns: PickerColumn[];
 
-    if (unit === "kilogram") {
+    if (customUnit) {
+      columns = [
+        {
+          key: "custom",
+          values: customUnit.values,
+          selected: currentValue,
+          label: customUnit.label,
+          onSelect: (next) => onChange?.(next),
+        },
+      ];
+    } else if (unit === "kilogram") {
       const totalGrams = normalizeStep(
         Math.round(currentValue * 1000),
         0,
@@ -321,32 +376,40 @@ const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
 
     return (
       <div className="w-full flex flex-col justify-start items-start gap-3">
-        <label className="font-peyda text-white compact:text-lg fold:text-xl laptop:text-2xl">
-          می‌خوای چه مقداری از این مورد توی سبدت باشه؟
-        </label>
+        {label && (
+          <p
+            className={
+              appearance === "dashboard"
+                ? "font-peyda font-bold text-inherit"
+                : "font-peyda text-white compact:text-lg fold:text-xl laptop:text-2xl"
+            }
+          >
+            {label}
+          </p>
+        )}
         <div
           ref={ref}
           onBlur={onBlur}
-          className="
+          className={`
           relative
           h-36
           w-full
           overflow-hidden
           rounded-2xl
-          bg-darker-blue-500
-        "
+          ${appearance === "dashboard" ? "bg-darker-blue-200 dark:bg-darker-blue-500" : "bg-darker-blue-500"}
+        `}
         >
           {/* Selected row background */}
           <div
-            className="
+            className={`
             absolute
             inset-x-3
             top-1/2
             h-12
             -translate-y-1/2
             rounded-xs
-            bg-[#202228]
-          "
+            ${appearance === "dashboard" ? "bg-darker-blue-100 dark:bg-dark" : "bg-[#202228]"}
+          `}
           />
 
           {/* Columns */}
@@ -362,24 +425,56 @@ const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
             ${columns.length > 1 ? "justify-around" : "justify-center"}
           `}
           >
-            {columns.map((column) => (
+            {unitWheel && customUnit ? (
               <div
-                key={column.key}
-                className="
+                className={`flex w-full items-center gap-2 ${unitWheel.options.some((option) => option.description) ? "max-w-64" : "max-w-44"}`}
+              >
+                <WheelColumn
+                  dimInactive
+                  values={customUnit.values}
+                  selected={currentValue}
+                  onSelect={(next) => onChange?.(next)}
+                />
+                <WheelColumn
+                  textColumn
+                  label="واحد مقدار"
+                  values={unitIndexes}
+                  selected={unitWheel.options.findIndex(
+                    (option) => option.id === unitWheel.value,
+                  )}
+                  format={(index) => {
+                    const option = unitWheel.options[index];
+                    return option
+                      ? [option.label, option.description]
+                          .filter(Boolean)
+                          .join(" ")
+                      : "";
+                  }}
+                  onSelect={(index) => {
+                    const option = unitWheel.options[index];
+                    if (option) unitWheel.onChange(option.id);
+                  }}
+                />
+              </div>
+            ) : (
+              columns.map((column) => (
+                <div
+                  key={column.key}
+                  className="
                 flex
                 items-center
                 gap-4
               "
-              >
-                <WheelColumn
-                  values={column.values}
-                  selected={column.selected}
-                  format={column.format}
-                  onSelect={column.onSelect}
-                />
+                >
+                  <WheelColumn
+                    values={column.values}
+                    selected={column.selected}
+                    format={column.format}
+                    onSelect={column.onSelect}
+                  />
 
-                <span
-                  className="
+                  <span
+                    className="
                   shrink-0
                   font-peyda
                   compact:text-base
@@ -388,16 +483,17 @@ const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
                   font-bold
                   text-blue-800
                 "
-                >
-                  {column.label}
-                </span>
-              </div>
-            ))}
+                  >
+                    {column.label}
+                  </span>
+                </div>
+              ))
+            )}
           </div>
 
           {/* Top fade */}
           <div
-            className="
+            className={`
             pointer-events-none
             absolute
             inset-x-0
@@ -405,14 +501,14 @@ const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
             z-20
             h-12
             bg-linear-to-b
-            from-[#090A0F]
+            ${appearance === "dashboard" ? "from-darker-blue-200 dark:from-darker-blue-500" : "from-[#090A0F]"}
             to-transparent
-          "
+          `}
           />
 
           {/* Bottom fade */}
           <div
-            className="
+            className={`
             pointer-events-none
             absolute
             inset-x-0
@@ -420,9 +516,9 @@ const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
             z-20
             h-12
             bg-linear-to-t
-            from-[#090A0F]
+            ${appearance === "dashboard" ? "from-darker-blue-200 dark:from-darker-blue-500" : "from-[#090A0F]"}
             to-transparent
-          "
+          `}
           />
         </div>
       </div>

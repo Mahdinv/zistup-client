@@ -1,4 +1,6 @@
-import BaseDrawer from "@/shared/base-components/base-drawer";
+import QuickAddMeal from "@/features/dashboard/components/quick-add-meal/quick-add-meal";
+import type { MealSubmission } from "@/features/dashboard/components/quick-add-meal/quick-add-meal.types";
+import { toast } from "sonner";
 import { memo, useLayoutEffect, useRef, useState } from "react";
 import {
   PiBookOpen,
@@ -15,6 +17,9 @@ import { NavLink } from "react-router-dom";
 
 const DashboardFlowBottomNav = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [localSubmissions, setLocalSubmissions] = useState<MealSubmission[]>(
+    [],
+  );
   const navRef = useRef<HTMLDivElement>(null);
   const plusRef = useRef<HTMLButtonElement>(null);
 
@@ -61,7 +66,9 @@ const DashboardFlowBottomNav = () => {
           aria-label="افزودن وعده"
           aria-haspopup="dialog"
           aria-expanded={drawerOpen}
-          onClick={() => setDrawerOpen(true)}
+          onClick={() => {
+            setDrawerOpen(true);
+          }}
           ref={plusRef}
           className="absolute -top-1/2 translate-y-1/5 cursor-pointer
                        bg-green-400 active:bg-green-500 hover:bg-green-500 shadow-[0_4px_12px_0_rgba(44,229,127,0.3)]
@@ -167,22 +174,19 @@ const DashboardFlowBottomNav = () => {
           )}
         </NavLink>
       </div>
-      <BaseDrawer
+      <QuickAddMeal
         open={drawerOpen}
-        onOpenChange={setDrawerOpen}
-        title="افزودن وعده"
-        footer={false}
-        height="content"
-      >
-        <section className="rounded-2xl bg-blue-200 dark:bg-darker-blue-400 p-4 fold:p-5 font-peyda">
-          <h2 className="font-bold compact:text-lg fold:text-xl">
-            ثبت وعده جدید
-          </h2>
-          <p className="mt-2 leading-relaxed text-blue-900 dark:text-blue-500">
-            این بخش نمونه است؛ محتوای ثبت وعده در اینجا نمایش داده خواهد شد.
-          </p>
-        </section>
-      </BaseDrawer>
+        onClose={() => setDrawerOpen(false)}
+        onSubmit={(submission) => {
+          setLocalSubmissions((current) => [...current, submission]);
+          toast.success("غذا به‌صورت موقت در این نشست ثبت شد");
+        }}
+      />
+      <span role="status" className="sr-only">
+        {localSubmissions.length > 0
+          ? `تعداد غذاهای ثبت‌شده در این نشست: ${localSubmissions.length}`
+          : ""}
+      </span>
     </>
   );
 };

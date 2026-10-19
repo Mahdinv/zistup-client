@@ -14,6 +14,7 @@ import ScrollFade from "./scroll-fade";
 type BaseDrawerProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onOpenChangeComplete?: (open: boolean) => void;
   title: string;
   description?: string;
   header?: ReactNode;
@@ -29,6 +30,7 @@ type BaseDrawerProps = {
 const BaseDrawer = ({
   open,
   onOpenChange,
+  onOpenChangeComplete,
   title,
   description,
   header,
@@ -51,7 +53,12 @@ const BaseDrawer = ({
     ) : null;
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange} swipeDirection="down">
+    <Drawer
+      open={open}
+      onOpenChange={onOpenChange}
+      onOpenChangeComplete={onOpenChangeComplete}
+      swipeDirection="down"
+    >
       <DrawerContent
         dir="rtl"
         data-dashboard-theme={theme}
