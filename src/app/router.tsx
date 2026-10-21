@@ -73,7 +73,7 @@ const DashboardPage = lazy(
   () => import("@/features/dashboard/pages/dashboard-page"),
 );
 
-const DietPage = lazy(() => import("@/features/dashboard/pages/diet-page"));
+const DietsPage = lazy(() => import("@/features/dashboard/pages/diet-page"));
 
 const ZistyarPage = lazy(
   () => import("@/features/dashboard/pages/zistyar-page"),
@@ -279,8 +279,8 @@ const router = createBrowserRouter([
             element: <DashboardPage />,
           },
           {
-            path: "diet",
-            element: <DietPage />,
+            path: "diets",
+            element: <DietsPage />,
           },
           {
             path: "zistyar",

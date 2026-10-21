@@ -104,7 +104,7 @@ const DashboardFlowBottomNav = () => {
           )}
         </NavLink>
         <NavLink
-          to="/app/diet"
+          to="/app/diets"
           className="w-full flex flex-col items-center justify-center gap-1 cursor-pointer"
         >
           {({ isActive }) => (
@@ -121,7 +121,7 @@ const DashboardFlowBottomNav = () => {
                           compact:text-xs fold:text-sm laptop:text-base
                         `}
               >
-                رژیم
+                رژیم‌ها
               </small>
             </>
           )}
