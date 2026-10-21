@@ -133,6 +133,10 @@ const NumberCounter = ({
           type="button"
           disabled={disabled}
           className={`bg-green-400 rounded-xxs p-2 cursor-pointer select-none touch-none disabled:cursor-not-allowed disabled:opacity-50 ${plusButtonClasses}`}
+          aria-label="افزایش"
+          onClick={(event) => {
+            if (event.detail === 0) changeValue(1);
+          }}
           onPointerDown={() => startChanging(1)}
           onPointerUp={stopChanging}
           onPointerLeave={stopChanging}
@@ -157,6 +161,10 @@ const NumberCounter = ({
           type="button"
           disabled={disabled}
           className={`bg-darker-blue-200 rounded-xxs p-2 cursor-pointer select-none touch-none disabled:cursor-not-allowed disabled:opacity-50 ${minusButtonClasses}`}
+          aria-label="کاهش"
+          onClick={(event) => {
+            if (event.detail === 0) changeValue(-1);
+          }}
           onPointerDown={() => startChanging(-1)}
           onPointerUp={stopChanging}
           onPointerLeave={stopChanging}
