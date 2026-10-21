@@ -29,13 +29,13 @@ export default function DetailedQuantity({
   const detailedAmounts = getIngredientGramValues(part?.initialAmount ?? 5);
   return (
     <>
-      <div role="group" aria-label="اجزای غذا" className="mb-2 min-w-0 pb-2">
+      <div role="group" aria-label="اجزای غذا" className="mb-2 min-w-0">
         <Slider
           items={food.parts}
           selectedIndex={food.parts.findIndex((item) => item.id === part?.id)}
           getKey={(item) => item.id}
-          slides={{ perView: "auto", spacing: 10 }}
-          slideClassName="!min-w-36 !max-w-36 py-1"
+          slides={{ perView: "auto", spacing: 8 }}
+          slideClassName="!min-w-[120px] !max-w-[120px] py-0.5"
           renderItem={(item) => (
             <button
               type="button"
@@ -44,10 +44,10 @@ export default function DetailedQuantity({
               title={item.title}
               aria-label={item.title}
               aria-pressed={part?.id === item.id}
-              className={`flex h-18 w-full flex-col rounded-xl border px-2.5 pt-2 pb-1.5 text-right ${part?.id === item.id ? "border-blue-800 bg-blue-200 ring-1 ring-inset ring-blue-800 dark:border-blue-400 dark:bg-darker-blue-200 dark:ring-blue-400" : "border-blue-500 bg-blue-100 dark:border-dark dark:bg-darker-blue-300"} ${focus}`}
+              className={`flex h-[60px] w-full flex-col rounded-xs border p-2 text-right ${part?.id === item.id ? "border-blue-800 bg-blue-100 ring-1 ring-inset ring-blue-800 dark:border-blue-400 dark:bg-darker-blue-200 dark:ring-blue-400" : "border-blue-500 bg-blue-100 dark:border-dark dark:bg-darker-blue-300"} ${focus}`}
             >
-              <span className="flex min-h-7 min-w-0 items-center justify-between gap-2">
-                <span className="min-w-0 truncate font-bold text-sm">
+              <span className="flex min-h-[18px] min-w-0 items-center justify-between gap-2">
+                <span className="min-w-0 truncate font-bold text-base">
                   {item.title}
                 </span>
                 <span dir="ltr" className="flex shrink-0 items-baseline gap-1">
@@ -59,7 +59,7 @@ export default function DetailedQuantity({
                   </small>
                 </span>
               </span>
-              <span className="mt-1 flex min-h-0 flex-1 items-center justify-center gap-1 border-t border-blue-500/30 pt-1 text-blue-800 dark:border-darker-blue-100 dark:text-blue-700">
+              <span className="mt-1 flex min-h-0 flex-1 items-center justify-center gap-1 border-t border-blue-500/30 pt-1 text-blue-800 dark:border-dark dark:text-blue-700">
                 <span className="font-rokh text-base leading-none">
                   {formatMealNumber(
                     state.detailed?.[item.id]?.amount ??

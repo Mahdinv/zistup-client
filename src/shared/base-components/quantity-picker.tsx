@@ -377,7 +377,14 @@ const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
     }
 
     return (
-      <div className="w-full flex flex-col justify-start items-start gap-3">
+      <div
+        className={
+          "w-full flex flex-col justify-start items-start " +
+          (appearance === "dashboard"
+            ? "gap-1 [&_.font-rokh>div]:text-[32px]"
+            : "gap-3")
+        }
+      >
         {label && (
           <p
             className={
@@ -394,7 +401,7 @@ const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
           onBlur={onBlur}
           className={`
           relative
-          h-36
+          ${appearance === "dashboard" ? "h-[132px]" : "h-36"}
           w-full
           overflow-hidden
           rounded-2xl
@@ -410,14 +417,14 @@ const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
             h-12
             -translate-y-1/2
             rounded-xs
-            ${appearance === "dashboard" ? "bg-darker-blue-100 dark:bg-dark" : "bg-[#202228]"}
+            ${appearance === "dashboard" ? "h-[34px] bg-darker-blue-100 dark:bg-[#202228]" : "bg-[#202228]"}
           `}
           />
 
           {/* Columns */}
           <div
             className={`
-            relative
+            ${appearance === "dashboard" ? "absolute top-1/2 -translate-y-1/2 !h-36" : "relative"}
             z-10
             flex
             h-full
@@ -470,6 +477,7 @@ const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
               "
                 >
                   <WheelColumn
+                    dimInactive={appearance === "dashboard"}
                     values={column.values}
                     selected={column.selected}
                     format={formatValue ?? column.format}
@@ -504,7 +512,7 @@ const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
             z-20
             h-12
             bg-linear-to-b
-            ${appearance === "dashboard" ? "from-darker-blue-200 dark:from-darker-blue-500" : "from-[#090A0F]"}
+            ${appearance === "dashboard" ? "!h-[18px] from-darker-blue-200 dark:from-darker-blue-500" : "from-[#090A0F]"}
             to-transparent
           `}
           />

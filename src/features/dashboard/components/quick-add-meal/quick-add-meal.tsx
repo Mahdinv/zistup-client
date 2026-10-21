@@ -1,3 +1,4 @@
+import MealIcon from "./meal-icon";
 import SearchBox from "@/shared/base-components/search-box";
 import { toast } from "sonner";
 import { createSubmission } from "../../lib/quick-add-meal/meal-submission";
@@ -6,7 +7,6 @@ import useFoodInfoQuery from "../../hooks/use-food-info-query.hook";
 import FoodDetailsResource from "./food-details-resource";
 import useDebouncedValue from "@/shared/hooks/use-debounced-value.hook";
 import { useReducer, useRef } from "react";
-import { PiCaretRight, PiMicrophone } from "react-icons/pi";
 import BaseDrawer from "@/shared/base-components/base-drawer";
 import { useDashboardTheme } from "../../hooks/use-dashboard-theme.hook";
 import useMealSearchQuery from "../../hooks/use-meal-search-query.hook";
@@ -73,6 +73,8 @@ export default function QuickAddMeal({ open, onClose, onSubmit }: Props) {
   };
   return (
     <BaseDrawer
+      closeIcon={<MealIcon name="close" />}
+      appearance="quick-add-meal"
       open={open && !state.nextStep}
       onOpenChange={(nextOpen) => {
         if (!nextOpen) close();
@@ -88,10 +90,10 @@ export default function QuickAddMeal({ open, onClose, onSubmit }: Props) {
       header={
         state.step === "details" && state.detailed ? (
           <div className="flex items-center gap-2">
-            <span className="font-yekan text-lg font-extrabold fold:text-xl">
+            <span className="font-yekan text-[20px] leading-[1.2] font-extrabold">
               {title}
             </span>
-            <span className="shrink-0 rounded-full border border-blue-800 px-2 py-1 text-xs text-blue-800 dark:border-blue-400 dark:text-blue-400">
+            <span className="shrink-0 rounded-full border border-blue-900 px-2.5 py-1 text-sm leading-[1.4] font-bold text-blue-900 dark:border-blue-400 dark:text-blue-400">
               ثبت تفکیک شده
             </span>
           </div>
@@ -104,6 +106,19 @@ export default function QuickAddMeal({ open, onClose, onSubmit }: Props) {
       headerContent={
         state.step === "search" ? (
           <SearchBox
+            appearance="quick-add-meal"
+            icon={
+              <>
+                <MealIcon
+                  name={state.query ? "search" : "search-light"}
+                  className="size-6 dark:hidden"
+                />
+                <MealIcon
+                  name="search"
+                  className="hidden size-6 dark:inline-flex"
+                />
+              </>
+            }
             value={state.query}
             aria-label="جستجوی غذا"
             placeholder="نام غذا یا خوراکی رو اینجا سرچ کن"
@@ -112,9 +127,9 @@ export default function QuickAddMeal({ open, onClose, onSubmit }: Props) {
                 type="button"
                 aria-label="جستجوی صوتی (به‌زودی)"
                 onClick={() => toast.info("جستجوی صوتی هنوز فعال نیست")}
-                className="flex size-12 shrink-0 items-center justify-center rounded-2xl border border-blue-500 bg-blue-200 text-blue-600 dark:border-blue-900 dark:bg-darker-blue-400 focus-visible:outline-2 focus-visible:outline-blue-400"
+                className="flex size-12 shrink-0 items-center justify-center rounded-2xl border border-blue-500 bg-blue-300 text-blue-500 dark:border-blue-900 dark:bg-darker-blue-400 focus-visible:outline-2 focus-visible:outline-blue-400"
               >
-                <PiMicrophone className="size-6" />
+                <MealIcon name="mic" className="size-6" />
               </button>
             }
             onChange={(query) => dispatch({ type: "query", query })}
@@ -128,9 +143,9 @@ export default function QuickAddMeal({ open, onClose, onSubmit }: Props) {
               type="button"
               onClick={() => dispatch({ type: "back" })}
               disabled={!!state.nextStep}
-              className={`flex min-h-11 items-center justify-center gap-1 rounded-full border border-blue-500 bg-blue-200 px-3 font-bold text-lg text-blue-700 dark:border-transparent dark:bg-darker-blue-400 focus-visible:outline-2 focus-visible:outline-blue-400 ${state.step === "details" ? "w-1/3" : "w-full"}`}
+              className={`flex h-[42px] items-center justify-center gap-0.5 rounded-2xl border border-blue-500 bg-blue-300 px-2 font-bold text-xl leading-[1.45] shadow-[0_4px_4px_0_#0000000a] dark:shadow-none text-blue-700 dark:border-transparent dark:bg-darker-blue-400 focus-visible:outline-2 focus-visible:outline-blue-400 ${state.step === "details" ? "w-1/3" : "w-full"}`}
             >
-              <PiCaretRight />
+              <MealIcon name="back" />
               بازگشت
             </button>
             {state.step === "details" && (
@@ -138,7 +153,7 @@ export default function QuickAddMeal({ open, onClose, onSubmit }: Props) {
                 type="button"
                 disabled={!!state.nextStep || !foodInfoQuery.isSuccess}
                 onClick={submit}
-                className="min-h-11 flex-1 rounded-full bg-green-400 font-bold text-lg text-darker-green-200 hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-blue-400"
+                className="h-[42px] flex-1 rounded-2xl bg-green-400 font-bold text-xl leading-[1.45] shadow-[0_4px_4px_0_#0000000a] dark:shadow-none text-darker-green-200 hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-blue-400"
               >
                 ثبت غذا
               </button>

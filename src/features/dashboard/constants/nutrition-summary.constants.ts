@@ -6,7 +6,7 @@ export const nutrients = [
     label: "پروتئین",
     unit: "g",
     precision: 0,
-    color: "bg-red-400",
+    color: "bg-red-200",
   },
   {
     key: "fiber",

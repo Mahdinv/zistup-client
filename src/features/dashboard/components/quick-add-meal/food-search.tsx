@@ -1,3 +1,4 @@
+import MealIcon from "./meal-icon";
 import { formatServingUnit } from "../../api/types/serving-unit";
 import { formatMealNumber } from "../../lib/quick-add-meal/format-meal-number";
 import Button from "@/shared/base-components/button";
@@ -5,7 +6,6 @@ import { getApiErrorMessage } from "@/shared/api/error.helpers";
 import type { MealSearchItem } from "../../api/types/meal-search.types";
 import ImageWithSkeleton from "@/shared/base-components/image-with-skeleton";
 import ScrollFade from "@/shared/base-components/scroll-fade";
-import { PiMagnifyingGlass, PiPlus } from "react-icons/pi";
 import { toast } from "sonner";
 import type { SearchState } from "../../api/types/quick-add-meal.types";
 export default function FoodSearch({
@@ -23,7 +23,7 @@ export default function FoodSearch({
         {[0, 1, 2, 3].map((row) => (
           <div
             key={row}
-            className="h-15 rounded-3xl bg-blue-200 dark:bg-darker-blue-300 animate-pulse motion-reduce:animate-none"
+            className="h-[55px] rounded-2xl bg-blue-200 dark:bg-darker-blue-300 animate-pulse motion-reduce:animate-none"
           />
         ))}
         <span className="sr-only">در حال دریافت غذاها...</span>
@@ -46,14 +46,14 @@ export default function FoodSearch({
   if (state.status === "results")
     return (
       <ScrollFade
-        wrapperClassName="[--result-row:3.75rem] [--result-gap:0.5rem] h-[calc(var(--result-row)*4+var(--result-gap)*3)]"
+        wrapperClassName="[--result-row:55px] [--result-gap:0.5rem] h-[calc(var(--result-row)*4+var(--result-gap)*3)]"
         className="overscroll-contain"
       >
         <ul aria-label="نتایج جستجوی غذا" className="space-y-(--result-gap)">
           {state.foods.map((food) => (
             <li
               key={food.id}
-              className="flex h-(--result-row) items-center gap-2 rounded-3xl bg-darker-blue-200 py-2 pr-3 pl-2 text-white dark:bg-darker-blue-500"
+              className="flex h-(--result-row) items-center gap-2 rounded-2xl bg-darker-blue-200 py-2 px-3 text-white dark:bg-darker-blue-500"
             >
               <div className="min-w-0 flex-1">
                 <h3 className="truncate font-bold text-lg">{food.name}</h3>
@@ -71,9 +71,9 @@ export default function FoodSearch({
                 type="button"
                 onClick={() => onSelect(food)}
                 aria-label={`افزودن ${food.name}`}
-                className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-green-400 text-darker-green-200 hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
+                className="flex size-[35px] shrink-0 items-center justify-center rounded-xs bg-green-400 text-darker-green-200 hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
               >
-                <PiPlus className="size-8" />
+                <MealIcon name="plus" />
               </button>
             </li>
           ))}
@@ -83,13 +83,13 @@ export default function FoodSearch({
   return (
     <div
       role="status"
-      className="flex min-h-40 flex-col items-center justify-center gap-2 py-2 text-center"
+      className="flex min-h-[155px] flex-col items-center justify-center gap-2 text-sm leading-[1.4] text-center"
     >
       {state.status === "idle" ? (
         <>
-          <PiMagnifyingGlass aria-hidden className="size-12 text-blue-900" />
+          <MealIcon name="search-empty" />
           <p>منتظر جستجوی تو هستیم...</p>
-          <p className="max-w-52 text-blue-800">
+          <p className="max-w-[196px] text-blue-800">
             اسم غذا رو بالا تایپ کن یا با دکمه میکروفون اسمش رو بگو.
           </p>
         </>
@@ -98,7 +98,7 @@ export default function FoodSearch({
           <ImageWithSkeleton
             src="/pwa/add-meal/food-not-found.webp"
             alt=""
-            wrapperClassName="h-20 w-20"
+            wrapperClassName="h-[94px] w-[106px]"
             className="h-full w-full object-contain"
           />
           <p>متاسفم، غذایی با این نام پیدا نشد.</p>
@@ -107,9 +107,9 @@ export default function FoodSearch({
             onClick={() =>
               toast.info("افزودن غذای جدید در نسخه بعدی فعال می‌شود")
             }
-            className="flex min-h-11 items-center gap-2 rounded-xl border border-blue-800 px-3 font-bold text-blue-800 dark:border-blue-400 dark:text-blue-400 focus-visible:outline-2 focus-visible:outline-blue-400"
+            className="flex h-8 items-center gap-2 rounded-xs border-2 border-blue-800 px-2.5 font-bold text-base text-blue-800 dark:border-blue-400 dark:text-blue-400 focus-visible:outline-2 focus-visible:outline-blue-400"
           >
-            <PiPlus className="size-6" />
+            <MealIcon name="add" />
             افزودن غذای جدید
           </button>
         </>

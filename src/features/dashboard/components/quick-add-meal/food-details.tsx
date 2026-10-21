@@ -1,3 +1,4 @@
+import MealIcon from "./meal-icon";
 import {
   GENERAL_AMOUNTS,
   nutrients,
@@ -8,7 +9,6 @@ import DetailedQuantity from "./detailed-quantity";
 import { formatMealNumber } from "../../lib/quick-add-meal/format-meal-number";
 import { useMemo } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { PiArrowUpLeft, PiFireFill } from "react-icons/pi";
 import QuantityPicker from "@/shared/base-components/quantity-picker";
 import { getGeneralUnits } from "../../lib/quick-add-meal/quantity-units.ts";
 import type { FlowAction } from "../../lib/quick-add-meal/quick-add-meal.state";
@@ -33,7 +33,7 @@ export default function FoodDetails({
     <motion.div
       layout={!reduceMotion}
       transition={{ duration: reduceMotion ? 0 : 0.24 }}
-      className="space-y-4"
+      className="space-y-4 text-base"
     >
       <AnimatePresence initial={false}>
         {!state.detailed && (
@@ -42,7 +42,7 @@ export default function FoodDetails({
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0, marginBottom: 0 }}
             transition={{ duration: reduceMotion ? 0 : 0.24 }}
-            className="overflow-hidden bg-green-100 text-xs leading-relaxed dark:bg-darker-blue-400"
+            className="overflow-hidden bg-green-100 text-sm leading-[1.4] dark:bg-darker-blue-400"
           >
             <div className="p-3">
               <h3 className="mb-1 font-bold text-base text-blue-700 dark:text-blue-400">
@@ -57,15 +57,15 @@ export default function FoodDetails({
       <motion.section
         layout={!reduceMotion}
         aria-label="ارزش غذایی ترکیب استاندارد"
-        className="rounded-3xl bg-blue-200 p-3 shadow-sm dark:bg-darker-blue-400"
+        className="rounded-2xl bg-blue-300 p-3 shadow-[0_4px_4px_0_#0000000a] dark:shadow-none dark:bg-darker-blue-400"
       >
-        <div className="mb-3 flex items-center justify-between gap-2">
+        <div className="mb-2 flex h-[39px] items-center justify-between gap-2">
           <h3 className="flex items-center gap-1 font-bold">
-            <PiFireFill className="size-6 text-orange-300" />
+            <MealIcon name="flame" />
             کالری دریافتی
           </h3>
           <span dir="ltr" className="flex items-baseline gap-2">
-            <span className="font-rokh text-7xl text-orange-200">
+            <span className="font-rokh text-8xl text-orange-200">
               {formatMealNumber(food.nutrition.kcal)}
             </span>
             <small className="font-bold">kcal</small>
@@ -82,22 +82,22 @@ export default function FoodDetails({
             slides={nutrientSlides}
             slideClassName="!min-w-44 !max-w-44"
             renderItem={(item) => (
-              <div className="flex h-20 flex-col justify-center rounded-xl bg-darker-blue-200 px-1.5 py-2 text-center text-white dark:bg-darker-blue-500">
+              <div className="flex h-[62px] flex-col justify-center rounded-xs bg-darker-blue-200 px-1.5 py-2 text-center text-white dark:bg-darker-blue-500">
                 <p
                   title={item.label}
-                  className="flex h-8 items-center justify-center gap-1 text-xs leading-4"
+                  className="flex h-[13px] items-center justify-center gap-1 text-sm leading-4"
                 >
                   <span
                     aria-hidden="true"
-                    className={`size-1.5 shrink-0 rounded-full ${item.color}`}
+                    className={`size-2 shrink-0 rounded-full ${item.color}`}
                   />
                   <span className="whitespace-nowrap">{item.label}</span>
                 </p>
                 <p
                   dir="ltr"
-                  className="mt-1 flex items-baseline justify-center gap-1"
+                  className="mt-3 flex items-baseline justify-center gap-1"
                 >
-                  <span className="font-rokh text-xl leading-6">
+                  <span className="font-rokh text-2xl leading-6">
                     {formatMealNumber(food.nutrition[item.key], item.precision)}
                   </span>
                   <small className="text-[10px]">
@@ -123,7 +123,7 @@ export default function FoodDetails({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
               transition={{ duration: reduceMotion ? 0 : 0.14 }}
-              className="rounded-3xl bg-blue-200 p-4 shadow-sm dark:bg-darker-blue-400"
+              className="rounded-2xl bg-blue-300 p-4 shadow-[0_4px_4px_0_#0000000a] dark:shadow-none dark:bg-darker-blue-400"
             >
               <DetailedQuantity state={state} food={food} dispatch={dispatch} />
             </motion.div>
@@ -148,12 +148,12 @@ export default function FoodDetails({
                         quantity: state.quantity,
                       })
                     }
-                    className={`flex min-h-11 items-center gap-1 text-blue-800 dark:text-blue-400 ${focus}`}
+                    className={`flex min-h-5 items-center gap-1 text-sm text-blue-800 dark:text-blue-400 ${focus}`}
                   >
                     <span className="underline underline-offset-4">
                       ثبت تفکیک شده
                     </span>
-                    <PiArrowUpLeft />
+                    <MealIcon name="detail" className="size-4" />
                   </button>
                 }
               </div>
