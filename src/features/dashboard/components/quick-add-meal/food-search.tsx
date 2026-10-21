@@ -1,48 +1,48 @@
+import { formatServingUnit } from "../../api/types/serving-unit";
+import { formatMealNumber } from "../../lib/quick-add-meal/format-meal-number";
+import Button from "@/shared/base-components/button";
+import { getApiErrorMessage } from "@/shared/api/error.helpers";
+import type { MealSearchItem } from "../../api/types/meal-search.types";
+import ImageWithSkeleton from "@/shared/base-components/image-with-skeleton";
 import ScrollFade from "@/shared/base-components/scroll-fade";
-import { PiMagnifyingGlass, PiMicrophone, PiPlus } from "react-icons/pi";
+import { PiMagnifyingGlass, PiPlus } from "react-icons/pi";
 import { toast } from "sonner";
-import type { Food, SearchState } from "./quick-add-meal.types";
-export function FoodSearchInput({
-  query,
-  onChange,
-}: {
-  query: string;
-  onChange: (query: string) => void;
-}) {
-  return (
-    <div className="flex flex-row-reverse gap-1.5">
-      <div className="flex min-w-0 flex-1 items-center gap-2 rounded-2xl border border-blue-500 bg-blue-200 px-3 text-blue-900 focus-within:border-blue-900 dark:border-blue-900 dark:bg-darker-blue-400 dark:text-white dark:focus-within:border-blue-400">
-        <PiMagnifyingGlass
-          aria-hidden
-          className="size-6 shrink-0 text-blue-800"
-        />
-        <input
-          aria-label="جستجوی غذا"
-          type="search"
-          value={query}
-          onChange={(event) => onChange(event.target.value)}
-          placeholder="نام غذا یا خوراکی رو اینجا سرچ کن"
-          className="h-12 min-w-0 w-full bg-transparent text-base outline-none placeholder:text-blue-600 dark:placeholder:text-blue-900"
-        />
-      </div>
-      <button
-        type="button"
-        aria-label="جستجوی صوتی (به‌زودی)"
-        onClick={() => toast.info("جستجوی صوتی هنوز فعال نیست")}
-        className="flex size-12 shrink-0 items-center justify-center rounded-2xl border border-blue-500 bg-blue-200 text-blue-600 dark:border-blue-900 dark:bg-darker-blue-400 focus-visible:outline-2 focus-visible:outline-blue-400"
-      >
-        <PiMicrophone className="size-6" />
-      </button>
-    </div>
-  );
-}
+import type { SearchState } from "../../api/types/quick-add-meal.types";
 export default function FoodSearch({
   state,
   onSelect,
+  onRetry,
 }: {
   state: SearchState;
-  onSelect: (food: Food) => void;
+  onSelect: (food: MealSearchItem) => void;
+  onRetry: () => void;
 }) {
+  if (state.status === "loading")
+    return (
+      <div role="status" aria-label="در حال جستجوی غذا" className="space-y-2">
+        {[0, 1, 2, 3].map((row) => (
+          <div
+            key={row}
+            className="h-15 rounded-3xl bg-blue-200 dark:bg-darker-blue-300 animate-pulse motion-reduce:animate-none"
+          />
+        ))}
+        <span className="sr-only">در حال دریافت غذاها...</span>
+      </div>
+    );
+  if (state.status === "error")
+    return (
+      <div
+        role="alert"
+        className="flex min-h-66 flex-col items-center justify-center gap-4 text-center"
+      >
+        <p>{getApiErrorMessage(state.error)}</p>
+        <Button
+          classes="btn btn-primary-green"
+          title="تلاش مجدد"
+          onClick={onRetry}
+        />
+      </div>
+    );
   if (state.status === "results")
     return (
       <ScrollFade
@@ -56,21 +56,21 @@ export default function FoodSearch({
               className="flex h-(--result-row) items-center gap-2 rounded-3xl bg-darker-blue-200 py-2 pr-3 pl-2 text-white dark:bg-darker-blue-500"
             >
               <div className="min-w-0 flex-1">
-                <h3 className="truncate font-bold text-lg">{food.title}</h3>
+                <h3 className="truncate font-bold text-lg">{food.name}</h3>
                 <p className="truncate text-xs text-blue-700">
-                  {food.subtitle}
+                  واحد: {formatServingUnit(food.serving_unit)}
                 </p>
               </div>
               <span className="flex flex-row-reverse items-baseline gap-1 text-orange-200">
                 <span className="font-rokh text-2xl">
-                  {food.nutrition.kcal}
+                  {formatMealNumber(food.nutrition.calories_kcal)}
                 </span>
                 <small className="text-white text-xxs">kcal</small>
               </span>
               <button
                 type="button"
                 onClick={() => onSelect(food)}
-                aria-label={`افزودن ${food.title}`}
+                aria-label={`افزودن ${food.name}`}
                 className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-green-400 text-darker-green-200 hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
               >
                 <PiPlus className="size-8" />
@@ -95,10 +95,11 @@ export default function FoodSearch({
         </>
       ) : (
         <>
-          <img
+          <ImageWithSkeleton
             src="/pwa/add-meal/food-not-found.webp"
             alt=""
-            className="h-20 w-20 object-contain"
+            wrapperClassName="h-20 w-20"
+            className="h-full w-full object-contain"
           />
           <p>متاسفم، غذایی با این نام پیدا نشد.</p>
           <button

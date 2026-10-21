@@ -1,4 +1,10 @@
-import { type ReactNode, useCallback, useMemo, useState } from "react";
+import {
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import {
   useKeenSlider,
@@ -22,6 +28,7 @@ type SliderProps<T> = {
   autoplay?: false | AutoplayOptions;
   slides?: KeenSliderOptions["slides"];
   slideClassName?: string;
+  selectedIndex?: number;
 };
 
 const createAutoplayPlugin = ({
@@ -94,6 +101,7 @@ const Slider = <T,>({
     spacing: 8,
   },
   slideClassName = "",
+  selectedIndex,
 }: SliderProps<T>) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -122,6 +130,13 @@ const Slider = <T,>({
     },
     plugins,
   );
+
+  // Synchronize an optional controlled selection with Keen's external instance.
+  useEffect(() => {
+    if (selectedIndex != null && selectedIndex >= 0) {
+      instanceRef.current?.moveToIdx(selectedIndex);
+    }
+  }, [selectedIndex, instanceRef]);
 
   const handleDotClick = useCallback(
     (index: number) => {

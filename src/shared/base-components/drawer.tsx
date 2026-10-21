@@ -97,8 +97,9 @@ function DrawerSwipeHandle({
 function DrawerContent({
   className,
   children,
+  swipeHandle,
   ...props
-}: DrawerPrimitive.Popup.Props) {
+}: DrawerPrimitive.Popup.Props & { swipeHandle?: React.ReactNode }) {
   const { hasSnapPoints, modal, showSwipeHandle, swipeDirection } = useDrawer();
   const swipeAxis =
     swipeDirection === "down" || swipeDirection === "up" ? "y" : "x";
@@ -146,9 +147,10 @@ function DrawerContent({
           )}
           {...props}
         >
-          {showSwipeHandle && <DrawerSwipeHandle />}
+          {swipeHandle ?? (showSwipeHandle && <DrawerSwipeHandle />)}
           <DrawerPrimitive.Content
             data-slot="drawer-content"
+            data-base-ui-swipe-ignore={swipeHandle != null ? "" : undefined}
             className={cn(
               "flex min-h-0 flex-1 flex-col overflow-hidden overscroll-contain rounded-[inherit] transition-opacity duration-300 ease-[cubic-bezier(0.45,1.005,0,1.005)] select-text group-data-nested-drawer-open/drawer-popup:opacity-0 group-data-nested-drawer-swiping/drawer-popup:opacity-100 group-data-swiping/drawer-popup:select-none",
             )}

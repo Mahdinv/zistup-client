@@ -12,6 +12,7 @@ interface UnitWheel {
   onChange: (id: string) => void;
 }
 interface QuantityPickerProps {
+  formatValue?: (value: number) => string;
   customUnit?: CustomQuantityUnit;
   unitWheel?: UnitWheel;
   label?: string;
@@ -282,6 +283,7 @@ const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
       onBlur,
       unit = "kilogram",
       customUnit,
+      formatValue,
       unitWheel,
       label = "می‌خوای چه مقداری از این مورد توی سبدت باشه؟",
       appearance = "default",
@@ -431,6 +433,7 @@ const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
               >
                 <WheelColumn
                   dimInactive
+                  format={formatValue}
                   values={customUnit.values}
                   selected={currentValue}
                   onSelect={(next) => onChange?.(next)}
@@ -469,7 +472,7 @@ const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
                   <WheelColumn
                     values={column.values}
                     selected={column.selected}
-                    format={column.format}
+                    format={formatValue ?? column.format}
                     onSelect={column.onSelect}
                   />
 

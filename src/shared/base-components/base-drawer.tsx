@@ -60,6 +60,9 @@ const BaseDrawer = ({
       swipeDirection="down"
     >
       <DrawerContent
+        swipeHandle={
+          <DrawerSwipeHandle className="group-data-[swipe-axis=y]/drawer-popup:h-5 group-data-[swipe-axis=y]/drawer-popup:items-center group-data-[swipe-axis=y]/drawer-popup:after:w-14 after:bg-blue-500 dark:after:bg-dark" />
+        }
         dir="rtl"
         data-dashboard-theme={theme}
         className={cn(
@@ -80,7 +83,6 @@ const BaseDrawer = ({
             {description}
           </DrawerDescription>
         )}
-        <DrawerSwipeHandle className="group-data-[swipe-axis=y]/drawer-popup:h-5 group-data-[swipe-axis=y]/drawer-popup:items-center group-data-[swipe-axis=y]/drawer-popup:after:w-14 after:bg-blue-500 dark:after:bg-dark" />
         <header className="shrink-0 border-b border-blue-500/60 dark:border-darker-blue-100 px-4 fold:px-6 pb-3">
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0 flex-1">

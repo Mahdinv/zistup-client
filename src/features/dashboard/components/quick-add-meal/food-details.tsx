@@ -1,19 +1,19 @@
+import {
+  GENERAL_AMOUNTS,
+  nutrients,
+  nutrientSlides,
+} from "../../constants/nutrition-summary.constants";
+import Slider from "@/shared/base-components/slider";
+import DetailedQuantity from "./detailed-quantity";
+import { formatMealNumber } from "../../lib/quick-add-meal/format-meal-number";
 import { useMemo } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { PiArrowUpLeft, PiFireFill } from "react-icons/pi";
 import QuantityPicker from "@/shared/base-components/quantity-picker";
-import { getGeneralUnits } from "./quick-add-meal.data";
-import { getDetailedAmounts } from "./quick-add-meal.state";
-import type { FlowAction } from "./quick-add-meal.state";
-import type { FlowState, Food } from "./quick-add-meal.types";
+import { getGeneralUnits } from "../../lib/quick-add-meal/quantity-units.ts";
+import type { FlowAction } from "../../lib/quick-add-meal/quick-add-meal.state";
+import type { FlowState, Food } from "../../api/types/quick-add-meal.types";
 
-const GENERAL_AMOUNTS = Array.from({ length: 1000 }, (_, i) => i + 1);
-const number = new Intl.NumberFormat("fa-IR", { maximumFractionDigits: 2 });
-const nutrients = [
-  { key: "protein", label: "پروتئین", color: "bg-red-400" },
-  { key: "fiber", label: "فیبر", color: "bg-green-400" },
-  { key: "carbohydrates", label: "کربوهیدرات", color: "bg-orange-200" },
-] as const;
 const focus =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400";
 
@@ -27,15 +27,8 @@ export default function FoodDetails({
   dispatch: (action: FlowAction) => void;
 }) {
   const reduceMotion = useReducedMotion();
-  const detailedAmounts = useMemo(
-    () => getDetailedAmounts(food, state.quantity),
-    [food, state.quantity],
-  );
   const units = useMemo(() => getGeneralUnits(food), [food]);
   const generalUnit = units.find((unit) => unit.id === state.quantity.unitId)!;
-  const part = food.parts.find((item) => item.id === state.activePartId);
-  const detail = part && state.detailed?.[part.id];
-  const detailedUnit = part?.units.find((unit) => unit.id === detail?.unitId);
   return (
     <motion.div
       layout={!reduceMotion}
@@ -43,7 +36,7 @@ export default function FoodDetails({
       className="space-y-4"
     >
       <AnimatePresence initial={false}>
-        {!state.detailed && food.parts.length > 1 && (
+        {!state.detailed && (
           <motion.aside
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
@@ -73,29 +66,47 @@ export default function FoodDetails({
           </h3>
           <span dir="ltr" className="flex items-baseline gap-2">
             <span className="font-rokh text-7xl text-orange-200">
-              {food.nutrition.kcal}
+              {formatMealNumber(food.nutrition.kcal)}
             </span>
             <small className="font-bold">kcal</small>
           </span>
         </div>
-        <div className="grid grid-cols-3 gap-2">
-          {nutrients.map((item) => (
-            <div
-              key={item.key}
-              className="rounded-xl bg-darker-blue-200 px-1 py-2 text-center text-white dark:bg-darker-blue-500"
-            >
-              <p className="flex items-center justify-center gap-1 text-xs">
-                <span className={`size-2 rounded-full ${item.color}`} />
-                {item.label}
-              </p>
-              <p dir="ltr" className="mt-1">
-                <span className="font-rokh text-xl">
-                  {food.nutrition[item.key]}
-                </span>
-                <small className="ml-2">g</small>
-              </p>
-            </div>
-          ))}
+        <div
+          role="group"
+          aria-label="شاخص‌های تغذیه و محیط زیست"
+          className="min-w-0"
+        >
+          <Slider
+            items={nutrients}
+            getKey={(item) => item.key}
+            slides={nutrientSlides}
+            slideClassName="!min-w-44 !max-w-44"
+            renderItem={(item) => (
+              <div className="flex h-20 flex-col justify-center rounded-xl bg-darker-blue-200 px-1.5 py-2 text-center text-white dark:bg-darker-blue-500">
+                <p
+                  title={item.label}
+                  className="flex h-8 items-center justify-center gap-1 text-xs leading-4"
+                >
+                  <span
+                    aria-hidden="true"
+                    className={`size-1.5 shrink-0 rounded-full ${item.color}`}
+                  />
+                  <span className="whitespace-nowrap">{item.label}</span>
+                </p>
+                <p
+                  dir="ltr"
+                  className="mt-1 flex items-baseline justify-center gap-1"
+                >
+                  <span className="font-rokh text-xl leading-6">
+                    {formatMealNumber(food.nutrition[item.key], item.precision)}
+                  </span>
+                  <small className="text-[10px]">
+                    <bdi>{item.unit}</bdi>
+                  </small>
+                </p>
+              </div>
+            )}
+          />
         </div>
       </motion.section>
       <motion.section
@@ -104,7 +115,7 @@ export default function FoodDetails({
         className="relative"
       >
         <AnimatePresence mode="popLayout" initial={false}>
-          {state.detailed && part && detail && detailedUnit ? (
+          {state.detailed ? (
             <motion.div
               layout={!reduceMotion}
               key="detailed"
@@ -114,76 +125,7 @@ export default function FoodDetails({
               transition={{ duration: reduceMotion ? 0 : 0.14 }}
               className="rounded-3xl bg-blue-200 p-4 shadow-sm dark:bg-darker-blue-400"
             >
-              <p className="mb-3 text-xs text-blue-800 dark:text-blue-400">
-                ثبت تفکیک شده برای {number.format(state.quantity.amount)}{" "}
-                {generalUnit.label}
-              </p>
-              <div
-                role="group"
-                aria-label="اجزای غذا"
-                className="mb-2 flex gap-2 overflow-x-auto pb-2"
-              >
-                {food.parts.map((item) => (
-                  <button
-                    type="button"
-                    key={item.id}
-                    onClick={() => dispatch({ type: "part", partId: item.id })}
-                    aria-pressed={part.id === item.id}
-                    className={`min-w-28 shrink-0 rounded-xl border bg-blue-100 p-2 text-right dark:bg-darker-blue-300 ${part.id === item.id ? "border-blue-800 ring-1 ring-blue-800 dark:border-blue-400 dark:ring-blue-400" : "border-blue-500 dark:border-dark"} ${focus}`}
-                  >
-                    <span className="flex justify-between gap-2 font-bold">
-                      {item.title}
-                      <span className="font-rokh text-orange-200">
-                        {item.kcal}
-                        <small className="mr-1 font-peyda text-xxs">kcal</small>
-                      </span>
-                    </span>
-                    <span className="text-xs text-blue-800">
-                      {number.format(state.detailed?.[item.id]?.amount ?? 0)}{" "}
-                      {
-                        item.units.find(
-                          (unit) =>
-                            unit.id === state.detailed?.[item.id]?.unitId,
-                        )?.label
-                      }
-                    </span>
-                  </button>
-                ))}
-              </div>
-              <QuantityPicker
-                key={part.id}
-                appearance="dashboard"
-                label={`تنظیم مقدار ${part.title}`}
-                unitWheel={{
-                  options: part.units,
-                  value: detail.unitId,
-                  onChange: (unitId) =>
-                    dispatch({
-                      type: "detail",
-                      partId: part.id,
-                      quantity: { ...detail, unitId },
-                    }),
-                }}
-                value={detail.amount}
-                customUnit={{
-                  label: `${detailedUnit.label} ${detailedUnit.description}`,
-                  values: detailedAmounts,
-                }}
-                onChange={(amount) =>
-                  dispatch({
-                    type: "detail",
-                    partId: part.id,
-                    quantity: { ...detail, amount },
-                  })
-                }
-              />
-              <p className="mt-2 text-xs text-blue-800 dark:text-blue-500">
-                {detailedUnit.description} • هر {generalUnit.label}:{" "}
-                {number.format(
-                  detailedUnit.amountPerGeneral[generalUnit.id] ?? 1,
-                )}{" "}
-                {detailedUnit.label}
-              </p>
+              <DetailedQuantity state={state} food={food} dispatch={dispatch} />
             </motion.div>
           ) : (
             <motion.div
@@ -196,10 +138,16 @@ export default function FoodDetails({
             >
               <div className="mb-2 flex items-center justify-between gap-2">
                 <h3 className="font-bold">چه مقدار خوردی؟</h3>
-                {food.parts.length > 0 && (
+                {
                   <button
                     type="button"
-                    onClick={() => dispatch({ type: "detailed" })}
+                    onClick={() =>
+                      dispatch({
+                        type: "detailed",
+                        food,
+                        quantity: state.quantity,
+                      })
+                    }
                     className={`flex min-h-11 items-center gap-1 text-blue-800 dark:text-blue-400 ${focus}`}
                   >
                     <span className="underline underline-offset-4">
@@ -207,10 +155,11 @@ export default function FoodDetails({
                     </span>
                     <PiArrowUpLeft />
                   </button>
-                )}
+                }
               </div>
               <QuantityPicker
                 appearance="dashboard"
+                formatValue={formatMealNumber}
                 label=""
                 unitWheel={{
                   options: units,

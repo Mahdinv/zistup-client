@@ -1,5 +1,5 @@
 import QuickAddMeal from "@/features/dashboard/components/quick-add-meal/quick-add-meal";
-import type { MealSubmission } from "@/features/dashboard/components/quick-add-meal/quick-add-meal.types";
+import type { AddMealPayload } from "@/features/dashboard/api/types/add-meal.types";
 import { toast } from "sonner";
 import { memo, useLayoutEffect, useRef, useState } from "react";
 import {
@@ -17,7 +17,7 @@ import { NavLink } from "react-router-dom";
 
 const DashboardFlowBottomNav = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [localSubmissions, setLocalSubmissions] = useState<MealSubmission[]>(
+  const [localSubmissions, setLocalSubmissions] = useState<AddMealPayload[]>(
     [],
   );
   const navRef = useRef<HTMLDivElement>(null);
@@ -178,6 +178,7 @@ const DashboardFlowBottomNav = () => {
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         onSubmit={(submission) => {
+          console.log("Quick Add Meal payload (not sent to API):", submission);
           setLocalSubmissions((current) => [...current, submission]);
           toast.success("غذا به‌صورت موقت در این نشست ثبت شد");
         }}
