@@ -25,9 +25,15 @@ import FoodSearch from "./food-search";
 type Props = {
   open: boolean;
   onClose: () => void;
-  onSubmit: (submission: AddMealPayload) => void;
+  onSubmit: (submission: AddMealPayload) => Promise<boolean>;
+  isSubmitting: boolean;
 };
-export default function QuickAddMeal({ open, onClose, onSubmit }: Props) {
+export default function QuickAddMeal({
+  open,
+  onClose,
+  onSubmit,
+  isSubmitting,
+}: Props) {
   const [state, dispatch] = useReducer(flowReducer, initialFlow);
   const submitted = useRef(false);
   const searchTerm = normalizeFoodSearch(state.query);
@@ -58,18 +64,21 @@ export default function QuickAddMeal({ open, onClose, onSubmit }: Props) {
         ? `${meal?.title ?? ""} چی خوردی؟`
         : (foodInfoQuery.data?.title ?? "جزئیات غذا");
   const close = () => {
-    onClose();
+    if (!submitted.current) onClose();
   };
-  const submit = () => {
-    if (!foodInfoQuery.isSuccess || submitted.current) return;
+  const submit = async () => {
+    if (!foodInfoQuery.isSuccess || submitted.current || isSubmitting) return;
     const submission = createSubmission(resolvedState, foodInfoQuery.data);
     if (!submission) {
       toast.error("امکان محاسبه مقدار غذا وجود ندارد");
       return;
     }
     submitted.current = true;
-    onSubmit(submission);
-    close();
+    try {
+      if (await onSubmit(submission)) onClose();
+    } finally {
+      submitted.current = false;
+    }
   };
   return (
     <BaseDrawer
@@ -142,7 +151,7 @@ export default function QuickAddMeal({ open, onClose, onSubmit }: Props) {
             <button
               type="button"
               onClick={() => dispatch({ type: "back" })}
-              disabled={!!state.nextStep}
+              disabled={!!state.nextStep || isSubmitting}
               className={`flex h-[42px] items-center justify-center gap-0.5 rounded-2xl border border-blue-500 bg-blue-300 px-2 font-bold text-xl leading-[1.45] shadow-[0_4px_4px_0_#0000000a] dark:shadow-none text-blue-700 dark:border-transparent dark:bg-darker-blue-400 focus-visible:outline-2 focus-visible:outline-blue-400 ${state.step === "details" ? "w-1/3" : "w-full"}`}
             >
               <MealIcon name="back" />
@@ -151,11 +160,13 @@ export default function QuickAddMeal({ open, onClose, onSubmit }: Props) {
             {state.step === "details" && (
               <button
                 type="button"
-                disabled={!!state.nextStep || !foodInfoQuery.isSuccess}
+                disabled={
+                  !!state.nextStep || !foodInfoQuery.isSuccess || isSubmitting
+                }
                 onClick={submit}
                 className="h-[42px] flex-1 rounded-2xl bg-green-400 font-bold text-xl leading-[1.45] shadow-[0_4px_4px_0_#0000000a] dark:shadow-none text-darker-green-200 hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-blue-400"
               >
-                ثبت غذا
+                {isSubmitting ? "در حال ثبت..." : "ثبت غذا"}
               </button>
             )}
           </div>
@@ -175,11 +186,17 @@ export default function QuickAddMeal({ open, onClose, onSubmit }: Props) {
         />
       )}
       {state.step === "details" && (
-        <FoodDetailsResource
-          state={resolvedState}
-          resource={foodInfoQuery}
-          dispatch={dispatch}
-        />
+        <fieldset
+          disabled={isSubmitting}
+          className="min-w-0"
+          aria-busy={isSubmitting}
+        >
+          <FoodDetailsResource
+            state={resolvedState}
+            resource={foodInfoQuery}
+            dispatch={dispatch}
+          />
+        </fieldset>
       )}
     </BaseDrawer>
   );

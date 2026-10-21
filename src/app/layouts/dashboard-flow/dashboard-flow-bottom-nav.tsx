@@ -1,5 +1,11 @@
 import QuickAddMeal from "@/features/dashboard/components/quick-add-meal/quick-add-meal";
-import type { AddMealPayload } from "@/features/dashboard/api/types/add-meal.types";
+import type {
+  AddMealPayload,
+  AddMealRequest,
+} from "@/features/dashboard/api/types/add-meal.types";
+import { addMeal } from "@/features/dashboard/api/add-meal.api";
+import { normalizeApiError } from "@/shared/api";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { memo, useLayoutEffect, useRef, useState } from "react";
 import {
@@ -17,9 +23,38 @@ import { NavLink } from "react-router-dom";
 
 const DashboardFlowBottomNav = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [localSubmissions, setLocalSubmissions] = useState<AddMealPayload[]>(
-    [],
+  const submissionInFlight = useRef(false);
+  const lastAttempt = useRef<{ key: string; payload: AddMealRequest } | null>(
+    null,
   );
+  const { mutateAsync, isPending, isSuccess } = useMutation({
+    mutationFn: addMeal,
+    onSuccess: () => toast.success("غذا با موفقیت ثبت شد"),
+    onError: (error) => toast.error(normalizeApiError(error).message),
+  });
+
+  const submitMeal = async (submission: AddMealPayload): Promise<boolean> => {
+    if (submissionInFlight.current) return false;
+    submissionInFlight.current = true;
+    try {
+      const key = JSON.stringify(submission);
+      // Preserve the request ID for manual retries and Query retries.
+      if (lastAttempt.current?.key !== key) {
+        lastAttempt.current = {
+          key,
+          payload: { ...submission, client_event_id: crypto.randomUUID() },
+        };
+      }
+      await mutateAsync(lastAttempt.current.payload);
+      lastAttempt.current = null;
+      return true;
+    } catch {
+      // API errors are reported by the mutation; retain the request for retry.
+      return false;
+    } finally {
+      submissionInFlight.current = false;
+    }
+  };
   const navRef = useRef<HTMLDivElement>(null);
   const plusRef = useRef<HTMLButtonElement>(null);
 
@@ -176,17 +211,16 @@ const DashboardFlowBottomNav = () => {
       </div>
       <QuickAddMeal
         open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        onSubmit={(submission) => {
-          console.log("Quick Add Meal payload (not sent to API):", submission);
-          setLocalSubmissions((current) => [...current, submission]);
-          toast.success("غذا به‌صورت موقت در این نشست ثبت شد");
+        onClose={() => {
+          if (submissionInFlight.current) return;
+          lastAttempt.current = null;
+          setDrawerOpen(false);
         }}
+        onSubmit={submitMeal}
+        isSubmitting={isPending}
       />
       <span role="status" className="sr-only">
-        {localSubmissions.length > 0
-          ? `تعداد غذاهای ثبت‌شده در این نشست: ${localSubmissions.length}`
-          : ""}
+        {isPending ? "در حال ثبت غذا" : isSuccess ? "غذا با موفقیت ثبت شد" : ""}
       </span>
     </>
   );
