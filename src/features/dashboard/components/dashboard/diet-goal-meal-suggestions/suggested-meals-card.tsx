@@ -1,3 +1,7 @@
+import type { DietFood, DietMeal } from "../../../api/types/diet-day.types";
+import { MealType } from "../../../api/types/add-meal.types";
+import useAddMealMutation from "../../../hooks/use-add-meal-mutation.hook";
+import { toast } from "sonner";
 import { DirectionProvider } from "@base-ui/react/direction-provider";
 import { Tabs } from "@base-ui/react/tabs";
 import BaseDrawer from "@/shared/base-components/base-drawer";
@@ -10,50 +14,66 @@ const mealPlanTabs = [
   {
     value: "primary",
     label: "پیشنهاد اصلی",
-    heading: "محتوای پیشنهاد اصلی",
-    description: "جزئیات پیشنهاد اصلی این وعده در این بخش نمایش داده خواهد شد.",
   },
   {
     value: "alternative-1",
     label: "جایگزین اول",
-    heading: "محتوای جایگزین اول",
-    description:
-      "جزئیات اولین جایگزین این وعده در این بخش نمایش داده خواهد شد.",
   },
   {
     value: "alternative-2",
     label: "جایگزین دوم",
-    heading: "محتوای جایگزین دوم",
-    description:
-      "جزئیات دومین جایگزین این وعده در این بخش نمایش داده خواهد شد.",
   },
 ] as const;
 
 type MealPlanTab = (typeof mealPlanTabs)[number]["value"];
 
 type SuggestedMealsCardProps = {
-  item: {
-    mealTitle: string;
-    mealColor?: string;
-    id: string;
-    title: string;
-    source: string;
-    category: string;
-    imageUrl?: string | null;
-    quantity: { grams: number; servings: number; unit: string };
-    ingredients: string[];
-    nutrition: {
-      caloriesKcal: number;
-      proteinG: number;
-      carbohydrateG: number;
-      fiberG: number;
-    };
-  };
+  item: DietFood & { meal: DietMeal; mealTitle: string; mealColor?: string };
+  initialTab: MealPlanTab;
 };
-
-const SuggestedMealsCard = ({ item }: SuggestedMealsCardProps) => {
+const SuggestedMealsCard = ({ item, initialTab }: SuggestedMealsCardProps) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<MealPlanTab>("primary");
+  const [activeTab, setActiveTab] = useState<MealPlanTab>(initialTab);
+  const { submitMeal, isPending, submissionInFlight } = useAddMealMutation();
+  const foods = {
+    primary: item.meal.main,
+    "alternative-1": item.meal.alternatives[0],
+    "alternative-2": item.meal.alternatives[1],
+  };
+  const submit = async () => {
+    if (submissionInFlight.current) return;
+    const food = foods[activeTab];
+    if (!food) {
+      toast.error("پیشنهاد انتخاب‌شده در پاسخ برنامه غذایی موجود نیست");
+      return;
+    }
+    const meal = Object.values(MealType).find(
+      (value) => value === item.meal.key,
+    );
+    const foodId = Number(food.id);
+    if (!/^[0-9]+$/.test(food.id) || !Number.isSafeInteger(foodId) || foodId <= 0) {
+      toast.error("برنامه غذایی کد دستور غذا را برگردانده است؛ شناسه عددی غذا (foodId) برای ثبت از سرور دریافت نشده است");
+      return;
+    }
+    if (!meal) {
+      toast.error("نوع وعده در برنامه غذایی برای ثبت غذا معتبر نیست (meal)");
+      return;
+    }
+    // The plan already supplies total grams; servings must not be multiplied again.
+    if (!Number.isFinite(food.quantity.grams) || food.quantity.grams <= 0) {
+      toast.error("وزن غذا به گرم در برنامه غذایی موجود یا معتبر نیست (value)");
+      return;
+    }
+    if (
+      await submitMeal({
+        foodId,
+        meal,
+        value: food.quantity.grams,
+        separatedItems: [],
+      })
+    )
+      setDrawerOpen(false);
+  };
   return (
     <>
       <article
@@ -81,7 +101,10 @@ const SuggestedMealsCard = ({ item }: SuggestedMealsCardProps) => {
             aria-haspopup="dialog"
             aria-expanded={drawerOpen}
             data-keen-slider-clickable="true"
-            onClick={() => setDrawerOpen(true)}
+            onClick={() => {
+              setActiveTab(initialTab);
+              setDrawerOpen(true);
+            }}
             className="compact:size-8 fold:size-9 laptop:size-10 rounded-full bg-green-400 hover:bg-green-500 active:bg-green-500 cursor-pointer flex justify-center items-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 outline-none"
           >
             <LuArrowUpLeft
@@ -122,19 +145,22 @@ const SuggestedMealsCard = ({ item }: SuggestedMealsCardProps) => {
           value={activeTab}
           onValueChange={(value: unknown) => {
             const tab = mealPlanTabs.find((tab) => tab.value === value);
-            if (tab) setActiveTab(tab.value);
+            if (tab && !submissionInFlight.current) setActiveTab(tab.value);
           }}
         >
           <BaseDrawer
+            className="bg-[#c3e6f3] text-darker-green-200 dark:text-gray-200 [--scroll-fade-color:#c3e6f3] [&_[data-slot=base-drawer-footer]]:px-3 [&_[data-slot=base-drawer-footer]]:pt-4 [&_[data-slot=base-drawer-footer]]:pb-[max(18px,env(safe-area-inset-bottom))] [&_[data-slot=drawer-swipe-handle]]:h-[18px] [&_[data-slot=drawer-swipe-handle]]:after:w-[57px] [&_[data-slot=drawer-swipe-handle]]:after:h-[5px] [&>[data-slot=drawer-content]>header]:px-4 [&>[data-slot=drawer-content]>header]:pb-0 [&>[data-slot=drawer-content]>header>div:first-child]:h-8 [&_[data-slot=drawer-close]]:size-6 [&_[data-slot=drawer-close]>svg]:size-6 [&_[data-slot=base-drawer-body]]:p-4 [&>[data-slot=drawer-content]>header>div:last-child]:mt-4"
             open={drawerOpen}
-            onOpenChange={setDrawerOpen}
+            onOpenChange={(open) => {
+              if (!submissionInFlight.current) setDrawerOpen(open);
+            }}
             title="جزئیات وعده پیشنهادی"
             header={
-              <div className="flex flex-wrap items-center gap-2">
-                <h2 className="font-yekan font-extrabold compact:text-lg fold:text-xl laptop:text-2xl">
+              <div className="flex items-center gap-2">
+                <h2 className="font-yekan font-extrabold text-[20px] leading-[1.2]">
                   وعده پیشنهادی
                 </h2>
-                <span className="rounded-full border border-yellow-500 px-3 py-1 text-yellow-600 dark:text-yellow-500 font-peyda compact:text-sm fold:text-base">
+                <span className="flex h-6 items-center rounded-full border border-yellow-500 px-3 text-yellow-600 dark:text-yellow-500 font-peyda text-[12px] font-bold leading-[1.4]">
                   {item.mealTitle}
                 </span>
               </div>
@@ -143,13 +169,13 @@ const SuggestedMealsCard = ({ item }: SuggestedMealsCardProps) => {
               <Tabs.List
                 aria-label="پیشنهادهای وعده"
                 activateOnFocus
-                className="-mb-3 grid grid-cols-3"
+                className="-mb-px grid grid-cols-3"
               >
                 {mealPlanTabs.map((tab) => (
                   <Tabs.Tab
                     key={tab.value}
                     value={tab.value}
-                    className="min-w-0 cursor-pointer border-b-2 border-transparent px-1 py-3 text-center font-peyda font-bold compact:text-xs mobile:text-sm fold:text-base text-blue-800 dark:text-blue-700 transition-colors data-active:border-blue-700 data-active:text-blue-900 dark:data-active:border-blue-600 dark:data-active:text-blue-400 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-500"
+                    className="min-w-0 cursor-pointer border-b-2 border-transparent px-1 mobile:px-3 py-2 text-center font-peyda font-bold text-[14px] leading-[1.4] text-blue-700 transition-colors data-active:border-blue-700 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-500"
                   >
                     {tab.label}
                   </Tabs.Tab>
@@ -158,27 +184,102 @@ const SuggestedMealsCard = ({ item }: SuggestedMealsCardProps) => {
             }
             footer={
               <Button
-                classes="btn btn-primary-green focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-                title="بستن"
-                onClick={() => setDrawerOpen(false)}
+                classes="h-[42px] rounded-full bg-green-400 text-darker-green-200 font-peyda font-bold !text-[18px] leading-[1.45] hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+                title={isPending ? "در حال ثبت..." : "ثبت این غذا"}
+                disable={isPending || !foods[activeTab]}
+                onClick={() => void submit()}
               />
             }
           >
-            {mealPlanTabs.map((tab) => (
-              <Tabs.Panel
-                key={tab.value}
-                value={tab.value}
-                className="flex flex-col gap-3 font-peyda focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-              >
-                <h3 className="font-bold compact:text-lg fold:text-xl">
-                  {tab.heading}
-                </h3>
-                <p className="font-bold">{item.title}</p>
-                <p className="leading-relaxed text-blue-900 dark:text-blue-500">
-                  {tab.description}
-                </p>
-              </Tabs.Panel>
-            ))}
+            {mealPlanTabs.map((tab) => {
+              const food = foods[tab.value];
+              return (
+                <Tabs.Panel
+                  key={tab.value}
+                  value={tab.value}
+                  className="flex flex-col gap-4 font-peyda"
+                >
+                  {food ? (
+                    <>
+                      <div>
+                        <h3 className="font-bold text-[18px] leading-[1.45] dark:text-gray-50">
+                          {food.title}
+                        </h3>
+                        <div className="flex items-center gap-1 text-[14px] font-bold leading-[1.4] text-blue-900">
+                          <span>حجم:</span>
+                          <span dir="rtl" className="inline-flex items-baseline gap-0.5">
+                            <bdi className="font-rokh text-[16px] leading-[1.3]">{food.quantity.servings}</bdi>
+                            <span className="text-[12px]">{food.quantity.unit}</span>
+                          </span>
+                          <span aria-hidden="true">/</span>
+                          <span dir="rtl" className="inline-flex items-baseline gap-0.5">
+                            <bdi className="font-rokh text-[14px] leading-[1.3]">{Math.round(food.quantity.grams)}</bdi>
+                            <span className="text-[12px]">گرم</span>
+                          </span>
+                        </div>
+                      </div>
+                      <section className="rounded-[20px] bg-blue-200 dark:bg-darker-blue-400 p-3 shadow-[0_4px_4px_#0000000a] dark:shadow-none">
+                        <div className="flex h-[39px] items-center justify-between gap-2">
+                          <span className="flex items-center gap-2 text-[14px] leading-[1.4] font-bold dark:text-blue-100">
+                            <PiFireSimpleFill className="h-5 w-4 text-orange-200" />
+                            کالری دریافتی
+                          </span>
+                          <span dir="ltr" className="isolate flex items-baseline gap-1">
+                            <strong className="font-rokh text-[36px] font-extrabold leading-[1.25] text-orange-200">
+                              {Math.round(food.nutrition.caloriesKcal)}
+                            </strong>{" "}
+                            <span className="font-yekan text-[12px] font-extrabold leading-[1.2]">kcal</span>
+                          </span>
+                        </div>
+                        <dl className="mt-2 grid grid-cols-3 gap-2">
+                          {(
+                            [
+                              ["پروتئین", food.nutrition.proteinG, "bg-[#ff7474]"],
+                              ["فیبر", food.nutrition.fiberG, "bg-green-400"],
+                              ["کربوهیدرات", food.nutrition.carbohydrateG, "bg-orange-200"],
+                            ] as const
+                          ).map(([label, value, dotColor]) => (
+                            <div
+                              key={label}
+                              className="flex min-w-0 flex-col items-center justify-center h-[62px] gap-3 rounded-[10px] bg-darker-blue-200 dark:bg-darker-blue-500 p-3 text-center"
+                            >
+                              <dt className="flex items-center gap-1 text-[12px] font-bold leading-[1.4] text-blue-100 dark:text-blue-800">
+                                <span aria-hidden="true" className={`size-2 shrink-0 rounded-full ${dotColor}`} />
+                                {label}
+                              </dt>
+                              <dd dir="ltr" className="isolate flex h-[13px] items-center justify-center gap-[3px] font-rokh text-[20px] font-semibold leading-none text-blue-100">
+                                <bdi className="relative top-px">{value}</bdi> <span className="font-yekan text-[12px] font-extrabold text-blue-100 dark:text-blue-900">g</span>
+                              </dd>
+                            </div>
+                          ))}
+                        </dl>
+                      </section>
+                      <section className="rounded-[20px] bg-blue-200 dark:bg-darker-blue-400 p-3 shadow-[0_4px_4px_#0000000a] dark:shadow-none">
+                        <h4 className="text-[16px] leading-[1.4] font-bold">ترکیبات:</h4>
+                        <ul className="mt-1 flex flex-wrap gap-1">
+                          {food.ingredients.map((ingredient, index) => (
+                            <li
+                              key={index}
+                              className="rounded-full border border-gray-100 text-blue-800 dark:border-darker-blue-100 px-1.5 py-0.5 text-[14px] font-medium leading-[1.4] dark:text-gray-50"
+                            >
+                              {ingredient}
+                            </li>
+                          ))}
+                        </ul>
+                      </section>
+                      <section className="rounded-[20px] min-h-[69px] border border-blue-500 dark:border-green-900 bg-blue-200 dark:bg-darker-blue-400 p-3 shadow-[0_4px_4px_#0000000a] dark:shadow-none">
+                        <h4 className="text-[12px] font-medium leading-[1.4]">همراه پیشنهادی این وعده:</h4>
+                        <p className="mt-1 text-[14px] text-blue-900 dark:text-blue-700">
+                          به‌زودی
+                        </p>
+                      </section>
+                    </>
+                  ) : (
+                    <p>پیشنهادی برای این گزینه موجود نیست.</p>
+                  )}
+                </Tabs.Panel>
+              );
+            })}
           </BaseDrawer>
         </Tabs.Root>
       </DirectionProvider>

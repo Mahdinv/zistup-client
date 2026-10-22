@@ -32,6 +32,7 @@ const DietGoalMealSuggestions = ({ meals }: DietGoalMealSuggestionsProps) => {
         ? [
             {
               ...selectedMeal,
+              meal,
               mealId: meal.id,
               mealTitle: meal.title,
               mealColor,
@@ -83,7 +84,9 @@ const DietGoalMealSuggestions = ({ meals }: DietGoalMealSuggestionsProps) => {
             slideClassName="w-(--meal-card-width) min-w-(--meal-card-width) max-w-(--meal-card-width) shrink-0"
             getKey={(item) => item.mealId}
             items={displayDiets}
-            renderItem={(item) => <SuggestedMealsCard item={item} />}
+            renderItem={(item) => (
+              <SuggestedMealsCard item={item} initialTab={activePlan} />
+            )}
           />
         </div>
       </div>

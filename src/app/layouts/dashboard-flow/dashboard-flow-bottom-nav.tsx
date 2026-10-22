@@ -1,10 +1,5 @@
 import QuickAddMeal from "@/features/dashboard/components/quick-add-meal/quick-add-meal";
-import type { AddMealPayload } from "@/features/dashboard/api/types/add-meal.types";
-import { mealLogsQueryKeys } from "@/features/dashboard/constants/meal-logs-query.constants";
-import { addMeal } from "@/features/dashboard/api/add-meal.api";
-import { normalizeApiError } from "@/shared/api";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import useAddMealMutation from "@/features/dashboard/hooks/use-add-meal-mutation.hook";
 import { memo, useLayoutEffect, useRef } from "react";
 import {
   PiBookOpen,
@@ -26,30 +21,8 @@ type Props = {
 };
 
 const DashboardFlowBottomNav = ({ drawerOpen, onOpen, onClose }: Props) => {
-  const queryClient = useQueryClient();
-  const submissionInFlight = useRef(false);
-  const { mutateAsync, isPending, isSuccess } = useMutation({
-    mutationFn: addMeal,
-    onSuccess: () => {
-      toast.success("غذا با موفقیت ثبت شد");
-      void queryClient.invalidateQueries({ queryKey: mealLogsQueryKeys.all });
-    },
-    onError: (error) => toast.error(normalizeApiError(error).message),
-  });
-
-  const submitMeal = async (submission: AddMealPayload): Promise<boolean> => {
-    if (submissionInFlight.current) return false;
-    submissionInFlight.current = true;
-    try {
-      await mutateAsync(submission);
-      return true;
-    } catch {
-      // API errors are reported by the mutation.
-      return false;
-    } finally {
-      submissionInFlight.current = false;
-    }
-  };
+  const { submitMeal, isPending, isSuccess, submissionInFlight } =
+    useAddMealMutation();
   const navRef = useRef<HTMLDivElement>(null);
   const plusRef = useRef<HTMLButtonElement>(null);
 
