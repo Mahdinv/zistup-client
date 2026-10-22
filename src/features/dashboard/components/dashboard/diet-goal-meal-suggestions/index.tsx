@@ -1,3 +1,4 @@
+import { mealColors } from "../../../constants/meal-colors.constants";
 import Slider from "@/shared/base-components/slider";
 import { memo, useMemo, useState } from "react";
 import SuggestedMealsCard from "./suggested-meals-card";
@@ -10,15 +11,6 @@ const tabs = [
   { value: "alternative-1", title: "جایگزین اول" },
   { value: "alternative-2", title: "جایگزین دوم" },
 ] satisfies { value: PlanType; title: string }[];
-
-const mealColors = [
-  { title: "صبحانه", value: "#FFEB66" },
-  { title: "میان‌وعده صبح", value: "#06B6D4" },
-  { title: "ناهار", value: "#FF9F45" },
-  { title: "میان‌وعده عصر", value: "#F97316" },
-  { title: "شام", value: "#7EBBD0" },
-  { title: "۲ ساعت قبل خواب", value: "#7C3AED" },
-];
 
 type DietGoalMealSuggestionsProps = {
   meals: DietMeal[] | undefined;
