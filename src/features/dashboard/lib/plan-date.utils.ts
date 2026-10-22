@@ -51,6 +51,15 @@ const toDateForFormatting = (date: number): Date => {
   return result;
 };
 
+export const formatPlanDateForApi = (date: number): string => {
+  const { gy, gm, gd } = d2g(date);
+  return [
+    String(gy).padStart(4, "0"),
+    String(gm).padStart(2, "0"),
+    String(gd).padStart(2, "0"),
+  ].join("-");
+};
+
 export const formatPlanDate = (date: number) => {
   const parts = persianDateFormatter.formatToParts(toDateForFormatting(date));
   const part = (type: Intl.DateTimeFormatPartTypes) =>

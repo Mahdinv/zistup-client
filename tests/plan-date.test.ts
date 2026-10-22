@@ -4,6 +4,7 @@ import { d2j, j2d, toGregorian } from "jalaali-js";
 import {
   clampPlanDate,
   formatPlanDate,
+  formatPlanDateForApi,
   getDietDayForDate,
   getDietDayIndex,
   getPlanDateRange,
@@ -197,4 +198,19 @@ test("malformed or impossible creation dates are rejected", () => {
   ]) {
     assert.equal(getPlanDateRange(value), null);
   }
+});
+
+test("API date uses the selected Gregorian calendar day with zero padding", () => {
+  assert.equal(
+    formatPlanDateForApi(
+      getTehranCalendarDate(new Date("2026-01-02T12:00:00Z")),
+    ),
+    "2026-01-02",
+  );
+  assert.equal(
+    formatPlanDateForApi(
+      getTehranCalendarDate(new Date("2026-10-22T21:00:00Z")),
+    ),
+    "2026-10-23",
+  );
 });
