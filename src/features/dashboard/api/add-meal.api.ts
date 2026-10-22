@@ -1,7 +1,7 @@
 import { ApiError, httpClient } from "@/shared/api";
-import type { AddMealRequest } from "./types/add-meal.types";
+import type { AddMealPayload } from "./types/add-meal.types";
 
-export async function addMeal(payload: AddMealRequest): Promise<void> {
+export async function addMeal(payload: AddMealPayload): Promise<void> {
   const response = await httpClient.post<{ success?: boolean }>(
     "/dashboard/meal-logs",
     payload,

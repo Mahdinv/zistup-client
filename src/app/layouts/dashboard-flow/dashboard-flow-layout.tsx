@@ -1,4 +1,6 @@
 import useUserProfileQuery from "@/shared/hooks/use-user-profile-query.hook";
+import { useCallback, useState } from "react";
+import type { DashboardOutletContext } from "@/features/dashboard/hooks/use-quick-add-meal-drawer.hook";
 import DashboardThemeProvider from "@/features/dashboard/context/dashboard-theme-context";
 import { useLocation, useOutlet } from "react-router-dom";
 import DashboardFlowHeader from "./dashboard-flow-header";
@@ -8,7 +10,11 @@ import DashboardFlowContainer from "./dashboard-flow-container";
 const DashboardFlowContent = () => {
   useUserProfileQuery();
   const { pathname } = useLocation();
-  const outlet = useOutlet();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const openQuickAddMeal = useCallback(() => setDrawerOpen(true), []);
+  const outlet = useOutlet({
+    openQuickAddMeal,
+  } satisfies DashboardOutletContext);
 
   // const navigate = useNavigate();
 
@@ -35,7 +41,11 @@ const DashboardFlowContent = () => {
       >
         خروج
       </button> */}
-      <DashboardFlowBottomNav />
+      <DashboardFlowBottomNav
+        drawerOpen={drawerOpen}
+        onOpen={openQuickAddMeal}
+        onClose={() => setDrawerOpen(false)}
+      />
     </div>
   );
 };

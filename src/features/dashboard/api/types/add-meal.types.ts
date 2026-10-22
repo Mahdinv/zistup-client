@@ -13,7 +13,3 @@ export type AddMealPayload = {
   meal: MealType;
   separatedItems: SeparatedItem[];
 };
-
-export type AddMealRequest = AddMealPayload & {
-  client_event_id: string;
-};

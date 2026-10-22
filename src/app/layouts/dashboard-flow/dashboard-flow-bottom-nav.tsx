@@ -1,13 +1,11 @@
 import QuickAddMeal from "@/features/dashboard/components/quick-add-meal/quick-add-meal";
-import type {
-  AddMealPayload,
-  AddMealRequest,
-} from "@/features/dashboard/api/types/add-meal.types";
+import type { AddMealPayload } from "@/features/dashboard/api/types/add-meal.types";
+import { mealLogsQueryKeys } from "@/features/dashboard/constants/meal-logs-query.constants";
 import { addMeal } from "@/features/dashboard/api/add-meal.api";
 import { normalizeApiError } from "@/shared/api";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { memo, useLayoutEffect, useRef, useState } from "react";
+import { memo, useLayoutEffect, useRef } from "react";
 import {
   PiBookOpen,
   PiBookOpenFill,
@@ -21,15 +19,21 @@ import {
 } from "react-icons/pi";
 import { NavLink } from "react-router-dom";
 
-const DashboardFlowBottomNav = () => {
-  const [drawerOpen, setDrawerOpen] = useState(false);
+type Props = {
+  drawerOpen: boolean;
+  onOpen: () => void;
+  onClose: () => void;
+};
+
+const DashboardFlowBottomNav = ({ drawerOpen, onOpen, onClose }: Props) => {
+  const queryClient = useQueryClient();
   const submissionInFlight = useRef(false);
-  const lastAttempt = useRef<{ key: string; payload: AddMealRequest } | null>(
-    null,
-  );
   const { mutateAsync, isPending, isSuccess } = useMutation({
     mutationFn: addMeal,
-    onSuccess: () => toast.success("غذا با موفقیت ثبت شد"),
+    onSuccess: () => {
+      toast.success("غذا با موفقیت ثبت شد");
+      void queryClient.invalidateQueries({ queryKey: mealLogsQueryKeys.all });
+    },
     onError: (error) => toast.error(normalizeApiError(error).message),
   });
 
@@ -37,19 +41,10 @@ const DashboardFlowBottomNav = () => {
     if (submissionInFlight.current) return false;
     submissionInFlight.current = true;
     try {
-      const key = JSON.stringify(submission);
-      // Preserve the request ID for manual retries and Query retries.
-      if (lastAttempt.current?.key !== key) {
-        lastAttempt.current = {
-          key,
-          payload: { ...submission, client_event_id: crypto.randomUUID() },
-        };
-      }
-      await mutateAsync(lastAttempt.current.payload);
-      lastAttempt.current = null;
+      await mutateAsync(submission);
       return true;
     } catch {
-      // API errors are reported by the mutation; retain the request for retry.
+      // API errors are reported by the mutation.
       return false;
     } finally {
       submissionInFlight.current = false;
@@ -102,7 +97,7 @@ const DashboardFlowBottomNav = () => {
           aria-haspopup="dialog"
           aria-expanded={drawerOpen}
           onClick={() => {
-            setDrawerOpen(true);
+            onOpen();
           }}
           ref={plusRef}
           className="absolute -top-1/2 translate-y-1/5 cursor-pointer
@@ -213,8 +208,7 @@ const DashboardFlowBottomNav = () => {
         open={drawerOpen}
         onClose={() => {
           if (submissionInFlight.current) return;
-          lastAttempt.current = null;
-          setDrawerOpen(false);
+          onClose();
         }}
         onSubmit={submitMeal}
         isSubmitting={isPending}
