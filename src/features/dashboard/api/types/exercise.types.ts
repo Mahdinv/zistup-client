@@ -13,13 +13,9 @@ export type ExerciseSearchResponse = {
   items: Exercise[];
 };
 
-// Local submission contract; map to the registration API once it is available.
+// Form submission contract; map to the registration API once it is available.
 export type PhysicalActivitySubmission = {
   exercise: Exercise;
   durationMinutes: number;
   calories: number | null;
-};
-
-export type LoggedPhysicalActivity = PhysicalActivitySubmission & {
-  localId: string;
 };

@@ -1,10 +1,10 @@
 import { useId, useRef, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { useQuery } from "@tanstack/react-query";
+import { useUserProfileStore } from "@/shared/stores/user-profile.store";
 import { PiFireSimpleFill, PiXCircle } from "react-icons/pi";
 import BaseDrawer from "@/shared/base-components/base-drawer";
 import NumberCounter from "@/shared/base-components/number-counter";
-import { getUserProfile } from "@/features/game-workflow/api/demographic-information.api";
+
 import { useDashboardTheme } from "../../../hooks/use-dashboard-theme.hook";
 import type {
   Exercise,
@@ -16,12 +16,14 @@ import ExerciseSearch from "./exercise-search";
 type FormValues = { exercise: Exercise | null; durationMinutes: number };
 type Props = {
   open: boolean;
+  pending: boolean;
   onClose: () => void;
-  onSubmit: (submission: PhysicalActivitySubmission) => void;
+  onSubmit: (submission: PhysicalActivitySubmission) => Promise<boolean>;
 };
 
 export default function PhysicalActivityDrawer({
   open,
+  pending,
   onClose,
   onSubmit,
 }: Props) {
@@ -33,46 +35,38 @@ export default function PhysicalActivityDrawer({
     control,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting: isFormSubmitting },
   } = useForm<FormValues>({
     defaultValues: { exercise: null, durationMinutes: 15 },
   });
+  const isSubmitting = pending || isFormSubmitting;
   const [exercise, minutes] = useWatch({
     control,
     name: ["exercise", "durationMinutes"],
   });
-  const profile = useQuery({
-    queryKey: ["userProfile"],
-    queryFn: getUserProfile,
-    enabled: open,
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
-  });
-  const calories = estimateActivityCalories(
-    exercise,
-    minutes,
-    profile.data?.weight,
-  );
+  const weight = useUserProfileStore((state) => state.user?.weight);
+  const calories = estimateActivityCalories(exercise, minutes, weight);
   const submit = (event: React.FormEvent<HTMLFormElement>) =>
-    handleSubmit((values) => {
+    handleSubmit(async (values) => {
       if (!values.exercise || submitted.current) return;
       submitted.current = true;
-      onSubmit({
+      const success = await onSubmit({
         exercise: values.exercise,
         durationMinutes: values.durationMinutes,
         calories: estimateActivityCalories(
           values.exercise,
           values.durationMinutes,
-          profile.data?.weight,
+          weight,
         ),
       });
-      onClose();
+      if (success) onClose();
+      else submitted.current = false;
     })(event);
   return (
     <BaseDrawer
       open={open}
       onOpenChange={(next) => {
-        if (!next) onClose();
+        if (!next && !isSubmitting) onClose();
       }}
       onOpenChangeComplete={(isOpen) => {
         if (isOpen || open) return;
@@ -105,10 +99,11 @@ export default function PhysicalActivityDrawer({
         <button
           type="submit"
           form={formId}
+          aria-busy={isSubmitting}
           disabled={isSubmitting}
           className="h-10.5 w-full cursor-pointer rounded-2xl bg-orange-200 text-xl font-bold text-darker-green-200 hover:bg-orange-300 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-orange-300"
         >
-          ثبت این فعالیت
+          {isSubmitting ? "در حال ثبت..." : "ثبت این فعالیت"}
         </button>
       }
     >
@@ -131,6 +126,7 @@ export default function PhysicalActivityDrawer({
               label="مدت فعالیت"
               value={field.value}
               onChange={field.onChange}
+              disabled={isSubmitting}
               min={1}
               max={1440}
               suffix="دقیقه"

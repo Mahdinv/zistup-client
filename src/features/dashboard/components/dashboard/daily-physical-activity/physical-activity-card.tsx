@@ -1,14 +1,14 @@
 import { memo } from "react";
 import { PiXCircle } from "react-icons/pi";
 
-import type { LoggedPhysicalActivity } from "../../../api/types/exercise.types";
+import type { DailyActivity } from "../../../api/types/daily-activities.types";
 
 const PhysicalActivityCard = ({
   activity,
   onRemove,
 }: {
-  activity: LoggedPhysicalActivity;
-  onRemove: () => void;
+  activity: DailyActivity;
+  onRemove?: () => void;
 }) => {
   return (
     <li
@@ -20,10 +20,10 @@ const PhysicalActivityCard = ({
     >
       <div className="min-w-0 flex-1 pl-2 break-words justify-start flex flex-col items-start gap-1">
         <h2 className="font-peyda font-bold compact:text-base fold:text-lg laptop:text-xl">
-          {activity.exercise.label}
+          {activity.activity}
         </h2>
         <label className="text-blue-800 font-peyda font-medium compact:text-sm fold:text-base laptop:text-lg">
-          به مدت {activity.durationMinutes} دقیقه
+          به مدت {activity.duration} دقیقه
         </label>
       </div>
       <div className="flex flex-row justify-end items-center gap-1.5">
@@ -35,17 +35,19 @@ const PhysicalActivityCard = ({
             {activity.calories ?? "—"}
           </label>
         </div>
-        <button
-          type="button"
-          onClick={onRemove}
-          aria-label={`حذف ${activity.exercise.label}`}
-        >
-          <PiXCircle
-            aria-hidden
-            className="text-blue-900 hover:text-darker-blue-200 active:text-darker-blue-200 compact:text-4xl fold:text-5xl laptop:text-6xl cursor-pointer"
-            strokeWidth={1.5}
-          />
-        </button>
+        {onRemove && (
+          <button
+            type="button"
+            onClick={onRemove}
+            aria-label={`حذف ${activity.activity}`}
+          >
+            <PiXCircle
+              aria-hidden
+              className="text-blue-900 hover:text-darker-blue-200 active:text-darker-blue-200 compact:text-4xl fold:text-5xl laptop:text-6xl cursor-pointer"
+              strokeWidth={1.5}
+            />
+          </button>
+        )}
       </div>
     </li>
   );
