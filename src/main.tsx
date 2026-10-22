@@ -1,3 +1,4 @@
+import { useUserProfileStore } from "@/shared/stores/user-profile.store";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
@@ -17,6 +18,7 @@ import { setupImageRetry } from "./shared/lib/image-retry";
 configureHttpClient({
   onUnauthorized: () => {
     queryClient.clear();
+    useUserProfileStore.getState().clearUser();
 
     window.location.replace("/auth/login");
   },

@@ -1,3 +1,4 @@
+import { useUserProfileStore } from "@/shared/stores/user-profile.store";
 import { httpClient, queryClient, tokenStorage } from "../../../shared/api";
 import type { AuthIdentifierDTO } from "./auth.types";
 
@@ -26,4 +27,5 @@ export async function validateUser(data: {
 export function logout() {
   tokenStorage.remove();
   queryClient.clear();
+  useUserProfileStore.getState().clearUser();
 }

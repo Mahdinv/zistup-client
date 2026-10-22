@@ -1,3 +1,4 @@
+import useUserProfileQuery from "@/shared/hooks/use-user-profile-query.hook";
 import DashboardThemeProvider from "@/features/dashboard/context/dashboard-theme-context";
 import { useLocation, useOutlet } from "react-router-dom";
 import DashboardFlowHeader from "./dashboard-flow-header";
@@ -5,6 +6,7 @@ import DashboardFlowBottomNav from "./dashboard-flow-bottom-nav";
 import DashboardFlowContainer from "./dashboard-flow-container";
 
 const DashboardFlowContent = () => {
+  useUserProfileQuery();
   const { pathname } = useLocation();
   const outlet = useOutlet();
 

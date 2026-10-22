@@ -18,17 +18,16 @@ import {
   type DemographicInformationForm,
 } from "../schemas/demographic-informations.schema";
 import { useMemo, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  addDemographicInformation,
-  getUserProfile,
-} from "../api/demographic-information.api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { addDemographicInformation } from "../api/demographic-information.api";
 import { toast } from "sonner";
 import { normalizeApiError } from "@/shared/api";
 import GameCompletedModal from "../components/game-completed-modal";
 import { FaCheck } from "react-icons/fa6";
 import { useLocation, useNavigate } from "react-router-dom";
-import type { User } from "../api/user.types";
+import useUserProfileQuery, {
+  userProfileQueryKey,
+} from "@/shared/hooks/use-user-profile-query.hook";
 
 const provinces = iranProvinceCities.map(({ province }) => ({
   value: province,
@@ -43,15 +42,7 @@ const DemographicInformationPage = () => {
 
   const actionType = state?.actionType ?? undefined;
 
-  const { data } = useQuery<User>({
-    queryKey: ["userProfile"],
-    queryFn: getUserProfile,
-    staleTime: Infinity,
-    gcTime: 0,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    enabled: actionType !== "create",
-  });
+  const { data } = useUserProfileQuery(actionType !== "create");
 
   const formValues = useMemo(() => {
     if (!data || data === undefined)
@@ -77,6 +68,7 @@ const DemographicInformationPage = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: addDemographicInformation,
     onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: userProfileQueryKey });
       if (actionType === "create") {
         setModal(true);
       } else {
