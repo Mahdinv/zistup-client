@@ -41,11 +41,12 @@ httpClient.interceptors.request.use((config) => {
 });
 
 httpClient.interceptors.response.use((response) => {
-  if (isApiFailureResponse(response.data)) {
+  if (response.data?.success === false) {
+    const failure = isApiFailureResponse(response.data) ? response.data : undefined;
     throw new ApiError({
       type: "api",
-      code: response.data.error.code,
-      message: response.data.error.message,
+      code: failure?.error.code,
+      message: failure?.error.message ?? "انجام درخواست ناموفق بود.",
       status: response.status,
       method: response.config.method?.toUpperCase(),
       url: response.config.url,
@@ -70,6 +71,8 @@ httpClient.interceptors.response.use(
         tokenStorage.remove();
 
         await clientConfiguration.onUnauthorized?.();
+      } catch {
+        // Cleanup failures must not replace the original API error.
       } finally {
         handlingUnauthorized = false;
       }

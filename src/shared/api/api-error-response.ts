@@ -1,7 +1,7 @@
 export type ApiFailureResponse = {
   success: false;
   error: {
-    code: number;
+    code?: number;
     message: string;
   };
 };
@@ -26,8 +26,8 @@ export function isApiFailureResponse(
   }
 
   return (
-    typeof value.error.code === "number" &&
-    Number.isFinite(value.error.code) &&
+    (value.error.code === undefined || typeof value.error.code === "number") &&
+    (value.error.code === undefined || Number.isFinite(value.error.code)) &&
     typeof value.error.message === "string" &&
     value.error.message.trim().length > 0
   );

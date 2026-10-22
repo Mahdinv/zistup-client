@@ -1,4 +1,4 @@
-import { ApiError, httpClient } from "@/shared/api";
+import { httpClient } from "@/shared/api";
 import type {
   RegisterActivityRequest,
   RegisterActivityResponse,
@@ -11,13 +11,5 @@ export async function registerActivity(
     "/dashboard/activities",
     payload,
   );
-  if (!response.data.success) {
-    throw new ApiError({
-      type: "api",
-      message: "ثبت فعالیت ناموفق بود. لطفاً دوباره تلاش کنید.",
-      method: "POST",
-      url: "/dashboard/activities",
-    });
-  }
   return response.data;
 }

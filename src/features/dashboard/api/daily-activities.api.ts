@@ -1,4 +1,4 @@
-import { ApiError, httpClient } from "@/shared/api";
+import { httpClient } from "@/shared/api";
 import type { DailyActivitiesResponse } from "./types/daily-activities.types";
 
 export async function getDailyActivities(
@@ -12,13 +12,5 @@ export async function getDailyActivities(
       signal,
     },
   );
-  if (!response.data.success) {
-    throw new ApiError({
-      type: "api",
-      message: "دریافت فعالیت‌های امروز ناموفق بود. لطفاً دوباره تلاش کنید.",
-      method: "GET",
-      url: "/dashboard/activities",
-    });
-  }
   return response.data;
 }

@@ -1,4 +1,4 @@
-import { ApiError, httpClient } from "@/shared/api";
+import { httpClient } from "@/shared/api";
 import type { MealLogsResponse } from "./types/meal-logs.types";
 
 export async function getMealLogs(
@@ -12,43 +12,19 @@ export async function getMealLogs(
       signal,
     },
   );
-  if (!response.data.success) {
-    throw new ApiError({
-      type: "api",
-      message: "دریافت وعده‌های ثبت‌شده ناموفق بود. لطفاً دوباره تلاش کنید.",
-      method: "GET",
-      url: "/dashboard/meal-logs",
-    });
-  }
   return response.data;
 }
 
 export async function deleteMealLog(id: number): Promise<void> {
-  const response = await httpClient.post<{ success?: boolean }>(
+  await httpClient.post(
     "/dashboard/meal-logs/delete",
     { id },
   );
-  if (response.data?.success === false) {
-    throw new ApiError({
-      type: "api",
-      message: "حذف وعده ناموفق بود. لطفاً دوباره تلاش کنید.",
-      method: "POST",
-      url: "/dashboard/meal-logs/delete",
-    });
-  }
 }
 
 export async function deleteDayMealLogs(date: string): Promise<void> {
-  const response = await httpClient.post<{ success?: boolean }>(
+  await httpClient.post(
     "/dashboard/meal-logs/delete-day",
     { date },
   );
-  if (response.data?.success === false) {
-    throw new ApiError({
-      type: "api",
-      message: "حذف وعده‌های روز ناموفق بود. لطفاً دوباره تلاش کنید.",
-      method: "POST",
-      url: "/dashboard/meal-logs/delete-day",
-    });
-  }
 }
