@@ -51,8 +51,14 @@ const SuggestedMealsCard = ({ item, initialTab }: SuggestedMealsCardProps) => {
       (value) => value === item.meal.key,
     );
     const foodId = Number(food.id);
-    if (!/^[0-9]+$/.test(food.id) || !Number.isSafeInteger(foodId) || foodId <= 0) {
-      toast.error("برنامه غذایی کد دستور غذا را برگردانده است؛ شناسه عددی غذا (foodId) برای ثبت از سرور دریافت نشده است");
+    if (
+      !/^[0-9]+$/.test(food.id) ||
+      !Number.isSafeInteger(foodId) ||
+      foodId <= 0
+    ) {
+      toast.error(
+        "برنامه غذایی کد دستور غذا را برگردانده است؛ شناسه عددی غذا (foodId) برای ثبت از سرور دریافت نشده است",
+      );
       return;
     }
     if (!meal) {
@@ -149,7 +155,7 @@ const SuggestedMealsCard = ({ item, initialTab }: SuggestedMealsCardProps) => {
           }}
         >
           <BaseDrawer
-            className="bg-[#c3e6f3] text-darker-green-200 dark:text-gray-200 [--scroll-fade-color:#c3e6f3] [&_[data-slot=base-drawer-footer]]:px-3 [&_[data-slot=base-drawer-footer]]:pt-4 [&_[data-slot=base-drawer-footer]]:pb-[max(18px,env(safe-area-inset-bottom))] [&_[data-slot=drawer-swipe-handle]]:h-[18px] [&_[data-slot=drawer-swipe-handle]]:after:w-[57px] [&_[data-slot=drawer-swipe-handle]]:after:h-[5px] [&>[data-slot=drawer-content]>header]:px-4 [&>[data-slot=drawer-content]>header]:pb-0 [&>[data-slot=drawer-content]>header>div:first-child]:h-8 [&_[data-slot=drawer-close]]:size-6 [&_[data-slot=drawer-close]>svg]:size-6 [&_[data-slot=base-drawer-body]]:p-4 [&>[data-slot=drawer-content]>header>div:last-child]:mt-4"
+            className="bg-[#c3e6f3] text-darker-green-200 dark:text-gray-200 [--scroll-fade-color:#c3e6f3] **:data-[slot=base-drawer-footer]:px-3 **:data-[slot=base-drawer-footer]:pt-4 **:data-[slot=base-drawer-footer]:pb-[max(18px,env(safe-area-inset-bottom))] **:data-[slot=drawer-swipe-handle]:h-4.5 **:data-[slot=drawer-swipe-handle]:after:w-14.25 **:data-[slot=drawer-swipe-handle]:after:h-1.25 [&>[data-slot=drawer-content]>header]:px-4 [&>[data-slot=drawer-content]>header]:pb-0 [&>[data-slot=drawer-content]>header>div:first-child]:h-8 **:data-[slot=drawer-close]:size-6 [&_[data-slot=drawer-close]>svg]:size-6 **:data-[slot=base-drawer-body]:p-4 [&>[data-slot=drawer-content]>header>div:last-child]:mt-4"
             open={drawerOpen}
             onOpenChange={(open) => {
               if (!submissionInFlight.current) setDrawerOpen(open);
@@ -207,55 +213,91 @@ const SuggestedMealsCard = ({ item, initialTab }: SuggestedMealsCardProps) => {
                         </h3>
                         <div className="flex items-center gap-1 text-[14px] font-bold leading-[1.4] text-blue-900">
                           <span>حجم:</span>
-                          <span dir="rtl" className="inline-flex items-baseline gap-0.5">
-                            <bdi className="font-rokh text-[16px] leading-[1.3]">{food.quantity.servings}</bdi>
-                            <span className="text-[12px]">{food.quantity.unit}</span>
+                          <span
+                            dir="rtl"
+                            className="inline-flex items-baseline gap-0.5"
+                          >
+                            <bdi className="font-rokh text-[16px] leading-[1.3]">
+                              {food.quantity.servings}
+                            </bdi>
+                            <span className="text-[12px]">
+                              {food.quantity.unit}
+                            </span>
                           </span>
                           <span aria-hidden="true">/</span>
-                          <span dir="rtl" className="inline-flex items-baseline gap-0.5">
-                            <bdi className="font-rokh text-[14px] leading-[1.3]">{Math.round(food.quantity.grams)}</bdi>
+                          <span
+                            dir="rtl"
+                            className="inline-flex items-baseline gap-0.5"
+                          >
+                            <bdi className="font-rokh text-[14px] leading-[1.3]">
+                              {Math.round(food.quantity.grams)}
+                            </bdi>
                             <span className="text-[12px]">گرم</span>
                           </span>
                         </div>
                       </div>
-                      <section className="rounded-[20px] bg-blue-200 dark:bg-darker-blue-400 p-3 shadow-[0_4px_4px_#0000000a] dark:shadow-none">
-                        <div className="flex h-[39px] items-center justify-between gap-2">
+                      <section className="rounded-2xl bg-blue-200 dark:bg-darker-blue-400 p-3 shadow-[0_4px_4px_#0000000a] dark:shadow-none">
+                        <div className="flex h-9.75 items-center justify-between gap-2">
                           <span className="flex items-center gap-2 text-[14px] leading-[1.4] font-bold dark:text-blue-100">
                             <PiFireSimpleFill className="h-5 w-4 text-orange-200" />
                             کالری دریافتی
                           </span>
-                          <span dir="ltr" className="isolate flex items-baseline gap-1">
-                            <strong className="font-rokh text-[36px] font-extrabold leading-[1.25] text-orange-200">
+                          <span
+                            dir="ltr"
+                            className="isolate flex items-baseline gap-1"
+                          >
+                            <strong className="font-rokh text-[36px] font-extrabold leading-tight text-orange-200">
                               {Math.round(food.nutrition.caloriesKcal)}
                             </strong>{" "}
-                            <span className="font-yekan text-[12px] font-extrabold leading-[1.2]">kcal</span>
+                            <span className="font-yekan text-[12px] font-extrabold leading-[1.2]">
+                              kcal
+                            </span>
                           </span>
                         </div>
                         <dl className="mt-2 grid grid-cols-3 gap-2">
                           {(
                             [
-                              ["پروتئین", food.nutrition.proteinG, "bg-[#ff7474]"],
+                              [
+                                "پروتئین",
+                                food.nutrition.proteinG,
+                                "bg-[#ff7474]",
+                              ],
                               ["فیبر", food.nutrition.fiberG, "bg-green-400"],
-                              ["کربوهیدرات", food.nutrition.carbohydrateG, "bg-orange-200"],
+                              [
+                                "کربوهیدرات",
+                                food.nutrition.carbohydrateG,
+                                "bg-orange-200",
+                              ],
                             ] as const
                           ).map(([label, value, dotColor]) => (
                             <div
                               key={label}
-                              className="flex min-w-0 flex-col items-center justify-center h-[62px] gap-3 rounded-[10px] bg-darker-blue-200 dark:bg-darker-blue-500 p-3 text-center"
+                              className="flex min-w-0 flex-col items-center justify-center h-15.5 gap-3 rounded-xs bg-darker-blue-200 dark:bg-darker-blue-500 p-3 text-center"
                             >
                               <dt className="flex items-center gap-1 text-[12px] font-bold leading-[1.4] text-blue-100 dark:text-blue-800">
-                                <span aria-hidden="true" className={`size-2 shrink-0 rounded-full ${dotColor}`} />
+                                <span
+                                  aria-hidden="true"
+                                  className={`size-2 shrink-0 rounded-full ${dotColor}`}
+                                />
                                 {label}
                               </dt>
-                              <dd dir="ltr" className="isolate flex h-[13px] items-center justify-center gap-[3px] font-rokh text-[20px] font-semibold leading-none text-blue-100">
-                                <bdi className="relative top-px">{value}</bdi> <span className="font-yekan text-[12px] font-extrabold text-blue-100 dark:text-blue-900">g</span>
+                              <dd
+                                dir="ltr"
+                                className="isolate flex h-3.25 items-center justify-center gap-0.75 font-rokh text-[20px] font-semibold leading-none text-blue-100"
+                              >
+                                <bdi className="relative top-px">{value}</bdi>{" "}
+                                <span className="font-yekan text-[12px] font-extrabold text-blue-100 dark:text-blue-900">
+                                  g
+                                </span>
                               </dd>
                             </div>
                           ))}
                         </dl>
                       </section>
-                      <section className="rounded-[20px] bg-blue-200 dark:bg-darker-blue-400 p-3 shadow-[0_4px_4px_#0000000a] dark:shadow-none">
-                        <h4 className="text-[16px] leading-[1.4] font-bold">ترکیبات:</h4>
+                      <section className="rounded-2xl bg-blue-200 dark:bg-darker-blue-400 p-3 shadow-[0_4px_4px_#0000000a] dark:shadow-none">
+                        <h4 className="text-[16px] leading-[1.4] font-bold">
+                          ترکیبات:
+                        </h4>
                         <ul className="mt-1 flex flex-wrap gap-1">
                           {food.ingredients.map((ingredient, index) => (
                             <li
@@ -267,8 +309,10 @@ const SuggestedMealsCard = ({ item, initialTab }: SuggestedMealsCardProps) => {
                           ))}
                         </ul>
                       </section>
-                      <section className="rounded-[20px] min-h-[69px] border border-blue-500 dark:border-green-900 bg-blue-200 dark:bg-darker-blue-400 p-3 shadow-[0_4px_4px_#0000000a] dark:shadow-none">
-                        <h4 className="text-[12px] font-medium leading-[1.4]">همراه پیشنهادی این وعده:</h4>
+                      <section className="rounded-2xl min-h-17.25 border border-blue-500 dark:border-green-900 bg-blue-200 dark:bg-darker-blue-400 p-3 shadow-[0_4px_4px_#0000000a] dark:shadow-none">
+                        <h4 className="text-[12px] font-medium leading-[1.4]">
+                          همراه پیشنهادی این وعده:
+                        </h4>
                         <p className="mt-1 text-[14px] text-blue-900 dark:text-blue-700">
                           به‌زودی
                         </p>

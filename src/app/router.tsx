@@ -9,6 +9,8 @@ import { requireAuth } from "@/features/auth/loaders/require-auth";
 import { redirectIfAuthenticated } from "@/features/auth/loaders/redirect-if-authenticated";
 import DashboardFlowLayout from "./layouts/dashboard-flow/dashboard-flow-layout";
 import NotFoundPage from "./layouts/not-found-page";
+// Keep Profile ready before navigation so its slide never starts with a lazy fallback.
+import ProfilePage from "@/features/dashboard/pages/profile-page";
 
 /* Auth */
 const LoginPage = lazy(() => import("@/features/auth/pages/login-page"));
@@ -77,10 +79,6 @@ const DietsPage = lazy(() => import("@/features/dashboard/pages/diet-page"));
 
 const ZistyarPage = lazy(
   () => import("@/features/dashboard/pages/zistyar-page"),
-);
-
-const ProfilePage = lazy(
-  () => import("@/features/dashboard/pages/profile-page"),
 );
 
 const router = createBrowserRouter([
