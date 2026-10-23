@@ -8,6 +8,7 @@ import { addBasicInformation } from "@/features/onboarding/api/onboarding.api";
 import type {
   ProfileBasicInformation,
   ProfileGoalInformation,
+  ProfileIdentity,
 } from "@/features/onboarding/schemas/basic-information.schema";
 export default function useSaveProfile(
   onSaved: () => void,
@@ -42,7 +43,9 @@ export default function useSaveProfile(
       onBusyChange(false);
     },
   });
-  const submit = (values: ProfileBasicInformation | ProfileGoalInformation) => {
+  const submit = (
+    values: ProfileBasicInformation | ProfileGoalInformation | ProfileIdentity,
+  ) => {
     // A synchronous guard also covers submissions before React re-renders.
     if (submitting.current) return;
     submitting.current = true;

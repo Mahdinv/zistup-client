@@ -20,6 +20,7 @@ import { useDashboardTheme } from "../hooks/use-dashboard-theme.hook";
 import ProfileBasicInformation from "../components/profile/profile-basic-information";
 
 import ProfileGoalInformation from "../components/profile/profile-goal-information";
+import ProfileIdentityEditor from "../components/profile/profile-identity-editor";
 type Section = "goal" | "account" | "basic" | "subscription" | "avatar";
 const titles: Record<Section, string> = {
   goal: "انتخاب هدف",
@@ -87,6 +88,12 @@ const ProfilePage = () => {
           }}
         />
       </motion.div>
+      <ProfileIdentityEditor
+        open={section === "avatar"}
+        onOpenChange={(open) => {
+          if (!open) setSection(null);
+        }}
+      />
       <ProfileGoalInformation
         open={section === "goal"}
         onOpenChange={(open) => {
@@ -100,7 +107,12 @@ const ProfilePage = () => {
         }}
       />
       <BaseDrawer
-        open={section !== null && section !== "basic" && section !== "goal"}
+        open={
+          section !== null &&
+          section !== "basic" &&
+          section !== "goal" &&
+          section !== "avatar"
+        }
         onOpenChange={(open) => {
           if (!open) setSection(null);
         }}

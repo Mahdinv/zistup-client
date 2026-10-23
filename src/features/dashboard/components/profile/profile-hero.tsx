@@ -31,10 +31,10 @@ export default function ProfileHero({
       />
       <div
         dir="ltr"
-        className="flex w-full items-start justify-center gap-[42px]"
+        className="flex w-full items-start justify-center gap-10.5"
       >
         <div className="flex min-w-0 flex-1 flex-col items-center gap-3">
-          <div className="relative size-[100px] shrink-0">
+          <div className="relative size-25 shrink-0">
             <motion.div
               layoutCrossfade={false}
               layoutId="profile-avatar"
@@ -48,7 +48,7 @@ export default function ProfileHero({
                 type="button"
                 onClick={onEditAvatar}
                 aria-label="ویرایش تصویر پروفایل"
-                className="absolute -right-[2.5px] top-[66.5px] flex size-6 cursor-pointer items-center justify-center rounded-full bg-blue-500 text-darker-blue-400 shadow-[0_4px_4px_rgba(0,0,0,0.04)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
+                className="absolute right-[-2.5px] top-[66.5px] flex size-6 cursor-pointer items-center justify-center rounded-full bg-blue-500 text-darker-blue-400 shadow-[0_4px_4px_rgba(0,0,0,0.04)] outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
               >
                 <PiPencilSimple size={15} aria-hidden="true" />
               </button>
@@ -61,7 +61,7 @@ export default function ProfileHero({
             data-profile-element="name"
             transition={transition}
             dir="rtl"
-            className="w-full break-words text-center font-yekan text-2xl font-extrabold leading-[1.2] text-darker-green-200 dark:text-white"
+            className="w-full wrap-break-word text-center font-yekan text-2xl font-extrabold leading-[1.2] text-darker-green-200 dark:text-white"
           >
             <ProfileName />
           </motion.h1>

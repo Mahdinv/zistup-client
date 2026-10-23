@@ -16,12 +16,6 @@ const DashboardFlowContent = () => {
     openQuickAddMeal,
   } satisfies DashboardOutletContext);
 
-  // const navigate = useNavigate();
-
-  // const logoutHandler = () => {
-  //   logout();
-  //   navigate("/auth/login", { replace: true });
-  // };
   return (
     <div
       className="dashboard-theme relative [--scroll-fade-color:var(--color-blue-100)] dark:[--scroll-fade-color:var(--color-darker-blue-200)]
@@ -33,13 +27,7 @@ const DashboardFlowContent = () => {
           {outlet}
         </DashboardFlowContainer>
       </div>
-      {/* <button
-        type="button"
-        className="text-red-400 dark:text-red-200 cursor-pointer px-3 py-2 focus-visible:outline-2 focus-visible:outline-offset-2"
-        onClick={logoutHandler}
-      >
-        خروج
-      </button> */}
+
       <DashboardFlowBottomNav
         drawerOpen={drawerOpen}
         onOpen={openQuickAddMeal}

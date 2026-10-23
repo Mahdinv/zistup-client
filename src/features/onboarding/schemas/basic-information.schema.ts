@@ -34,3 +34,8 @@ export const ProfileGoalInformationSchema = BasicInformationSchema.pick({
 export type ProfileGoalInformation = z.infer<
   typeof ProfileGoalInformationSchema
 >;
+
+export const ProfileIdentitySchema = BasicInformationSchema.pick({
+  name: true,
+}).extend({ avatar: z.string().nullable() });
+export type ProfileIdentity = z.infer<typeof ProfileIdentitySchema>;

@@ -68,7 +68,7 @@ const DashboardFlowHeader = () => {
         <Link
           to="/app/profile"
           aria-label="مشاهده پروفایل"
-          className="shrink-0 rounded-full focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
+          className="shrink-0 rounded-full outline-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
         >
           <motion.div
             layoutCrossfade={false}

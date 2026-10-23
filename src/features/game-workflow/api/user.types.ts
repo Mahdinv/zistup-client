@@ -1,5 +1,6 @@
 export type User = {
   id: number;
+  avatar?: string | null;
   mainGoal?: string;
   focus?: string[];
   name: string;

@@ -1,20 +1,20 @@
 import { motion, useReducedMotion } from "framer-motion";
 import ImageWithSkeleton from "@/shared/base-components/image-with-skeleton";
 import { useUserProfileStore } from "@/shared/stores/user-profile.store";
-import { getUserAvatar } from "@/shared/lib/user-avatar";
+import { PiUserFill } from "react-icons/pi";
 
 const skeleton = "bg-blue-500/25 dark:bg-blue-700/20 motion-safe:animate-pulse";
 
 export function ProfileAvatar() {
-  const sex = useUserProfileStore((state) => state.user?.sex);
-  const src = getUserAvatar(sex);
+  const user = useUserProfileStore((state) => state.user);
+  const src = user?.avatar;
   const reducedMotion = useReducedMotion();
   return (
     <div
       className="relative size-full overflow-hidden rounded-full"
-      aria-busy={!src}
+      aria-busy={!user}
     >
-      {!src && (
+      {!user && (
         <span
           aria-label="در حال بارگذاری تصویر پروفایل"
           className={`absolute inset-0 rounded-full ${skeleton}`}
@@ -22,18 +22,23 @@ export function ProfileAvatar() {
       )}
       <motion.div
         initial={false}
-        animate={{ opacity: src ? 1 : 0 }}
+        animate={{ opacity: user ? 1 : 0 }}
         transition={{ duration: reducedMotion ? 0 : 0.2 }}
         className="size-full"
       >
-        {src && (
+        {src ? (
           <ImageWithSkeleton
             src={src}
             alt="تصویر پروفایل"
             wrapperClassName="size-full rounded-full"
             className="size-full object-cover opacity-100! transition-none!"
           />
-        )}
+        ) : user ? (
+          <PiUserFill
+            aria-label="تصویر پیش‌فرض کاربر"
+            className="size-full translate-y-[10%] scale-110 text-darker-blue-100"
+          />
+        ) : null}
       </motion.div>
     </div>
   );
