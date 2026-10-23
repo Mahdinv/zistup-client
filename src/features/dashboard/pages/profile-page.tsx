@@ -17,8 +17,12 @@ import ProfileItem from "../components/profile/profile-item";
 import ProfileAppearance from "../components/profile/profile-appearance";
 import { useDashboardTheme } from "../hooks/use-dashboard-theme.hook";
 
-type Section = "account" | "basic" | "subscription" | "avatar";
+import ProfileBasicInformation from "../components/profile/profile-basic-information";
+
+import ProfileGoalInformation from "../components/profile/profile-goal-information";
+type Section = "goal" | "account" | "basic" | "subscription" | "avatar";
 const titles: Record<Section, string> = {
+  goal: "انتخاب هدف",
   account: "حساب کاربری",
   basic: "اطلاعات پایه",
   subscription: "اشتراک",
@@ -30,28 +34,11 @@ const ProfilePage = () => {
   const { theme } = useDashboardTheme();
   const navigate = useNavigate();
   const [section, setSection] = useState<Section | null>(null);
-  const details =
-    section === "account"
-      ? [
-          ["نام", user?.name],
-          ["شماره همراه", user?.mobile],
-          ["ایمیل", user?.email],
-        ]
-      : [
-          ["تاریخ تولد", user?.birthDate?.split("T")[0]],
-          [
-            "قد",
-            user?.height
-              ? `${user.height.toLocaleString("fa-IR")} سانتی‌متر`
-              : null,
-          ],
-          [
-            "وزن",
-            user?.weight
-              ? `${user.weight.toLocaleString("fa-IR")} کیلوگرم`
-              : null,
-          ],
-        ];
+  const details = [
+    ["نام", user?.name],
+    ["شماره همراه", user?.mobile],
+    ["ایمیل", user?.email],
+  ];
   return (
     <div dir="rtl" className="flex w-full flex-col gap-6 pb-6 font-peyda">
       <ProfileHero onEditAvatar={() => setSection("avatar")} />
@@ -80,7 +67,7 @@ const ProfilePage = () => {
             title="هدف رژیم"
             subtitle="مشاهده و انتخاب رژیم"
             icon={PiTarget}
-            onClick={() => navigate("/app/diets")}
+            onClick={() => setSection("goal")}
           />
           <ProfileItem
             title="اشتراک"
@@ -100,15 +87,27 @@ const ProfilePage = () => {
           }}
         />
       </motion.div>
+      <ProfileGoalInformation
+        open={section === "goal"}
+        onOpenChange={(open) => {
+          if (!open) setSection(null);
+        }}
+      />
+      <ProfileBasicInformation
+        open={section === "basic"}
+        onOpenChange={(open) => {
+          if (!open) setSection(null);
+        }}
+      />
       <BaseDrawer
-        open={section !== null}
+        open={section !== null && section !== "basic" && section !== "goal"}
         onOpenChange={(open) => {
           if (!open) setSection(null);
         }}
         title={section ? titles[section] : "پروفایل"}
         theme={theme}
       >
-        {section === "account" || section === "basic" ? (
+        {section === "account" ? (
           <dl className="space-y-4">
             {details.map(([label, value]) => (
               <div key={label} className="flex flex-wrap justify-between gap-3">

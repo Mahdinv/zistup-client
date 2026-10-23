@@ -8,7 +8,11 @@ import {
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { LiaFemaleSolid, LiaMaleSolid } from "react-icons/lia";
+import {
+  genderOptions,
+  mainGoalOptions,
+  focusOptions,
+} from "@/shared/constants/basic-information-options";
 
 import TextBox from "@/shared/base-components/text-box";
 import Radio from "@/shared/base-components/radio";
@@ -29,53 +33,6 @@ import {
   BasicInformationSchema,
   type BasicInformation,
 } from "../schemas/basic-information.schema";
-
-const genderOptions = [
-  {
-    title: "آقا",
-    value: "male",
-    icon: <LiaMaleSolid className="text-2xl" strokeWidth={0.8} />,
-  },
-  {
-    title: "خانم",
-    value: "female",
-    icon: <LiaFemaleSolid className="text-2xl" strokeWidth={0.8} />,
-  },
-];
-
-const mainGoalOptions = [
-  {
-    title: "کاهش وزن",
-    value: "weight-loss",
-  },
-  {
-    title: "حفظ وزن",
-    value: "weight-maintenance",
-  },
-  {
-    title: "افزایش وزن",
-    value: "weight-gain",
-  },
-];
-
-const focusOptions = [
-  {
-    title: "عضله سازی",
-    value: "muscle-building",
-  },
-  {
-    title: "تغذیه سالم",
-    value: "healthy-eating",
-  },
-  {
-    title: "محیط زیست",
-    value: "environment",
-  },
-  {
-    title: "سایر...",
-    value: "others",
-  },
-];
 
 const stepOneFields: FieldPath<BasicInformation>[] = [
   "name",

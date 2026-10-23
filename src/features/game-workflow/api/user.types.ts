@@ -1,5 +1,7 @@
 export type User = {
   id: number;
+  mainGoal?: string;
+  focus?: string[];
   name: string;
   mobile: string;
   refCode: string;

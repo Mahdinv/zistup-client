@@ -16,3 +16,21 @@ export const BasicInformationSchema = z.object({
 });
 
 export type BasicInformation = z.infer<typeof BasicInformationSchema>;
+
+export const ProfileBasicInformationSchema = BasicInformationSchema.pick({
+  sex: true,
+  weight: true,
+  height: true,
+  birthDate: true,
+});
+export type ProfileBasicInformation = z.infer<
+  typeof ProfileBasicInformationSchema
+>;
+
+export const ProfileGoalInformationSchema = BasicInformationSchema.pick({
+  mainGoal: true,
+  focus: true,
+});
+export type ProfileGoalInformation = z.infer<
+  typeof ProfileGoalInformationSchema
+>;
