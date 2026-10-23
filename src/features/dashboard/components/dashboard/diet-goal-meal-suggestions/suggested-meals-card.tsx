@@ -88,7 +88,7 @@ const SuggestedMealsCard = ({ item, initialTab }: SuggestedMealsCardProps) => {
                     bg-blue-300 dark:bg-[#21262D]
                     border border-blue-500 dark:border-darker-blue-100
                     rounded-2xl p-4 cursor-grab
-                    flex flex-col items-start gap-4
+                    flex flex-1 flex-col items-start gap-4
                 "
       >
         <div className="w-full flex flex-row justify-between items-start">
@@ -124,7 +124,7 @@ const SuggestedMealsCard = ({ item, initialTab }: SuggestedMealsCardProps) => {
           {item.title}
         </h1>
         <div
-          className="w-full
+          className="mt-auto w-full
                    bg-[#0D321E] dark:bg-darker-blue-500
                     text-white
                     rounded-xl py-1 px-3

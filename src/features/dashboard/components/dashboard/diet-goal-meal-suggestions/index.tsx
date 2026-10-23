@@ -81,7 +81,7 @@ const DietGoalMealSuggestions = ({ meals }: DietGoalMealSuggestionsProps) => {
           <Slider
             key={sliderKey}
             slides={{ origin: "auto", perView: "auto", spacing: 8 }}
-            slideClassName="w-(--meal-card-width) min-w-(--meal-card-width) max-w-(--meal-card-width) shrink-0"
+            slideClassName="flex flex-col w-(--meal-card-width) min-w-(--meal-card-width) max-w-(--meal-card-width) shrink-0"
             getKey={(item) => item.mealId}
             items={displayDiets}
             renderItem={(item) => (
