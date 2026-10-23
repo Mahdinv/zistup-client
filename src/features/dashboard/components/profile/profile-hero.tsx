@@ -27,7 +27,7 @@ export default function ProfileHero({
           borderTopLeftRadius: 0,
           borderTopRightRadius: 0,
         }}
-        className="pointer-events-none absolute -inset-px -z-10 rounded-b-[20px]! border border-transparent bg-blue-200 shadow-[0_4px_4px_rgba(0,0,0,0.04)] dark:border-darker-blue-100 dark:bg-[linear-gradient(163.55deg,#0D0E12_-87.8%,#75D5F6_1285.98%)]"
+        className="pointer-events-none absolute -inset-px -z-10 border border-transparent bg-blue-200 shadow-[0_4px_4px_rgba(0,0,0,0.04)] dark:border-darker-blue-100 dark:bg-[linear-gradient(163.55deg,#0D0E12_-87.8%,#75D5F6_1285.98%)]"
       />
       <div
         dir="ltr"

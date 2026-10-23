@@ -27,8 +27,8 @@ const DashboardFlowHeader = () => {
         style={{
           borderTopLeftRadius: 0,
           borderTopRightRadius: 0,
-          borderBottomLeftRadius: 0,
-          borderBottomRightRadius: 0,
+          borderBottomLeftRadius: 20,
+          borderBottomRightRadius: 20,
         }}
         className="pointer-events-none absolute inset-0 -z-10 bg-blue-100 dark:bg-darker-blue-400 border-b border-gray-300 dark:border-darker-blue-100 shadow-[0_2px_2px_-1px_rgba(0,0,0,0.04)]"
       />
