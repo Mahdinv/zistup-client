@@ -13,7 +13,7 @@ export const initialFlow: FlowState = {
   mealId: null,
   query: "",
   selectedFoodId: null,
-  quantity: { amount: 3, unitId: "" },
+  quantity: { amount: 1, unitId: "" },
   detailed: null,
   activePartId: null,
 };

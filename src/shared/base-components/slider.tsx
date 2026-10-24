@@ -149,7 +149,11 @@ const Slider = <T,>({
 
   return (
     <section className="w-full min-w-0 overflow-hidden">
-      <div ref={sliderRef} dir="rtl" className="keen-slider">
+      <div
+        ref={sliderRef}
+        dir="rtl"
+        className="keen-slider cursor-grab active:cursor-grabbing"
+      >
         {items.map((item) => (
           <div
             key={getKey(item)}

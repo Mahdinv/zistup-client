@@ -152,7 +152,7 @@ export default function QuickAddMeal({
               type="button"
               onClick={() => dispatch({ type: "back" })}
               disabled={!!state.nextStep || isSubmitting}
-              className={`flex h-[42px] items-center justify-center gap-0.5 rounded-2xl border border-blue-500 bg-blue-300 px-2 font-bold text-xl leading-[1.45] shadow-[0_4px_4px_0_#0000000a] dark:shadow-none text-blue-700 dark:border-transparent dark:bg-darker-blue-400 focus-visible:outline-2 focus-visible:outline-blue-400 ${state.step === "details" ? "w-1/3" : "w-full"}`}
+              className={`cursor-pointer flex h-[42px] items-center justify-center gap-0.5 rounded-2xl border border-blue-500 bg-blue-300 px-2 font-bold text-xl leading-[1.45] shadow-[0_4px_4px_0_#0000000a] dark:shadow-none text-blue-700 dark:border-transparent dark:bg-darker-blue-400 focus-visible:outline-2 focus-visible:outline-blue-400 ${state.step === "details" ? "w-1/3" : "w-full"}`}
             >
               <MealIcon name="back" />
               بازگشت
@@ -164,7 +164,7 @@ export default function QuickAddMeal({
                   !!state.nextStep || !foodInfoQuery.isSuccess || isSubmitting
                 }
                 onClick={submit}
-                className="h-[42px] flex-1 rounded-2xl bg-green-400 font-bold text-xl leading-[1.45] shadow-[0_4px_4px_0_#0000000a] dark:shadow-none text-darker-green-200 hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-blue-400"
+                className="cursor-pointer h-[42px] flex-1 rounded-2xl bg-green-400 font-bold text-xl leading-[1.45] shadow-[0_4px_4px_0_#0000000a] dark:shadow-none text-darker-green-200 hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-blue-400"
               >
                 {isSubmitting ? "در حال ثبت..." : "ثبت غذا"}
               </button>

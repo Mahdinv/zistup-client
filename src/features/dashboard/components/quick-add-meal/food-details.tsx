@@ -7,6 +7,7 @@ import {
 import Slider from "@/shared/base-components/slider";
 import DetailedQuantity from "./detailed-quantity";
 import { formatMealNumber } from "../../lib/quick-add-meal/format-meal-number";
+import { calculateMealNutrition } from "../../lib/quick-add-meal/meal-nutrition";
 import { useMemo } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import QuantityPicker from "@/shared/base-components/quantity-picker";
@@ -28,6 +29,10 @@ export default function FoodDetails({
 }) {
   const reduceMotion = useReducedMotion();
   const units = useMemo(() => getGeneralUnits(food), [food]);
+  const nutrition = useMemo(
+    () => calculateMealNutrition(state.quantity, food),
+    [state.quantity, food],
+  );
   const generalUnit = units.find((unit) => unit.id === state.quantity.unitId)!;
   return (
     <motion.div
@@ -66,7 +71,7 @@ export default function FoodDetails({
           </h3>
           <span dir="ltr" className="flex items-baseline gap-2">
             <span className="font-rokh text-8xl text-orange-200">
-              {formatMealNumber(food.nutrition.kcal)}
+              {formatMealNumber(nutrition.kcal)}
             </span>
             <small className="font-bold">kcal</small>
           </span>
@@ -98,7 +103,7 @@ export default function FoodDetails({
                   className="mt-3 flex items-baseline justify-center gap-1"
                 >
                   <span className="font-rokh text-2xl leading-6">
-                    {formatMealNumber(food.nutrition[item.key], item.precision)}
+                    {formatMealNumber(nutrition[item.key], item.precision)}
                   </span>
                   <small className="text-[10px]">
                     <bdi>{item.unit}</bdi>

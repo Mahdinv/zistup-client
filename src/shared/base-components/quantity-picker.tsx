@@ -256,7 +256,7 @@ function WheelColumn({
         event.preventDefault();
         onSelect(values[clamp(next, 0, values.length - 1)]);
       }}
-      className={`h-36 overflow-y-scroll overscroll-contain snap-y snap-mandatory touch-pan-y [scrollbar-width:none] [&::-webkit-scrollbar]:hidden select-none focus-visible:outline-2 focus-visible:outline-blue-400 ${textColumn ? "min-w-0 flex-1 font-peyda" : "w-16 shrink-0 font-rokh"}`}
+      className={`cursor-grab active:cursor-grabbing h-36 overflow-y-scroll overscroll-contain snap-y snap-mandatory touch-pan-y [scrollbar-width:none] [&::-webkit-scrollbar]:hidden select-none focus-visible:outline-2 focus-visible:outline-blue-400 ${textColumn ? "min-w-0 flex-1 font-peyda" : "w-16 shrink-0 font-rokh"}`}
     >
       <div className="h-12 shrink-0" />
 
@@ -264,7 +264,7 @@ function WheelColumn({
         <div
           key={item}
           onClick={() => onSelect(item)}
-          className={`flex h-12 shrink-0 snap-center items-center justify-center cursor-pointer px-1 leading-none ${textColumn ? "text-base font-bold" : "pt-2 text-5xl font-medium"} ${(!dimInactive && !textColumn) || item === selected ? (textColumn ? "text-blue-400" : "text-white") : textColumn ? "text-blue-800" : "text-white/40"}`}
+          className={`flex h-12 shrink-0 snap-center items-center justify-center cursor-inherit px-1 leading-none ${textColumn ? "text-base font-bold" : "pt-2 text-5xl font-medium"} ${(!dimInactive && !textColumn) || item === selected ? (textColumn ? "text-blue-400" : "text-white") : textColumn ? "text-blue-800" : "text-white/40"}`}
         >
           {format ? format(item) : item}
         </div>
@@ -381,7 +381,7 @@ const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
         className={
           "w-full flex flex-col justify-start items-start " +
           (appearance === "dashboard"
-            ? "gap-1 [&_.font-rokh>div]:text-[32px]"
+            ? "gap-1 [&_.font-rokh]:w-24 [&_.font-rokh>div]:text-[32px]"
             : "gap-3")
         }
       >

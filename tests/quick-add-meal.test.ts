@@ -15,6 +15,7 @@ test("navigation preserves query, meal, and quantities; closing cancels pending 
   state = flowReducer(state, { type: "query", query: "نان" });
   state = flowReducer(state, { type: "food", foodId: 324 });
   state = flowReducer(state, { type: "transition-complete" });
+  assert.equal(state.quantity.amount, 1);
   state = flowReducer(state, {
     type: "quantity",
     quantity: { amount: 6, unitId: "bite" },
@@ -58,10 +59,12 @@ test("local units remain available and selecting a new food clears previous deta
       ...initialFlow,
       step: "search",
       selectedFoodId: 324,
+      quantity: { amount: 243, unitId: "spoon" },
       detailed: { bread: { amount: 9, unitId: "sangak-palm" } },
     },
     { type: "food", foodId: 325 },
   );
   assert.equal(state.detailed, null);
   assert.equal(state.selectedFoodId, 325);
+  assert.deepEqual(state.quantity, { amount: 1, unitId: "" });
 });

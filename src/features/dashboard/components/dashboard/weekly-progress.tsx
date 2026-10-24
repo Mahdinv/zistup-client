@@ -1,10 +1,12 @@
 import type { WeeklyProgressDay } from "../../lib/plan-date.utils";
 import { memo } from "react";
 import { PiCheckFatFill } from "react-icons/pi";
+import { useUserProfileStore } from "@/shared/stores/user-profile.store";
 
 type WeeklyProgressProps = { days: WeeklyProgressDay[] };
 
 const WeeklyProgress = ({ days }: WeeklyProgressProps) => {
+  const name = useUserProfileStore((state) => state.user?.name);
   return (
     <div
       className="w-full
@@ -15,7 +17,7 @@ const WeeklyProgress = ({ days }: WeeklyProgressProps) => {
     >
       <div className="w-full flex flex-col items-start gap-1.5">
         <h2 className="font-yekan font-extrabold leading-[135%] compact:text-lg fold:text-xl laptop:text-2xl">
-          سلام پارسا 👋
+          سلام{name ? ` ${name}` : ""} 👋
         </h2>
         <p className="font-peyda font-medium leading-[140%] text-justify text-blue-900 dark:text-blue-300 compact:text-sm fold:text-base laptop:text-lg">
           با انتخاب های درست میتونی در مسیر تعادل قرار بگیری. تمرکز بر

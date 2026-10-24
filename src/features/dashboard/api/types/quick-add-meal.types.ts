@@ -24,6 +24,7 @@ export type Food = {
   generalUnits: QuantityUnit[];
   defaultUnitId?: string;
   servingWeightGrams: number;
+  amountGrams: number;
   parts: FoodPart[];
 };
 export type SearchState =

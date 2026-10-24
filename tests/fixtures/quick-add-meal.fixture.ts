@@ -5,6 +5,7 @@ export const TEST_FOODS: Food[] = [
     title: "غذای آزمایشی",
     defaultUnitId: "serving",
     servingWeightGrams: 350,
+    amountGrams: 100,
     nutrition: {
       kcal: 300,
       protein: 12,

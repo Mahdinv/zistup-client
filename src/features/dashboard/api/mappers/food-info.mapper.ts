@@ -27,6 +27,7 @@ export function mapFoodInfo({ data }: FoodInfoResponse): Food {
     },
     defaultUnitId: data.serving_unit,
     servingWeightGrams: data.serving_weight_g,
+    amountGrams: data.amount_g,
     generalUnits: [
       { id: data.serving_unit, label: formatServingUnit(data.serving_unit) },
     ],
