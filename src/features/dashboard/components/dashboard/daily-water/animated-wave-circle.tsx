@@ -1,8 +1,10 @@
 import { memo } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import { PiCheckBold } from "react-icons/pi";
 
 type AnimatedWaveCircleProps = {
   className?: string;
+  progress: number;
 };
 
 const VIEWBOX_SIZE = 200;
@@ -18,7 +20,7 @@ const FRONT_WAVE_BASELINE_Y = 120;
 
 const WAVE_START_X = -800;
 const WAVE_END_X = 1000;
-const WAVE_BOTTOM_Y = 220;
+const WAVE_BOTTOM_Y = 420;
 
 const buildWavePath = ({
   startX,
@@ -70,8 +72,13 @@ const frontWavePath = buildWavePath({
   bottomY: WAVE_BOTTOM_Y,
 });
 
-const AnimatedWaveCircle = ({ className = "" }: AnimatedWaveCircleProps) => {
+const AnimatedWaveCircle = ({
+  className = "",
+  progress,
+}: AnimatedWaveCircleProps) => {
   const shouldReduceMotion = useReducedMotion();
+  const complete = progress >= 1;
+  const animateWaves = !shouldReduceMotion && progress > 0 && !complete;
 
   return (
     <div
@@ -94,39 +101,59 @@ const AnimatedWaveCircle = ({ className = "" }: AnimatedWaveCircleProps) => {
         className="absolute inset-0 size-full"
         preserveAspectRatio="none"
       >
-        {/* Back wave - darker - moves LEFT */}
         <motion.g
-          initial={{ x: 0 }}
-          animate={shouldReduceMotion ? { x: 0 } : { x: [0, -WAVE_LENGTH] }}
+          initial={false}
+          animate={{ y: (0.5 - progress) * 320 }}
           transition={{
-            duration: 2.8,
-            ease: "linear",
-            repeat: Infinity,
+            duration: shouldReduceMotion ? 0 : 0.4,
+            ease: "easeOut",
           }}
-          style={{ willChange: "transform" }}
         >
-          <path
-            d={backWavePath}
-            className="fill-blue-600 dark:fill-darker-blue-100"
-          />
-        </motion.g>
+          {/* Back wave - darker - moves LEFT */}
+          <motion.g
+            initial={{ x: 0 }}
+            animate={animateWaves ? { x: [0, -WAVE_LENGTH] } : { x: 0 }}
+            transition={{
+              ease: "linear",
+              repeat: animateWaves ? Infinity : 0,
+              duration: animateWaves ? 2.8 : 0,
+            }}
+          >
+            <path
+              d={backWavePath}
+              className="fill-blue-600 dark:fill-darker-blue-100"
+            />
+          </motion.g>
 
-        {/* Front wave - lighter - moves RIGHT */}
-        <motion.g
-          initial={{ x: -WAVE_LENGTH }}
-          animate={
-            shouldReduceMotion ? { x: -WAVE_LENGTH } : { x: [-WAVE_LENGTH, 0] }
-          }
-          transition={{
-            duration: 2,
-            ease: "linear",
-            repeat: Infinity,
-          }}
-          style={{ willChange: "transform" }}
-        >
-          <path d={frontWavePath} className="fill-blue-400" />
+          {/* Front wave - lighter - moves RIGHT */}
+          <motion.g
+            initial={{ x: -WAVE_LENGTH }}
+            animate={
+              animateWaves ? { x: [-WAVE_LENGTH, 0] } : { x: -WAVE_LENGTH }
+            }
+            transition={{
+              ease: "linear",
+              repeat: animateWaves ? Infinity : 0,
+              duration: animateWaves ? 2 : 0,
+            }}
+          >
+            <path d={frontWavePath} className="fill-blue-400" />
+          </motion.g>
         </motion.g>
       </svg>
+      <motion.div
+        className="absolute inset-0 flex items-center justify-center"
+        initial={false}
+        animate={{ opacity: complete ? 1 : 0, scale: complete ? 1 : 0.9 }}
+        transition={{
+          duration: shouldReduceMotion ? 0 : 0.25,
+          ease: "easeOut",
+        }}
+      >
+        <span className="flex size-1/2 items-center justify-center rounded-full bg-blue-100 text-blue-800 dark:bg-darker-blue-300 dark:text-blue-400">
+          <PiCheckBold className="size-1/2" />
+        </span>
+      </motion.div>
     </div>
   );
 };

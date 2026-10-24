@@ -1,5 +1,4 @@
 import { memo } from "react";
-import { LuArrowUpLeft } from "react-icons/lu";
 import CircularDailyCaloriesProgress from "./circular-daily-calories-progress";
 
 const DailyCalories = () => {
@@ -14,27 +13,9 @@ const DailyCalories = () => {
         flex flex-col items-center gap-4
       "
     >
-      <div
-        className="
-          w-full
-          compact:min-h-6 fold:min-h-8 laptop:min-h-10
-          flex flex-row justify-between items-center
-        "
-      >
-        <h2 className="font-yekan font-extrabold leading-[135%] compact:text-lg fold:text-xl laptop:text-2xl">
-          کالری روزانه
-        </h2>
-
-        <LuArrowUpLeft
-          className="
-            text-orange-200
-            hover:text-orange-300 active:text-orange-300
-            compact:text-2xl fold:text-3xl laptop:text-4xl
-            cursor-pointer
-          "
-          strokeWidth={2.5}
-        />
-      </div>
+      <h2 className="self-start font-yekan font-extrabold leading-[135%] compact:text-lg fold:text-xl laptop:text-2xl">
+        کالری روزانه
+      </h2>
 
       <CircularDailyCaloriesProgress value={10} />
 

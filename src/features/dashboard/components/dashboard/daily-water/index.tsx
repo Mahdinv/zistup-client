@@ -1,9 +1,29 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { PiPlusBold } from "react-icons/pi";
 
 import AnimatedWaveCircle from "./animated-wave-circle";
+import {
+  DAILY_WATER_GOAL,
+  readDailyWater,
+  writeDailyWater,
+} from "../../../lib/daily-water.utils";
 
-const DailyWater = () => {
+type DailyWaterProps = {
+  date: string;
+};
+
+// The dashboard keys this card by date so each selection loads its own count.
+const DailyWater = ({ date }: DailyWaterProps) => {
+  const [glasses, setGlasses] = useState(() => readDailyWater(date));
+  const complete = glasses === DAILY_WATER_GOAL;
+
+  const addGlass = () => {
+    if (complete) return;
+    const next = Math.min(glasses + 1, DAILY_WATER_GOAL);
+    setGlasses(next);
+    writeDailyWater(date, next);
+  };
+
   return (
     <div
       className="
@@ -27,9 +47,15 @@ const DailyWater = () => {
         </h2>
 
         <div className="text-blue-500 flex flex-row justify-end items-center gap-1">
-          <label className="font-rokh font-bold leading-none compact:text-base mobile-lg:text-lg fold:text-xl laptop:text-2xl">
-            8/4
-          </label>
+          <span
+            dir="ltr"
+            aria-live="polite"
+            aria-atomic="true"
+            aria-label={`${glasses} از ${DAILY_WATER_GOAL} لیوان`}
+            className="font-rokh font-bold leading-none tabular-nums compact:text-base mobile-lg:text-lg fold:text-xl laptop:text-2xl"
+          >
+            {DAILY_WATER_GOAL}/{glasses}
+          </span>
 
           <label className="font-peyda font-bold leading-none compact:text-xxs mobile:text-xs fold:text-sm laptop:text-base">
             لیوان
@@ -37,9 +63,13 @@ const DailyWater = () => {
         </div>
       </div>
 
-      <AnimatedWaveCircle />
+      <AnimatedWaveCircle progress={glasses / DAILY_WATER_GOAL} />
 
-      <div
+      <button
+        type="button"
+        onClick={addGlass}
+        disabled={complete}
+        aria-label={complete ? "هدف آب روزانه تکمیل شد" : "افزودن یک لیوان آب"}
         className="
           mt-auto w-full
           compact:min-h-8 fold:min-h-10 laptop:min-h-12
@@ -48,17 +78,23 @@ const DailyWater = () => {
           border-[1.5px] border-blue-300 dark:border-dark
           rounded-[37px]
           flex flex-row justify-center items-center gap-2 cursor-pointer
+          disabled:cursor-default disabled:bg-blue-300 disabled:text-blue-800
+          dark:disabled:bg-darker-blue-100 dark:disabled:text-blue-400
+          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500
         "
       >
-        <PiPlusBold
-          className="compact:text-2xl fold:text-3xl laptop:text-4xl"
-          strokeWidth={4}
-        />
+        {!complete && (
+          <PiPlusBold
+            aria-hidden="true"
+            className="compact:text-2xl fold:text-3xl laptop:text-4xl"
+            strokeWidth={4}
+          />
+        )}
 
-        <label className="font-peyda font-bold leading-none compact:text-sm fold:text-base laptop:text-lg">
-          یک لیوان
-        </label>
-      </div>
+        <span className="font-peyda font-bold leading-none whitespace-nowrap compact:text-sm fold:text-base laptop:text-lg">
+          {complete ? "تکمیل شد" : "یک لیوان"}
+        </span>
+      </button>
     </div>
   );
 };

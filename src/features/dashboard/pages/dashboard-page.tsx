@@ -14,6 +14,7 @@ import ZistupRadar from "../components/dashboard/zistup-radar";
 import DetailedMonitoring from "../components/dashboard/detailed-monitoring";
 import ZistupRecommendation from "../components/dashboard/zistup-recommendation";
 import TodayLoggedMeals from "../components/dashboard/today-logged-meals";
+import { formatPlanDateForApi } from "../lib/plan-date.utils";
 
 const DashboardPage = () => {
   const dietQuery = useOptimizedDietaryQuery(true, {
@@ -77,7 +78,10 @@ const DashboardPage = () => {
       <DietGoalMealSuggestions meals={meals} />
       <div className="w-full flex flex-row items-stretch gap-3">
         <DailyCalories />
-        <DailyWater />
+        <DailyWater
+          key={planDates.selectedDate}
+          date={formatPlanDateForApi(planDates.selectedDate)}
+        />
       </div>
       <DailyPhysicalActivity />
       <ZistupRadar />
