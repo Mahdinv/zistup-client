@@ -7,6 +7,7 @@ import {
   formatPlanDateForApi,
   getDietDayForDate,
   getDietDayIndex,
+  getDashboardDateRange,
   getPlanDateRange,
   getTehranCalendarDate,
   getWeeklyProgressDays,
@@ -15,6 +16,51 @@ import {
 import type { DietResponse } from "../src/features/dashboard/api/types/diet-response.types.ts";
 
 type JalaliTuple = [number, number, number];
+test("dashboard navigation runs from plan start through today or plan expiry", () => {
+  const plan = getPlanDateRange("2026-10-12 08:00:00");
+  assert.ok(plan);
+  for (const date of [plan.planStartDate, plan.planStartDate + 5, plan.planEndDate, plan.planEndDate + 10]) {
+    const range = getDashboardDateRange(date, plan);
+    assert.ok(range);
+    assert.equal(range.planStartDate, plan.planStartDate);
+    assert.equal(range.planEndDate, Math.min(date, plan.planEndDate));
+    assert.equal(isWithinPlan(range.planStartDate, range), true);
+    assert.equal(isWithinPlan(range.planEndDate, range), true);
+    assert.equal(isWithinPlan(range.planStartDate - 1, range), false);
+    assert.equal(isWithinPlan(range.planEndDate + 1, range), false);
+    assert.equal(
+      clampPlanDate(range.planStartDate - 1, range),
+      range.planStartDate,
+    );
+    assert.equal(clampPlanDate(date + 1, range), range.planEndDate);
+  }
+});
+
+test("dashboard has no selectable dates without a plan or before its start", () => {
+  const today = j2d(1405, 8, 2);
+  assert.equal(getDashboardDateRange(today, null), null);
+  assert.equal(getDashboardDateRange(today, {
+    planStartDate: today + 1,
+    planEndDate: today + 31,
+  }), null);
+});
+
+test("dashboard limits roll forward at Tehran midnight", () => {
+  const plan = getPlanDateRange("2026-10-12 08:00:00");
+  assert.ok(plan);
+  const before = getDashboardDateRange(
+    getTehranCalendarDate(new Date("2026-10-24T20:29:59Z")),
+    plan,
+  );
+  const after = getDashboardDateRange(
+    getTehranCalendarDate(new Date("2026-10-24T20:30:00Z")),
+    plan,
+  );
+  assert.ok(before && after);
+  assert.equal(after.planEndDate, before.planEndDate + 1);
+  assert.equal(after.planStartDate, before.planStartDate);
+});
+
 const utcTimestamp = ([year, month, day]: JalaliTuple) => {
   const { gy, gm, gd } = toGregorian(year, month, day);
   return `${gy}-${String(gm).padStart(2, "0")}-${String(gd).padStart(2, "0")} 08:00:00`;

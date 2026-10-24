@@ -62,7 +62,11 @@ const DashboardPage = () => {
     );
   }
 
-  if (!planDates.range || planDates.selectedDate === null) {
+  if (
+    !planDates.range ||
+    !planDates.navigationRange ||
+    planDates.selectedDate === null
+  ) {
     return <p role="alert">تاریخ یا روزهای برنامه غذایی معتبر نیست.</p>;
   }
 
@@ -71,7 +75,7 @@ const DashboardPage = () => {
       <WeeklyProgress days={planDates.weeklyDays} />
       <Calendar
         selectedDate={planDates.selectedDate}
-        range={planDates.range}
+        range={planDates.navigationRange}
         onSelectDate={planDates.selectDate}
       />
       <DietAdherence />

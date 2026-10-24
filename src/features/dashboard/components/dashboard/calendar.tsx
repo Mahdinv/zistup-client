@@ -1,5 +1,7 @@
 import {
   formatPlanDate,
+  formatPlanDateForApi,
+  getTehranCalendarDate,
   isWithinPlan,
   type PlanDateRange,
 } from "../../lib/plan-date.utils";
@@ -50,10 +52,27 @@ const Calendar = ({ selectedDate, range, onSelectDate }: CalendarProps) => {
         aria-atomic="true"
         aria-label={formatted.label}
       >
-        <LuCalendarDays
-          className="compact:text-4xl fold:text-5xl laptop:text-6xl"
-          strokeWidth={1.5}
-        />
+        <span className="relative flex items-center focus-within:outline-2 focus-within:rounded">
+          <LuCalendarDays
+            className="compact:text-4xl fold:text-5xl laptop:text-6xl"
+            strokeWidth={1.5}
+          />
+          <input
+            type="date"
+            aria-label="انتخاب تاریخ"
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            value={formatPlanDateForApi(selectedDate)}
+            min={formatPlanDateForApi(range.planStartDate)}
+            max={formatPlanDateForApi(range.planEndDate)}
+            onClick={(event) => event.currentTarget.showPicker?.()}
+            onChange={(event) => {
+              const value = event.currentTarget.valueAsNumber;
+              if (!Number.isFinite(value)) return;
+              const date = getTehranCalendarDate(new Date(value));
+              if (isWithinPlan(date, range)) onSelectDate(date);
+            }}
+          />
+        </span>
         <label className="font-peyda font-bold leading-[140%] compact:text-base fold:text-lg laptop:text-xl">
           {formatted.weekday}
         </label>

@@ -110,6 +110,17 @@ export const isWithinPlan = (date: number, range: PlanDateRange): boolean =>
   date >= range.planStartDate &&
   date <= range.planEndDate;
 
+export const getDashboardDateRange = (
+  today: number,
+  range: PlanDateRange | null,
+): PlanDateRange | null => {
+  if (!range || today < range.planStartDate) return null;
+  return {
+    planStartDate: range.planStartDate,
+    planEndDate: Math.min(today, range.planEndDate),
+  };
+};
+
 export const clampPlanDate = (date: number, range: PlanDateRange): number =>
   Math.min(range.planEndDate, Math.max(range.planStartDate, date));
 
