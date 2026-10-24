@@ -14,6 +14,7 @@ const mapNutrition = (dto: DietNutritionDto): DietNutrition => ({
 
 const mapFood = (dto: DietFoodDto): DietFood => ({
   id: dto.id,
+  foodId: dto.foodId,
   title: dto.title,
   source: dto.source,
   category: dto.category,
@@ -21,6 +22,7 @@ const mapFood = (dto: DietFoodDto): DietFood => ({
   quantity: dto.quantity,
   ingredients: dto.ingredients,
   nutrition: mapNutrition(dto.nutrition),
+  companions: (dto.companions ?? []).map(mapFood),
 });
 
 export const mapDietDay = (dto: DietDayDto): DietDay => ({

@@ -47,15 +47,15 @@ const SuggestedMealsCard = ({ item, initialTab }: SuggestedMealsCardProps) => {
       toast.error("پیشنهاد انتخاب‌شده در پاسخ برنامه غذایی موجود نیست");
       return;
     }
-    const meal = Object.values(MealType).find(
-      (value) => value === item.meal.key,
-    );
-    const foodId = Number(food.id);
-    if (
-      !/^[0-9]+$/.test(food.id) ||
-      !Number.isSafeInteger(foodId) ||
-      foodId <= 0
-    ) {
+    const meal = [
+      "mid_morning_snack",
+      "afternoon_snack",
+      "pre_sleep_snack",
+    ].includes(item.meal.key)
+      ? MealType.Snack
+      : Object.values(MealType).find((value) => value === item.meal.key);
+    const foodId = food.foodId;
+    if (!Number.isSafeInteger(foodId) || foodId <= 0) {
       toast.error(
         "برنامه غذایی کد دستور غذا را برگردانده است؛ شناسه عددی غذا (foodId) برای ثبت از سرور دریافت نشده است",
       );
@@ -107,7 +107,10 @@ const SuggestedMealsCard = ({ item, initialTab }: SuggestedMealsCardProps) => {
             aria-haspopup="dialog"
             aria-expanded={drawerOpen}
             data-keen-slider-clickable="true"
-            onClick={() => {
+            onClickCapture={(event) => {
+              // Keen retains click suppression after dragging. Handle this
+              // explicit control before its native slider capture listener.
+              event.stopPropagation();
               setActiveTab(initialTab);
               setDrawerOpen(true);
             }}
@@ -309,14 +312,28 @@ const SuggestedMealsCard = ({ item, initialTab }: SuggestedMealsCardProps) => {
                           ))}
                         </ul>
                       </section>
-                      <section className="rounded-2xl min-h-17.25 border border-blue-500 dark:border-green-900 bg-blue-200 dark:bg-darker-blue-400 p-3 shadow-[0_4px_4px_#0000000a] dark:shadow-none">
-                        <h4 className="text-[12px] font-medium leading-[1.4]">
-                          همراه پیشنهادی این وعده:
-                        </h4>
-                        <p className="mt-1 text-[14px] text-blue-900 dark:text-blue-700">
-                          به‌زودی
-                        </p>
-                      </section>
+                      {food.companions.length > 0 && (
+                        <section className="rounded-2xl min-h-17.25 border border-blue-500 dark:border-green-900 bg-blue-200 dark:bg-darker-blue-400 p-3 shadow-[0_4px_4px_#0000000a] dark:shadow-none">
+                          <h4 className="text-[12px] font-medium leading-[1.4]">
+                            همراه پیشنهادی این وعده:
+                          </h4>
+                          <ul className="mt-1 flex flex-col gap-1 text-[14px] text-blue-900 dark:text-blue-700">
+                            {food.companions.map((companion) => (
+                              <li key={companion.id} className="wrap-anywhere">
+                                <span>{companion.title}</span>{" — "}
+                                <bdi className="font-rokh">
+                                  {companion.quantity.servings}
+                                </bdi>{" "}
+                                {companion.quantity.unit}{" / "}
+                                <bdi className="font-rokh">
+                                  {Math.round(companion.quantity.grams)}
+                                </bdi>{" "}
+                                گرم
+                              </li>
+                            ))}
+                          </ul>
+                        </section>
+                      )}
                     </>
                   ) : (
                     <p>پیشنهادی برای این گزینه موجود نیست.</p>

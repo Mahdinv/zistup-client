@@ -18,7 +18,7 @@ type DietGoalMealSuggestionsProps = {
 
 const DietGoalMealSuggestions = ({ meals }: DietGoalMealSuggestionsProps) => {
   const [activePlan, setActivePlan] = useState<PlanType>("primary");
-  debugger;
+
   const displayDiets = useMemo(() => {
     return (meals ?? []).flatMap((meal) => {
       const selectedMeal =

@@ -1,6 +1,7 @@
 import usePlanDates from "../hooks/use-plan-dates.hook";
 import useDietAdherenceQuery from "../hooks/use-diet-adherence-query.hook";
 import useCaloriesQuery from "../hooks/use-calories-query.hook";
+import useRadarQuery from "../hooks/use-radar-query.hook";
 import Skeleton from "react-loading-skeleton";
 import Button from "@/shared/base-components/button";
 import { getApiErrorMessage } from "@/shared/api/error.helpers";
@@ -39,6 +40,9 @@ const DashboardPage = () => {
       : null;
   const adherenceQuery = useDietAdherenceQuery(selectedDate);
   const caloriesQuery = useCaloriesQuery(selectedDate);
+  const radarQuery = useRadarQuery(
+    selectedDate ?? formatPlanDateForApi(planDates.today),
+  );
 
   if (dietQuery.isError) {
     return (
@@ -107,7 +111,12 @@ const DashboardPage = () => {
         />
       </div>
       <DailyPhysicalActivity />
-      <ZistupRadar />
+      <ZistupRadar
+        data={radarQuery.data?.data}
+        isLoading={radarQuery.isPending}
+        error={radarQuery.error}
+        onRetry={() => void radarQuery.refetch()}
+      />
       <DetailedMonitoring />
       <ZistupRecommendation />
       <TodayLoggedMeals />

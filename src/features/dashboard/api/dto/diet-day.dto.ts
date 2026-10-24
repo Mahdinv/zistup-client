@@ -7,6 +7,7 @@ export type DietNutritionDto = {
 
 export type DietFoodDto = {
   id: string;
+  foodId: number;
   title: string;
   source: string;
   category: string;
@@ -14,6 +15,7 @@ export type DietFoodDto = {
   quantity: { grams: number; servings: number; unit: string };
   ingredients: string[];
   nutrition: DietNutritionDto;
+  companions?: DietFoodDto[];
 };
 
 export type DietMealDto = {

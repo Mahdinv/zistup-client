@@ -1,10 +1,21 @@
 import { memo } from "react";
+import Skeleton from "react-loading-skeleton";
+import { getApiErrorMessage } from "@/shared/api/error.helpers";
+import type { RadarData } from "../../../api/types/radar.types";
 
 import RadarChart from "./radar-chart";
 
-const ZistupRadar = () => {
+type ZistupRadarProps = {
+  data?: RadarData;
+  isLoading: boolean;
+  error: unknown;
+  onRetry: () => void;
+};
+
+const ZistupRadar = ({ data, isLoading, error, onRetry }: ZistupRadarProps) => {
   return (
     <div
+      aria-busy={isLoading}
       className="
                     w-full
                     bg-blue-100 dark:bg-darker-blue-400
@@ -39,7 +50,26 @@ const ZistupRadar = () => {
           </div>
         </div>
       </div>
-      <RadarChart />
+      {error ? (
+        <div className="w-full text-center text-sm" role="alert">
+          <p>{getApiErrorMessage(error)}</p>
+          <button
+            type="button"
+            onClick={onRetry}
+            className="mt-2 cursor-pointer rounded px-3 py-1 text-blue-500 dark:text-blue-300 focus-visible:outline-2"
+          >
+            تلاش مجدد
+          </button>
+        </div>
+      ) : isLoading ? (
+        <div className="w-full" role="status" aria-label="در حال دریافت رادار">
+          <Skeleton height={240} borderRadius={16} />
+        </div>
+      ) : data ? (
+        <RadarChart radar={data} />
+      ) : (
+        <p role="status">اطلاعات رادار در دسترس نیست.</p>
+      )}
     </div>
   );
 };
