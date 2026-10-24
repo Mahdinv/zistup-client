@@ -1,4 +1,5 @@
 import usePlanDates from "../hooks/use-plan-dates.hook";
+import useDietAdherenceQuery from "../hooks/use-diet-adherence-query.hook";
 import Skeleton from "react-loading-skeleton";
 import Button from "@/shared/base-components/button";
 import { getApiErrorMessage } from "@/shared/api/error.helpers";
@@ -30,6 +31,12 @@ const DashboardPage = () => {
   );
 
   const meals = planDates.selectedDietDay?.meals;
+
+  const adherenceQuery = useDietAdherenceQuery(
+    planDates.selectedDate !== null
+      ? formatPlanDateForApi(planDates.selectedDate)
+      : null,
+  );
 
   if (dietQuery.isError) {
     return (
@@ -78,7 +85,12 @@ const DashboardPage = () => {
         range={planDates.navigationRange}
         onSelectDate={planDates.selectDate}
       />
-      <DietAdherence />
+      <DietAdherence
+        data={adherenceQuery.data?.data}
+        isLoading={adherenceQuery.isPending}
+        error={adherenceQuery.error}
+        onRetry={() => void adherenceQuery.refetch()}
+      />
       <DietGoalMealSuggestions meals={meals} />
       <div className="w-full flex flex-row items-stretch gap-3">
         <DailyCalories />

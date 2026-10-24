@@ -1,4 +1,5 @@
 import Button from "@/shared/base-components/button";
+import { groupsColor } from "@/shared/constants/food-group-colors.constants";
 import ScrollFade from "@/shared/base-components/scroll-fade";
 import PlaygroundFlowContainer from "@/app/layouts/playground-flow/playground-flow-container";
 import { motion } from "framer-motion";
@@ -126,15 +127,6 @@ const resultItemVariants = {
     },
   },
 };
-
-const groupsColor = [
-  { id: "protein", color: "#FF7878" },
-  { id: "carbohydrate", color: "#FF9F45" },
-  { id: "fiber", color: "#2CE57F" },
-  { id: "nuts", color: "#7EBBD0" },
-  { id: "oils", color: "#FFEE80" },
-  { id: "stimulant", color: "#BB6BD9" },
-];
 
 const OptimizedDietaryPage = () => {
   const [canStartPolling, setCanStartPolling] = useState(false);
