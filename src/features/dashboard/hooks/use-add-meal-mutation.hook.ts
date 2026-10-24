@@ -8,6 +8,7 @@ import { mealLogsQueryKeys } from "../constants/meal-logs-query.constants";
 import { dietAdherenceQueryKeys } from "../constants/diet-adherence-query.constants";
 import { caloriesQueryKeys } from "../constants/calories-query.constants";
 import { radarQueryKeys } from "../constants/radar-query.constants";
+import { nutritionQueryKeys } from "../constants/nutrition-query.constants";
 
 export default function useAddMealMutation() {
   const queryClient = useQueryClient();
@@ -22,6 +23,7 @@ export default function useAddMealMutation() {
         queryClient.invalidateQueries({ queryKey: dietAdherenceQueryKeys.all }),
         queryClient.invalidateQueries({ queryKey: caloriesQueryKeys.all }),
         queryClient.invalidateQueries({ queryKey: radarQueryKeys.all }),
+        queryClient.invalidateQueries({ queryKey: nutritionQueryKeys.all }),
       ]);
     },
     onError: (error) => toast.error(normalizeApiError(error).message),

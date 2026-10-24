@@ -1,87 +1,38 @@
-import { memo, useCallback, useLayoutEffect, useRef, useState } from "react";
+import {
+  memo,
+  useMemo,
+  useCallback,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import RecommendationAccordion, {
   type Recommendation,
 } from "./recommendation-accordion";
 import ScrollFade from "@/shared/base-components/scroll-fade";
 
-const defaultRecommendations: Recommendation[] = [
-  {
-    id: 1,
-    title: "کمبود آهن",
-    description:
-      "مصرف سبزی‌خوردن تازه، کاهو و گشنیز به افزایش جذب آهن و بهبود سلامت گوارش کمک می‌کند. همچنین تأمین از کشت بومی، باعث کاهش هزینه‌های حمل‌ونقل و حفظ محیط‌زیست می‌شود.",
-  },
-  {
-    id: 2,
-    title: "کمبود منیزیم",
-    description:
-      "مصرف سبزی‌خوردن تازه، کاهو و گشنیز به افزایش جذب آهن و بهبود سلامت گوارش کمک می‌کند. همچنین تأمین از کشت بومی، باعث کاهش هزینه‌های حمل‌ونقل و حفظ محیط‌زیست می‌شود.",
-  },
-  {
-    id: 3,
-    title: "کمبود کلسیم",
-    description:
-      "مصرف سبزی‌خوردن تازه، کاهو و گشنیز به افزایش جذب آهن و بهبود سلامت گوارش کمک می‌کند. همچنین تأمین از کشت بومی، باعث کاهش هزینه‌های حمل‌ونقل و حفظ محیط‌زیست می‌شود.",
-  },
-  {
-    id: 4,
-    title: "کمبود فیبر",
-    description:
-      "مصرف سبزی‌خوردن تازه، کاهو و گشنیز به افزایش جذب آهن و بهبود سلامت گوارش کمک می‌کند. همچنین تأمین از کشت بومی، باعث کاهش هزینه‌های حمل‌ونقل و حفظ محیط‌زیست می‌شود.",
-  },
-  {
-    id: 5,
-    title: "کمبود ویتامین دی",
-    description:
-      "مصرف سبزی‌خوردن تازه، کاهو و گشنیز به افزایش جذب آهن و بهبود سلامت گوارش کمک می‌کند. همچنین تأمین از کشت بومی، باعث کاهش هزینه‌های حمل‌ونقل و حفظ محیط‌زیست می‌شود.",
-  },
-  {
-    id: 6,
-    title: "کمبود کلسیم",
-    description:
-      "مصرف سبزی‌خوردن تازه، کاهو و گشنیز به افزایش جذب آهن و بهبود سلامت گوارش کمک می‌کند. همچنین تأمین از کشت بومی، باعث کاهش هزینه‌های حمل‌ونقل و حفظ محیط‌زیست می‌شود.",
-  },
-  {
-    id: 7,
-    title: "کمبود فیبر",
-    description:
-      "مصرف سبزی‌خوردن تازه، کاهو و گشنیز به افزایش جذب آهن و بهبود سلامت گوارش کمک می‌کند. همچنین تأمین از کشت بومی، باعث کاهش هزینه‌های حمل‌ونقل و حفظ محیط‌زیست می‌شود.",
-  },
-  {
-    id: 8,
-    title: "کمبود ویتامین دی",
-    description:
-      "مصرف سبزی‌خوردن تازه، کاهو و گشنیز به افزایش جذب آهن و بهبود سلامت گوارش کمک می‌کند. همچنین تأمین از کشت بومی، باعث کاهش هزینه‌های حمل‌ونقل و حفظ محیط‌زیست می‌شود.",
-  },
-  {
-    id: 9,
-    title: "کمبود کلسیم",
-    description:
-      "مصرف سبزی‌خوردن تازه، کاهو و گشنیز به افزایش جذب آهن و بهبود سلامت گوارش کمک می‌کند. همچنین تأمین از کشت بومی، باعث کاهش هزینه‌های حمل‌ونقل و حفظ محیط‌زیست می‌شود.",
-  },
-  {
-    id: 10,
-    title: "کمبود فیبر",
-    description:
-      "مصرف سبزی‌خوردن تازه، کاهو و گشنیز به افزایش جذب آهن و بهبود سلامت گوارش کمک می‌کند. همچنین تأمین از کشت بومی، باعث کاهش هزینه‌های حمل‌ونقل و حفظ محیط‌زیست می‌شود.",
-  },
-  {
-    id: 11,
-    title: "کمبود ویتامین دی",
-    description:
-      "مصرف سبزی‌خوردن تازه، کاهو و گشنیز به افزایش جذب آهن و بهبود سلامت گوارش کمک می‌کند. همچنین تأمین از کشت بومی، باعث کاهش هزینه‌های حمل‌ونقل و حفظ محیط‌زیست می‌شود.",
-  },
-];
+import type { NutritionAdvice } from "../../../api/types/nutrition.types";
+
+const emptyAdvices: NutritionAdvice[] = [];
 
 const VISIBLE_ITEM_COUNT = 10;
 
 type ZistupRecommendationProps = {
-  recommendations?: readonly Recommendation[];
+  advices?: readonly NutritionAdvice[];
 };
 
 const ZistupRecommendation = ({
-  recommendations = defaultRecommendations,
+  advices = emptyAdvices,
 }: ZistupRecommendationProps) => {
+  const recommendations = useMemo<Recommendation[]>(
+    () =>
+      advices.map(({ name, advice }, index) => ({
+        id: name + "-" + index,
+        title: name,
+        description: advice,
+      })),
+    [advices],
+  );
   const [activeId, setActiveId] = useState<Recommendation["id"] | null>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);

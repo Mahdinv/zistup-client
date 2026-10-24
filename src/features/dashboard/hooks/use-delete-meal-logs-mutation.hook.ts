@@ -7,6 +7,7 @@ import { mealLogsQueryKeys } from "../constants/meal-logs-query.constants";
 import { dietAdherenceQueryKeys } from "../constants/diet-adherence-query.constants";
 import { caloriesQueryKeys } from "../constants/calories-query.constants";
 import { radarQueryKeys } from "../constants/radar-query.constants";
+import { nutritionQueryKeys } from "../constants/nutrition-query.constants";
 
 type DeleteMealLogsRequest =
   { kind: "single"; id: number; date: string } | { kind: "day"; date: string };
@@ -25,6 +26,10 @@ export default function useDeleteMealLogsMutation() {
         request.kind === "single" ? "وعده حذف شد" : "وعده‌های روز حذف شدند",
       );
       await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: nutritionQueryKeys.daily(request.date),
+          exact: true,
+        }),
         queryClient.invalidateQueries({
           queryKey: radarQueryKeys.daily(request.date),
           exact: true,

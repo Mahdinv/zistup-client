@@ -12,21 +12,37 @@ import { getRelativePosition } from "chart.js/helpers";
 
 import "@/shared/lib/chartjs-setup";
 import { useDashboardTheme } from "@/features/dashboard/hooks/use-dashboard-theme.hook";
+import type { Nutrient } from "../../../api/types/nutrition.types";
+import { getNutrientComparison } from "../../../lib/nutrition.utils";
 
 type LineChartProps = {
-  labels: string[];
-  currentValues: number[];
-  referenceValues: number[];
-  unit: string;
+  nutrients: Nutrient[];
 };
 
-const numberFormat = new Intl.NumberFormat("fa-IR", {
-  maximumFractionDigits: 2,
-});
 const plugins: Plugin<"line">[] = [
   Filler,
   {
     id: "line-chart-tooltip-position",
+    afterDatasetsDraw(chart) {
+      const {
+        ctx,
+        scales: { x, y },
+      } = chart;
+      ctx.save();
+      ctx.strokeStyle = String(chart.options.scales?.x?.ticks?.color);
+      ctx.lineWidth = 1.5;
+      chart.data.datasets[0].data.forEach((value, index) => {
+        if (value !== null) return;
+        // A dash marks missing consumption; it is not a plotted zero or line segment.
+        const left = x.getPixelForValue(index);
+        const baseline = y.getPixelForValue(0);
+        ctx.beginPath();
+        ctx.moveTo(left - 3, baseline);
+        ctx.lineTo(left + 3, baseline);
+        ctx.stroke();
+      });
+      ctx.restore();
+    },
     afterDraw(chart) {
       // Re-anchor a pinned tooltip after a responsive chart layout/update.
       const tooltip = chart.tooltip;
@@ -37,12 +53,7 @@ const plugins: Plugin<"line">[] = [
   },
 ];
 
-const LineChart = ({
-  labels,
-  currentValues,
-  referenceValues,
-  unit,
-}: LineChartProps) => {
+const LineChart = ({ nutrients }: LineChartProps) => {
   const { theme } = useDashboardTheme();
   const chartRef = useRef<Chart<"line">>(null);
   const gradientRef = useRef<{ key: string; value: CanvasGradient } | null>(
@@ -58,6 +69,10 @@ const LineChart = ({
     const color = (name: string) =>
       styles.getPropertyValue(`--color-${name}`).trim();
     const isDark = theme === "dark";
+    const labels = nutrients.map(({ name }) => name);
+    const comparisons = nutrients.map(getNutrientComparison);
+    const currentValues = comparisons.map(({ current }) => current);
+    const referenceValues = comparisons.map(({ target }) => target);
 
     const data: ChartData<"line"> = {
       labels,
@@ -68,6 +83,8 @@ const LineChart = ({
           borderColor: color("blue-400"),
           borderWidth: 2.5,
           tension: 0.35,
+          spanGaps: false,
+          clip: 8,
           fill: "origin",
           backgroundColor: ({ chart }) => {
             const area = chart.chartArea;
@@ -106,7 +123,10 @@ const LineChart = ({
           borderCapStyle: "round",
           tension: 0.35,
           fill: false,
-          pointRadius: 0,
+          spanGaps: false,
+          clip: 8,
+          pointRadius: ({ dataIndex }) =>
+            referenceValues[dataIndex] === 0 ? 3 : 0,
           pointHoverRadius: 0,
           order: 1,
         },
@@ -136,9 +156,13 @@ const LineChart = ({
               element.style.opacity = "0";
               return;
             }
-            current.textContent = numberFormat.format(currentValues[index]);
-            reference.textContent = numberFormat.format(referenceValues[index]);
-            const point = chart.getDatasetMeta(0).data[index];
+            const nutrient = nutrients[index];
+            if (!nutrient) return;
+            current.textContent = comparisons[index].currentLabel;
+            reference.textContent = comparisons[index].targetLabel;
+            const point = chart.getDatasetMeta(
+              currentValues[index] === null ? 1 : 0,
+            ).data[index];
             if (!point) return;
             const { x, y } = point.getProps(["x", "y"], true);
             const width = element.offsetWidth;
@@ -167,20 +191,26 @@ const LineChart = ({
       },
       scales: {
         x: {
-          offset: false,
+          offset: true,
           border: { display: false },
           grid: { display: false, drawTicks: false },
           ticks: {
             color: color(isDark ? "blue-200" : "blue-600"),
-            padding: 12,
-            maxRotation: 0,
-            autoSkip: true,
+            padding: 8,
+            maxRotation: 90,
+            autoSkip: false,
             autoSkipPadding: 14,
             font: ({ chart }) => {
               const font = getComputedStyle(chart.canvas);
               return {
                 family: font.fontFamily,
-                size: parseFloat(font.fontSize),
+                size: Math.max(
+                  10,
+                  Math.min(
+                    parseFloat(font.fontSize),
+                    chart.width / nutrients.length / 3,
+                  ),
+                ),
                 weight: 700,
               };
             },
@@ -188,7 +218,8 @@ const LineChart = ({
         },
         y: {
           beginAtZero: true,
-          grace: "15%",
+          min: 0,
+          max: 110,
           border: { display: false },
           ticks: { display: false, count: 5 },
           grid: {
@@ -200,7 +231,7 @@ const LineChart = ({
       },
     };
     return { data, options };
-  }, [labels, currentValues, referenceValues, theme]);
+  }, [nutrients, theme]);
 
   useEffect(() => {
     const chart = chartRef.current;
@@ -244,12 +275,14 @@ const LineChart = ({
         close();
         return;
       }
-      const elements = chart.getElementsAtEventForMode(
-        event,
-        "index",
-        { intersect: false, axis: "x" },
-        false,
-      );
+      // Resolve the category directly so missing values never select a neighbor.
+      const index = chart.scales.x.getValueForPixel(position.x);
+      const elements =
+        index === undefined
+          ? []
+          : chart.data.datasets.flatMap((dataset, datasetIndex) =>
+              dataset.data[index] == null ? [] : [{ datasetIndex, index }],
+            );
       if (!elements.length) {
         close();
         return;
@@ -269,7 +302,7 @@ const LineChart = ({
       chart.draw();
     };
     const onPointerDown = (event: PointerEvent) => {
-      if (!usesHover(event) && event.isPrimary && event.button === 0) {
+      if (event.isPrimary && event.button === 0) {
         press = { id: event.pointerId, x: event.clientX, y: event.clientY };
       }
     };
@@ -281,7 +314,7 @@ const LineChart = ({
       ) {
         press = null;
       }
-      if (usesHover(event)) select(event, false);
+      if (usesHover(event) && !pinned) select(event, false);
     };
     const onPointerUp = (event: PointerEvent) => {
       if (press?.id === event.pointerId) select(event, true);
@@ -317,47 +350,47 @@ const LineChart = ({
       canvas.removeEventListener("pointercancel", onPointerCancel);
       canvas.removeEventListener("pointerleave", onPointerLeave);
     };
-  }, [data, unit]);
+  }, [data]);
 
   return (
-    <div className="relative h-48 w-full min-w-0 font-peyda text-sm mobile:text-base fold:h-60 fold:text-lg laptop:h-56 desktop:h-64">
-      <Line
-        ref={chartRef}
-        data={data}
-        options={options}
-        plugins={plugins}
-        role="img"
-        aria-label={labels
-          .map(
-            (label, index) =>
-              `${label}: الگوی کنونی ${currentValues[index]} ${unit}، توازن بهینه ${referenceValues[index]} ${unit}`,
-          )
-          .join("؛ ")}
-      />
-      <div
-        ref={tooltipRef}
-        aria-hidden="true"
-        className="pointer-events-none absolute top-0 left-0 z-10 max-w-full rounded-xl border-[0.5px] border-dark bg-darker-blue-500 px-3 py-2 font-peyda text-lg leading-tight opacity-0 shadow-md motion-safe:transition-[transform,opacity] motion-safe:duration-100"
-      >
-        <span
-          ref={pointerRef}
-          className="absolute size-2.5 border-t-[0.5px] border-l-[0.5px] border-dark bg-darker-blue-500"
+    <div className="w-full min-w-0">
+      <div className="relative h-72 w-full min-w-0 font-peyda text-sm mobile:text-base fold:text-lg desktop:h-64">
+        <Line
+          ref={chartRef}
+          data={data}
+          options={options}
+          plugins={plugins}
+          role="img"
+          aria-label={nutrients
+            .map((nutrient) => {
+              const comparison = getNutrientComparison(nutrient);
+              return `${nutrient.name}: الگوی کنونی ${comparison.currentLabel}، توازن بهینه ${comparison.targetLabel}`;
+            })
+            .join("؛ ")}
         />
         <div
-          dir="ltr"
-          className="relative flex items-center gap-2 text-blue-400"
+          ref={tooltipRef}
+          aria-hidden="true"
+          className="pointer-events-none absolute top-0 left-0 z-10 max-w-full rounded-xl border-[0.5px] border-dark bg-darker-blue-500 px-3 py-2 font-peyda text-lg leading-tight opacity-0 shadow-md motion-safe:transition-[transform,opacity] motion-safe:duration-100"
         >
-          <span className="size-2.5 shrink-0 rounded-full bg-blue-400" />
-          <span ref={currentRef} className="font-bold tabular-nums" />
-          <bdi className="truncate">{unit}</bdi>
-        </div>
-        <div
-          dir="ltr"
-          className="relative mt-1 flex items-center gap-2 text-white"
-        >
-          <span className="size-2.5 shrink-0 rounded-full border-[1.5px] border-dashed border-white" />
-          <span ref={referenceRef} className="font-bold tabular-nums" />
-          <bdi className="truncate">{unit}</bdi>
+          <span
+            ref={pointerRef}
+            className="absolute size-2.5 border-t-[0.5px] border-l-[0.5px] border-dark bg-darker-blue-500"
+          />
+          <div
+            dir="ltr"
+            className="relative flex items-center gap-2 text-blue-400"
+          >
+            <span className="size-2.5 shrink-0 rounded-full bg-blue-400" />
+            <span ref={currentRef} className="font-bold tabular-nums" />
+          </div>
+          <div
+            dir="ltr"
+            className="relative mt-1 flex items-center gap-2 text-white"
+          >
+            <span className="size-2.5 shrink-0 rounded-full border-[1.5px] border-dashed border-white" />
+            <span ref={referenceRef} className="font-bold tabular-nums" />
+          </div>
         </div>
       </div>
     </div>

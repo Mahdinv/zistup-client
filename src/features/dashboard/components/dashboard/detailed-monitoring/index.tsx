@@ -1,32 +1,72 @@
 import ComboBox from "@/shared/base-components/combo-box";
-import { memo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import LineChart from "./line-chart";
+import type { Nutrient } from "../../../api/types/nutrition.types";
+import { getApiErrorMessage } from "@/shared/api/error.helpers";
 
-// Temporary values until detailed-monitoring API data is available.
-const chartData = {
-  labels: ["زینک", "کلسیم", "منیزیم", "پتاسیم"],
-  currentValues: [13, 17, 5, 20],
-  referenceValues: [13, 20, 12, 25],
-  unit: "mcg",
+type DetailedMonitoringProps = {
+  nutrients?: Nutrient[];
+  isLoading: boolean;
+  error: unknown;
+  onRetry: () => void;
 };
 
-const chartFilterOptions = [
-  { label: "خانواده B", value: "b-family" },
-  { label: "درشت مغذی", value: "macrocephaly" },
-  { label: "ماده معدنی", value: "mineral" },
-  { label: "محلول در آب", value: "water-soluble" },
-  { label: "ویتامین محلول در چربی", value: "fat-soluble-vitamin" },
-  { label: "محیط زیست", value: "environment" },
-  { label: "دیگر", value: "other" },
+const emptyNutrients: Nutrient[] = [];
+const subgroupOrder = [
+  "درشت‌مغذی",
+  "خانواده B",
+  "ماده معدنی",
+  "محلول در آب",
+  "ویتامین محلول در چربی",
+  "محیط زیست",
 ];
+const subgroupLabel = (value: string) =>
+  value.replace(/\u200c/g, "").startsWith("محلول در آب")
+    ? "محلول در آب"
+    : value;
+const subgroupRank = (value: string) => {
+  if (value.trim() === "دیگر") return Infinity;
+  const index = subgroupOrder.indexOf(subgroupLabel(value));
+  return index < 0 ? subgroupOrder.length : index;
+};
 
-const DetailedMonitoring = () => {
+const DetailedMonitoring = ({
+  nutrients = emptyNutrients,
+  isLoading,
+  error,
+  onRetry,
+}: DetailedMonitoringProps) => {
   const [chartFilter, setChartFilter] = useState<string | null>(null);
+  const chartFilterOptions = useMemo(
+    () =>
+      [...new Set(nutrients.map(({ subgroup }) => subgroup))]
+        .sort(
+          (a, b) =>
+            subgroupRank(a) - subgroupRank(b) || a.localeCompare(b, "fa"),
+        )
+        .map((subgroup) => ({
+          label: subgroupLabel(subgroup),
+          value: subgroup,
+        })),
+    [nutrients],
+  );
+  const selectedSubgroup = chartFilterOptions.some(
+    ({ value }) => value === chartFilter,
+  )
+    ? chartFilter
+    : (chartFilterOptions.find(({ value }) => value === "ماده معدنی")?.value ??
+      chartFilterOptions[0]?.value ??
+      null);
+  const filteredNutrients = useMemo(
+    () => nutrients.filter(({ subgroup }) => subgroup === selectedSubgroup),
+    [nutrients, selectedSubgroup],
+  );
 
   return (
     <div
+      aria-busy={isLoading}
       className="
-                    w-full
+                    w-full min-w-0
                     bg-blue-100 dark:bg-darker-blue-400
                     border border-gray-100 dark:border-dark
                     rounded-2xl p-5 shadow-[0_4px_4px_0_rgba(0,0,0,0.04)]
@@ -40,7 +80,7 @@ const DetailedMonitoring = () => {
                   flex flex-row flex-wrap justify-between items-start gap-3
                 "
       >
-        <div className="flex-1 flex flex-col items-start compact:gap-1 fold:gap-2 laptop:gap-3">
+        <div className="flex-1 min-w-max flex flex-col items-start compact:gap-1 fold:gap-2 laptop:gap-3">
           <h2 className="font-yekan font-extrabold leading-[135%] compact:text-lg fold:text-xl desktop:text-2xl">
             پایش جزئی
           </h2>
@@ -62,14 +102,29 @@ const DetailedMonitoring = () => {
 
         <ComboBox
           variant="blue"
-          className="w-auto! compact:min-w-35 fold:min-w-44 laptop:min-w-40 desktop::min-w-56"
+          className="w-auto! max-w-full min-w-44 desktop:min-w-56 [&_button>span:first-child]:whitespace-normal"
           placeholder="مواد معدنی"
           options={chartFilterOptions}
-          value={chartFilter}
+          value={selectedSubgroup}
           onChange={setChartFilter}
         />
       </div>
-      <LineChart {...chartData} />
+      {error ? (
+        <button
+          type="button"
+          onClick={onRetry}
+          title={getApiErrorMessage(error)}
+          className="text-sm text-red-400 dark:text-red-200 cursor-pointer"
+        >
+          <span role="alert">{getApiErrorMessage(error)}</span> — تلاش مجدد
+        </button>
+      ) : isLoading ? (
+        <p role="status">در حال دریافت اطلاعات تغذیه</p>
+      ) : filteredNutrients.length ? (
+        <LineChart nutrients={filteredNutrients} />
+      ) : (
+        <p>داده‌ای موجود نیست</p>
+      )}
     </div>
   );
 };
