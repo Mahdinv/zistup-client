@@ -5,6 +5,7 @@ import { getApiErrorMessage } from "@/shared/api/error.helpers";
 import { deleteDayMealLogs, deleteMealLog } from "../api/meal-logs.api";
 import { mealLogsQueryKeys } from "../constants/meal-logs-query.constants";
 import { dietAdherenceQueryKeys } from "../constants/diet-adherence-query.constants";
+import { caloriesQueryKeys } from "../constants/calories-query.constants";
 
 type DeleteMealLogsRequest =
   { kind: "single"; id: number; date: string } | { kind: "day"; date: string };
@@ -29,6 +30,10 @@ export default function useDeleteMealLogsMutation() {
         }),
         queryClient.invalidateQueries({
           queryKey: dietAdherenceQueryKeys.daily(request.date),
+          exact: true,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: caloriesQueryKeys.daily(request.date),
           exact: true,
         }),
       ]);

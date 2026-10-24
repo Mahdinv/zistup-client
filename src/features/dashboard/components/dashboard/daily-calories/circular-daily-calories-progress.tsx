@@ -27,15 +27,14 @@ const CircularDailyCaloriesProgress = ({
           className="stroke-blue-300 dark:stroke-darker-blue-500"
         />
 
-        <motion.circle
-          cx="50"
-          cy="50"
-          r="40"
+        <motion.path
+          // Start at top center and sweep clockwise, without rotation or dash offsets.
+          d="M 50 10 A 40 40 0 1 1 50 90 A 40 40 0 1 1 50 10"
           fill="none"
           strokeWidth="20"
           strokeLinecap="round"
           className="stroke-orange-300"
-          transform="rotate(-90 50 50)"
+          opacity={progress > 0 ? 1 : 0}
           initial={shouldReduceMotion ? false : { pathLength: 0 }}
           animate={{ pathLength: progress }}
           transition={{

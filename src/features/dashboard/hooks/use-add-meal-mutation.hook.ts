@@ -6,6 +6,7 @@ import { addMeal } from "../api/add-meal.api";
 import type { AddMealPayload } from "../api/types/add-meal.types";
 import { mealLogsQueryKeys } from "../constants/meal-logs-query.constants";
 import { dietAdherenceQueryKeys } from "../constants/diet-adherence-query.constants";
+import { caloriesQueryKeys } from "../constants/calories-query.constants";
 
 export default function useAddMealMutation() {
   const queryClient = useQueryClient();
@@ -14,10 +15,11 @@ export default function useAddMealMutation() {
     mutationFn: addMeal,
     onSuccess: async () => {
       toast.success("غذا با موفقیت ثبت شد");
-      // Keep submission pending until active meal-log and adherence views refresh.
+      // Keep submission pending until active dashboard views refresh.
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: mealLogsQueryKeys.all }),
         queryClient.invalidateQueries({ queryKey: dietAdherenceQueryKeys.all }),
+        queryClient.invalidateQueries({ queryKey: caloriesQueryKeys.all }),
       ]);
     },
     onError: (error) => toast.error(normalizeApiError(error).message),
