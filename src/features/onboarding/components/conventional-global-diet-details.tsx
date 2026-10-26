@@ -7,7 +7,7 @@ import {
 import Button from "@/shared/base-components/button";
 import ScrollFade from "@/shared/base-components/scroll-fade";
 import Range from "@/shared/base-components/range";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { AnimatePresence, easeInOut, motion } from "framer-motion";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Controller, useForm, type SubmitHandler } from "react-hook-form";
@@ -17,6 +17,7 @@ import { latestDietQueryKey } from "@/features/dashboard/constants/latest-diet-q
 import { normalizeApiError } from "../../../shared/api";
 import { toast } from "sonner";
 import { addConventionalGlobalDiet } from "../api/diet.api";
+import { generateDietPlan } from "@/features/game-workflow/api/generate-diet-plan.api";
 import type { AccountFlowNavigationState } from "@/app/layouts/account-flow/account-flow.types";
 import type { Diet } from "../api/diet.types";
 
@@ -36,16 +37,30 @@ const ConventionalGlobalDietDetails = () => {
 
   const { control, handleSubmit } = useForm<ConventionalGlobalDiet>();
 
+  const submissionInFlight = useRef(false);
   const { mutate, isPending } = useMutation({
-    mutationFn: addConventionalGlobalDiet,
+    mutationFn: async ({
+      data,
+      dietName,
+    }: {
+      data: ConventionalGlobalDiet;
+      dietName: Diet["name"];
+    }) => {
+      await addConventionalGlobalDiet(data);
+      await generateDietPlan(dietName);
+    },
+    retry: false,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: latestDietQueryKey });
       toast.success("رژیم شما انتخاب شد");
-      navigate("/dashboard");
+      navigate("/app/dashboard");
     },
     onError: (error) => {
       const apiError = normalizeApiError(error);
       toast.error(apiError.message);
+    },
+    onSettled: () => {
+      submissionInFlight.current = false;
     },
   });
 
@@ -64,16 +79,20 @@ const ConventionalGlobalDietDetails = () => {
   const handleConventionalGlobalDietSubmit: SubmitHandler<
     ConventionalGlobalDiet
   > = (data) => {
+    if (submissionInFlight.current || isPending) return;
+    submissionInFlight.current = true;
     const finalData = {
       ...data,
       id: diet.id,
     };
-    mutate(finalData);
+    mutate({ data: finalData, dietName: diet.name });
   };
 
   return (
     <form
-      onSubmit={handleSubmit(handleConventionalGlobalDietSubmit)}
+      onSubmit={(event) =>
+        void handleSubmit(handleConventionalGlobalDietSubmit)(event)
+      }
       className="w-full min-h-0 h-full flex flex-col items-center gap-4"
     >
       <ScrollFade>

@@ -2,7 +2,7 @@ import {
   createContext,
   useCallback,
   useEffect,
-  useLayoutEffect,
+  useInsertionEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -31,15 +31,14 @@ const readTheme = (): DashboardTheme => {
 const DashboardThemeProvider = ({ children }: { children: ReactNode }) => {
   const [theme, setTheme] = useState<DashboardTheme>(readTheme);
 
-  useLayoutEffect(() => {
+  // Apply theme styles before descendants measure layout. Otherwise those reads
+  // can resolve light styles and start a color transition on a dark-theme mount.
+  useInsertionEffect(() => {
     document.documentElement.dataset.dashboardTheme = theme;
-  }, [theme]);
-
-  useLayoutEffect(() => {
     return () => {
       delete document.documentElement.dataset.dashboardTheme;
     };
-  }, []);
+  }, [theme]);
 
   useEffect(() => {
     try {

@@ -5,8 +5,10 @@ import { Link } from "react-router-dom";
 
 const TargetDietOption = ({
   routeState,
+  isActive = false,
 }: {
   routeState: AccountFlowNavigationState<Diet>;
+  isActive?: boolean;
 }) => {
   const charNumToSlice =
     routeState.data!.title === "مدیترانه ای"
@@ -56,7 +58,13 @@ const TargetDietOption = ({
             {routeState.data!.desc.slice(0, charNumToSlice)}
           </h4>
         </div>
-        <PiCaretLeftBold className="text-blue-900 text-4xl" />
+        {isActive ? (
+          <span className="shrink-0 rounded-full bg-darker-blue-200 py-1 pt-2 px-4 font-peyda text-xs text-white fold:text-sm">
+            فعال
+          </span>
+        ) : (
+          <PiCaretLeftBold className="text-blue-900 text-4xl" />
+        )}
       </Link>
     </li>
   );

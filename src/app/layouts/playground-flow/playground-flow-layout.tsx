@@ -1,4 +1,5 @@
-import { Suspense, useCallback, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
+import { getPlaygroundFlowOrigin } from "./playground-flow-navigation";
 
 import { Outlet, useLocation, useMatches, useNavigate } from "react-router-dom";
 
@@ -21,6 +22,23 @@ const PlaygroundFlowLayout = () => {
   const matches = useMatches();
 
   const location = useLocation();
+  const [entryOrigin] = useState(
+    () => getPlaygroundFlowOrigin(location.state) ?? "/onboarding/choose-plan",
+  );
+  const origin = getPlaygroundFlowOrigin(location.state) ?? entryOrigin;
+
+  // Carry the entry route through steps and roadmap returns, including reloads.
+  useEffect(() => {
+    if (getPlaygroundFlowOrigin(location.state)) return;
+    navigate(
+      { pathname: location.pathname, search: location.search, hash: location.hash },
+      {
+        replace: true,
+        preventScrollReset: true,
+        state: { ...location.state, origin },
+      },
+    );
+  }, [location, navigate, origin]);
 
   const [headerOverrideState, setHeaderOverrideState] =
     useState<HeaderOverrideState>({
@@ -68,7 +86,11 @@ const PlaygroundFlowLayout = () => {
     }
 
     if (routeHeader.backTo) {
-      navigate(routeHeader.backTo);
+      navigate(
+        location.pathname.replace(/\/+$/, "") === "/game-workflow"
+          ? origin
+          : routeHeader.backTo,
+      );
     }
   };
 

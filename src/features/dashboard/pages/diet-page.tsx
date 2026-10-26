@@ -4,6 +4,9 @@ import { useId, useLayoutEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import DietGoals from "../components/diets/diet-goals";
 import ScrollFade from "@/shared/base-components/scroll-fade";
+import useOptimizedDietaryQuery from "@/features/game-workflow/hooks/use-optimized-dietary-query.hook";
+import { useQuery } from "@tanstack/react-query";
+import { getDiets } from "@/features/onboarding/api/diet.api";
 
 const tabs = [
   { key: "goals", title: "اهداف رژیم" },
@@ -11,6 +14,20 @@ const tabs = [
 ] as const;
 
 const DietPage = () => {
+  const planQuery = useOptimizedDietaryQuery(true);
+  const activeDiet = planQuery.data?.success
+    ? planQuery.data.data.diet
+    : undefined;
+  const dietsQuery = useQuery({
+    queryKey: ["diets"],
+    queryFn: getDiets,
+    staleTime: 60 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+  });
+  const activeDietTitle =
+    planQuery.data?.success
+      ? planQuery.data.data.dietGoalsSummary?.diet.title
+      : undefined;
   const [activeTab, setActiveTab] = useState<"goals" | "target">("goals");
   const shouldReduceMotion = useReducedMotion();
   const tabsId = useId();
@@ -48,7 +65,7 @@ const DietPage = () => {
     >
       <div className="flex min-h-full w-full flex-col items-center gap-4 pt-3 pb-(--dashboard-bottom-space)">
         <div className="w-full shrink-0">
-          <CurrentDiet />
+          <CurrentDiet diet={activeDiet} title={activeDietTitle} />
         </div>
         <div
           ref={tabListRef}
@@ -115,7 +132,11 @@ const DietPage = () => {
                 <DietGoals />
               ) : (
                 <div className="flex w-full flex-col items-center gap-4">
-                  <TargetDiet />
+                  <TargetDiet
+                    activeDietKey={activeDiet?.key}
+                    diets={dietsQuery.data}
+                    isLoading={dietsQuery.isPending}
+                  />
                 </div>
               )}
             </motion.div>

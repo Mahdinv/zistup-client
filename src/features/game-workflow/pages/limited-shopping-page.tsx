@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { latestDietQueryKey } from "@/features/dashboard/constants/latest-diet-query.constants";
+import { generateDietPlan } from "../api/generate-diet-plan.api";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getFoodGroupsCategories } from "../api/past-week-intake.api";
 import {
@@ -188,21 +189,31 @@ const LimitedShoppingPage = () => {
     control,
   });
 
+  const submissionInFlight = useRef(false);
   const { mutate, isPending } = useMutation({
-    mutationFn: addShopping,
+    mutationFn: async (submission: Parameters<typeof addShopping>[0]) => {
+      await addShopping(submission);
+      await generateDietPlan("zistpa");
+    },
+    retry: false,
     onSuccess: async () => {
-      void queryClient.invalidateQueries({ queryKey: latestDietQueryKey });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: latestDietQueryKey }),
+        queryClient.invalidateQueries({ queryKey: ["roadMapList"] }),
+      ]);
       if (actionType === "create") {
         setModal(true);
       } else {
         toast.success("ویرایش مرحله ششم با موفقیت انجام شد");
         navigate("/game-workflow");
       }
-      queryClient.invalidateQueries({ queryKey: ["roadMapList"] });
     },
     onError: (error) => {
       const apiError = normalizeApiError(error);
       toast.error(apiError.message);
+    },
+    onSettled: () => {
+      submissionInFlight.current = false;
     },
   });
 
@@ -445,8 +456,11 @@ const LimitedShoppingPage = () => {
     if (changed) replace(newItems);
   }, [items, replace, calculatePositionI]);
 
-  const onShoppingFormHandler: SubmitHandler<ShoppingForm> = (data) =>
+  const onShoppingFormHandler: SubmitHandler<ShoppingForm> = (data) => {
+    if (submissionInFlight.current || isPending) return;
+    submissionInFlight.current = true;
     mutate({ data, game: "limited-shopping" });
+  };
 
   return (
     <PlaygroundFlowContainer>
@@ -518,7 +532,7 @@ const LimitedShoppingPage = () => {
           </div>
         </div>
         <form
-          onSubmit={handleSubmit(onShoppingFormHandler)}
+          onSubmit={(event) => void handleSubmit(onShoppingFormHandler)(event)}
           className="w-full flex flex-row items-center gap-2"
         >
           <Button

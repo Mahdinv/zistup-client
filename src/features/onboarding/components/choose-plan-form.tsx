@@ -88,7 +88,9 @@ const ChoosePlanForm = () => {
               title="شروع ساخت رژیم اختصاصی"
               icon={<PiCaretLeftBold />}
               onClick={() => {
-                navigate("/game-workflow");
+                navigate("/game-workflow", {
+                  state: { origin: "/onboarding/choose-plan" },
+                });
               }}
             />
           </article>

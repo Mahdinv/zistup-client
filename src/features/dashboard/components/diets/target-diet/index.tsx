@@ -1,8 +1,6 @@
 import type { AccountFlowNavigationState } from "@/app/layouts/account-flow/account-flow.types";
-import { getDiets } from "@/features/onboarding/api/diet.api";
 import type { Diet } from "@/features/onboarding/api/diet.types";
 import Button from "@/shared/base-components/button";
-import { useQuery } from "@tanstack/react-query";
 import { memo } from "react";
 import {
   PiAlarmFill,
@@ -16,14 +14,17 @@ import Skeleton from "react-loading-skeleton";
 import { useNavigate } from "react-router-dom";
 import TargetDietOption from "./target-diet-option";
 
-const TargetDiet = () => {
+const TargetDiet = ({
+  activeDietKey,
+  diets,
+  isLoading,
+}: {
+  activeDietKey?: string;
+  diets?: Diet[];
+  isLoading: boolean;
+}) => {
   const navigate = useNavigate();
-  const { data, isLoading } = useQuery({
-    queryKey: ["diets"],
-    queryFn: getDiets,
-    staleTime: 60 * 60 * 1000,
-    gcTime: 5 * 60 * 1000,
-  });
+  const isZistupActive = activeDietKey === "zistpa";
   return (
     <>
       <article className="flex w-full flex-col items-center justify-between gap-6 rounded-2xl bg-darker-green-100 p-4">
@@ -84,14 +85,32 @@ const TargetDiet = () => {
             </small>
           </li>
         </ul>
-        <Button
-          classes="btn btn-primary-green compact:text-[18px]! laptop:text-2xl! font-bold! compact:py-1! laptop:py-2!"
-          title="شروع ساخت رژیم اختصاصی"
-          icon={<PiCaretLeftBold />}
-          onClick={() => {
-            navigate("/game-workflow");
-          }}
-        />
+        {isZistupActive ? (
+          <button
+            type="button"
+            onClick={() => navigate("/game-workflow", { state: { origin: "/app/diets" } })}
+            className="flex h-12 w-full items-center justify-between gap-3 rounded-2xl bg-[#2CE57F] px-3 py-4 font-peyda font-bold text-black cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400"
+          >
+            <div className="flex-11 flex flex-row items-center justify-start compact:gap-2 mobile:gap-3 mobile-lg:gap-4 fold:gap-5 laptop:gap-6">
+              <span className="min-w-0 whitespace-nowrap compact:text-lg mobile:text-xl fold:text-2xl leading-none">
+                مشاهده نقشه راه
+              </span>
+              <PiCaretLeftBold aria-hidden="true" className="size-6 shrink-0" />
+            </div>
+            <span className="flex-1 flex shrink-0 items-center justify-center rounded-full bg-darker-green-100 py-1 pt-2 px-4 text-xs leading-none text-white fold:text-sm">
+              فعال
+            </span>
+          </button>
+        ) : (
+          <Button
+            classes="btn btn-primary-green compact:text-[18px]! laptop:text-2xl! font-bold! compact:py-1! laptop:py-2!"
+            title="شروع ساخت رژیم اختصاصی"
+            icon={<PiCaretLeftBold />}
+            onClick={() => {
+              navigate("/game-workflow", { state: { origin: "/app/diets" } });
+            }}
+          />
+        )}
       </article>
 
       <div className="relative w-full h-px bg-blue-600 dark:bg-dark my-4">
@@ -112,7 +131,7 @@ const TargetDiet = () => {
             containerClassName="w-full flex flex-col gap-1"
           />
         ) : (
-          (data || []).map((diet: Diet) => {
+          (diets || []).map((diet: Diet) => {
             const routeState: AccountFlowNavigationState<Diet> = {
               data: diet,
               accountFlowHeader: {
@@ -123,7 +142,13 @@ const TargetDiet = () => {
                 backTo: "/app/diets",
               },
             };
-            return <TargetDietOption key={diet.id} routeState={routeState} />;
+            return (
+              <TargetDietOption
+                key={diet.id}
+                routeState={routeState}
+                isActive={!isZistupActive && diet.name === activeDietKey}
+              />
+            );
           })
         )}
       </ul>
