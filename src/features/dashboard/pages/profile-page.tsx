@@ -1,7 +1,6 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { profileLayoutTransition } from "../constants/profile-motion.constants";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   PiCreditCard,
   PiSignOut,
@@ -9,7 +8,6 @@ import {
   PiUser,
   PiUserList,
 } from "react-icons/pi";
-import { logout } from "@/features/auth/api/auth.api";
 import BaseDrawer from "@/shared/base-components/base-drawer";
 import ScrollFade from "@/shared/base-components/scroll-fade";
 import { useUserProfileStore } from "@/shared/stores/user-profile.store";
@@ -22,6 +20,7 @@ import ProfileBasicInformation from "../components/profile/profile-basic-informa
 
 import ProfileGoalInformation from "../components/profile/profile-goal-information";
 import ProfileIdentityEditor from "../components/profile/profile-identity-editor";
+import ProfileLogoutDrawer from "../components/profile/profile-logout-drawer";
 type Section = "goal" | "account" | "basic" | "subscription" | "avatar";
 const titles: Record<Section, string> = {
   goal: "انتخاب هدف",
@@ -34,7 +33,7 @@ const ProfilePage = () => {
   const reducedMotion = useReducedMotion();
   const user = useUserProfileStore((state) => state.user);
   const { theme } = useDashboardTheme();
-  const navigate = useNavigate();
+  const [logoutOpen, setLogoutOpen] = useState(false);
   const [section, setSection] = useState<Section | null>(null);
   const details = [
     ["نام", user?.name],
@@ -42,7 +41,10 @@ const ProfilePage = () => {
     ["ایمیل", user?.email],
   ];
   return (
-    <div dir="rtl" className="flex h-full min-h-0 w-full flex-col gap-6 font-peyda">
+    <div
+      dir="rtl"
+      className="flex h-full min-h-0 w-full flex-col gap-6 font-peyda"
+    >
       <div className="shrink-0">
         <ProfileHero onEditAvatar={() => setSection("avatar")} />
       </div>
@@ -89,13 +91,11 @@ const ProfilePage = () => {
             title="خروج از حساب"
             icon={PiSignOut}
             destructive
-            onClick={() => {
-              logout();
-              navigate("/auth/login", { replace: true });
-            }}
+            onClick={() => setLogoutOpen(true)}
           />
         </motion.div>
       </ScrollFade>
+      <ProfileLogoutDrawer open={logoutOpen} onOpenChange={setLogoutOpen} />
       <ProfileIdentityEditor
         open={section === "avatar"}
         onOpenChange={(open) => {
