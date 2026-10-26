@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { PiCheckBold } from "react-icons/pi";
 
 type AnimatedWaveCircleProps = {
@@ -96,51 +96,54 @@ const AnimatedWaveCircle = ({
       `}
       aria-hidden="true"
     >
-      <svg
-        viewBox={`0 0 ${VIEWBOX_SIZE} ${VIEWBOX_SIZE}`}
-        className="absolute inset-0 size-full"
-        preserveAspectRatio="none"
-      >
-        <motion.g
-          initial={false}
-          animate={{ y: (0.5 - progress) * 320 }}
-          transition={{
-            duration: shouldReduceMotion ? 0 : 0.4,
-            ease: "easeOut",
-          }}
+      {/* Keep route presence initial={false} from suppressing the wave loops. */}
+      <AnimatePresence initial={true}>
+        <svg
+          viewBox={`0 0 ${VIEWBOX_SIZE} ${VIEWBOX_SIZE}`}
+          className="absolute inset-0 size-full"
+          preserveAspectRatio="none"
         >
-          {/* Back wave - darker - moves LEFT */}
           <motion.g
-            initial={{ x: 0 }}
-            animate={animateWaves ? { x: [0, -WAVE_LENGTH] } : { x: 0 }}
+            initial={false}
+            animate={{ y: (0.5 - progress) * 320 }}
             transition={{
-              ease: "linear",
-              repeat: animateWaves ? Infinity : 0,
-              duration: animateWaves ? 2.8 : 0,
+              duration: shouldReduceMotion ? 0 : 0.4,
+              ease: "easeOut",
             }}
           >
-            <path
-              d={backWavePath}
-              className="fill-blue-600 dark:fill-darker-blue-100"
-            />
-          </motion.g>
+            {/* Back wave - darker - moves LEFT */}
+            <motion.g
+              initial={{ x: 0 }}
+              animate={animateWaves ? { x: [0, -WAVE_LENGTH] } : { x: 0 }}
+              transition={{
+                ease: "linear",
+                repeat: animateWaves ? Infinity : 0,
+                duration: animateWaves ? 2.8 : 0,
+              }}
+            >
+              <path
+                d={backWavePath}
+                className="fill-blue-600 dark:fill-darker-blue-100"
+              />
+            </motion.g>
 
-          {/* Front wave - lighter - moves RIGHT */}
-          <motion.g
-            initial={{ x: -WAVE_LENGTH }}
-            animate={
-              animateWaves ? { x: [-WAVE_LENGTH, 0] } : { x: -WAVE_LENGTH }
-            }
-            transition={{
-              ease: "linear",
-              repeat: animateWaves ? Infinity : 0,
-              duration: animateWaves ? 2 : 0,
-            }}
-          >
-            <path d={frontWavePath} className="fill-blue-400" />
+            {/* Front wave - lighter - moves RIGHT */}
+            <motion.g
+              initial={{ x: -WAVE_LENGTH }}
+              animate={
+                animateWaves ? { x: [-WAVE_LENGTH, 0] } : { x: -WAVE_LENGTH }
+              }
+              transition={{
+                ease: "linear",
+                repeat: animateWaves ? Infinity : 0,
+                duration: animateWaves ? 2 : 0,
+              }}
+            >
+              <path d={frontWavePath} className="fill-blue-400" />
+            </motion.g>
           </motion.g>
-        </motion.g>
-      </svg>
+        </svg>
+      </AnimatePresence>
       <motion.div
         className="absolute inset-0 flex items-center justify-center"
         initial={false}
