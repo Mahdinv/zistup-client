@@ -1,0 +1,94 @@
+.server-connection-error {
+  --connection-bg: #21262d;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--connection-bg);
+  color: #fcfcfc;
+  font-family: var(--font-peyda);
+  text-align: center;
+}
+
+:where([data-dashboard-theme="dark"]) .server-connection-error,
+.server-connection-error[data-dashboard-theme="dark"] {
+  --connection-bg: #21262d;
+  color: #fcfcfc;
+}
+
+:where([data-dashboard-theme="light"]) .server-connection-error,
+.server-connection-error[data-dashboard-theme="light"] {
+  --connection-bg: #f4fafd;
+  color: #292f37;
+}
+
+.server-connection-error__content {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(2rem, 13vh, 6.5rem) 16px 24px;
+}
+
+.server-connection-error__subtitle {
+  color: #70a6b9;
+}
+
+:where([data-dashboard-theme="light"]) .server-connection-error__subtitle {
+  color: #547d8b;
+}
+
+:where([data-dashboard-theme="dark"]) .server-connection-error__subtitle {
+  color: #70a6b9;
+}
+
+.server-connection-error__image {
+  /* The 1280px asset has more empty space on the left: offset its visible center. */
+  width: min(100%, 360px);
+  flex-shrink: 0;
+  margin: clamp(12px, 5vh, 40px) 0 16px;
+  transform: translateX(-2.8%);
+  pointer-events: none;
+}
+
+.server-connection-error__retry {
+  min-height: 48px;
+  border: 1px solid #70a6b9;
+  background: color-mix(in srgb, #70a6b9 12%, var(--connection-bg));
+  color: inherit;
+  box-shadow: 0 6px 20px #0000000d;
+}
+
+.server-connection-error__retry:hover:not(:disabled) {
+  background: color-mix(in srgb, #70a6b9 25%, var(--connection-bg));
+}
+
+.server-connection-error__retry:focus-visible {
+  outline: 2px solid #70a6b9;
+  outline-offset: 4px;
+}
+
+.server-connection-error__retry:disabled {
+  opacity: 0.65;
+}
+
+.server-connection-error__footer {
+  flex-shrink: 0;
+  padding: 10px max(10px, env(safe-area-inset-right))
+    max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+  background: var(--connection-bg);
+}
+
+@media (max-height: 600px) {
+  .server-connection-error__content {
+    padding-top: 24px;
+  }
+  .server-connection-error__image {
+    width: min(65%, 230px);
+    margin-top: 12px;
+  }
+}

@@ -1,5 +1,11 @@
 import { normalizeApiError } from "./api-error";
 
+/** HTTP responses (including 4xx/5xx) are API errors, not lost connections. */
+export function isConnectionError(error: unknown): boolean {
+  const { type } = normalizeApiError(error);
+  return type === "network" || type === "timeout";
+}
+
 export function getApiErrorMessage(error: unknown): string {
   return normalizeApiError(error).message;
 }

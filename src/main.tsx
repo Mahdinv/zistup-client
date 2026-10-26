@@ -6,6 +6,7 @@ import "@/shared/lib/chartjs-setup";
 import "@/index.css";
 
 import Providers from "@/app/providers";
+import ConnectionErrorBoundary from "@/app/connection-error-boundary";
 import router from "@/app/router";
 
 import { configureHttpClient, queryClient } from "@/shared/api";
@@ -40,6 +41,7 @@ createRoot(rootElement).render(
   <StrictMode>
     <Providers>
       <RouterProvider router={router} />
+      <ConnectionErrorBoundary onHome={() => void router.navigate("/app/dashboard")} />
     </Providers>
   </StrictMode>,
 );

@@ -43,6 +43,7 @@ export default defineConfig({
         "pwa/app-icon-192.png",
         "pwa/app-icon-512.png",
         "pwa/apple-touch-icon-180.png",
+        "pwa/router-img.webp",
       ],
       manifest: {
         id: "/",
