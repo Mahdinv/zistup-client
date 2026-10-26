@@ -149,7 +149,7 @@ const DashboardFlowContainer = ({
                 animate="center"
                 exit="exit"
                 transition={reducedMotion ? { duration: 0 } : tabTransition}
-                className={`absolute inset-0 overflow-x-hidden ${background.pageKey === "/app/diets" ? "overflow-y-hidden" : "overflow-y-auto pt-3 pb-(--dashboard-bottom-space) scroll-pb-(--dashboard-bottom-space)"} overscroll-contain compact:px-4 fold:px-6`}
+                className={`absolute inset-0 overflow-x-hidden ${background.pageKey === "/app/diets" ? "overflow-y-hidden" : background.pageKey === "/app/zistyar" ? "overflow-y-hidden pb-(--dashboard-bottom-space)" : "overflow-y-auto pt-3 pb-(--dashboard-bottom-space) scroll-pb-(--dashboard-bottom-space)"} overscroll-contain compact:px-4 fold:px-6`}
               >
                 <RouteContent>
                   {isProfile ? background.outlet : children}
