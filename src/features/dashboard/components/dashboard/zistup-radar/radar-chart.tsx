@@ -57,8 +57,7 @@ const positions = [
 const percentFormatter = new Intl.NumberFormat("fa-IR", {
   maximumFractionDigits: 1,
 });
-const formatPercent = (value: number | null) =>
-  value === null ? "ناموجود" : `${percentFormatter.format(value)}٪`;
+const formatPercent = (value: number) => `${percentFormatter.format(value)}٪`;
 
 const RadarChart = ({ radar }: RadarChartProps) => {
   const { theme } = useDashboardTheme();
@@ -91,7 +90,7 @@ const RadarChart = ({ radar }: RadarChartProps) => {
     },
   };
 
-  const data: ChartData<"radar", (number | null)[]> = {
+  const data: ChartData<"radar"> = {
     labels: axes.map(({ key }) => categories[key].label),
     datasets: [
       {
@@ -102,18 +101,15 @@ const RadarChart = ({ radar }: RadarChartProps) => {
           ? "rgba(126, 187, 208, 0.22)"
           : "rgba(117, 213, 246, 0.14)",
         borderWidth: 1.5,
-        // A filled polygon would imply values across unavailable axes.
-        fill: currentValues.every((value) => value !== null) ? "shape" : false,
+        fill: "shape",
         showLine: true,
         spanGaps: false,
         tension: 0,
         pointBackgroundColor: BLUE,
         pointBorderColor: isDark ? "#1b1a20" : "#eef8fb",
         pointBorderWidth: 1.5,
-        pointRadius: ({ chart, dataIndex }) =>
-          currentValues[dataIndex] === null
-            ? 0
-            : Math.max(2.5, Math.min(6, chart.width / 47)),
+        pointRadius: ({ chart }) =>
+          Math.max(2.5, Math.min(6, chart.width / 47)),
         order: 0,
       },
       {

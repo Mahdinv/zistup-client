@@ -60,14 +60,14 @@ test("empty data preserves four radar axes with an empty current pattern", () =>
   }
 });
 
-test("sample unavailable zeros become gaps; available values retain their units and precision", () => {
+test("unavailable values plot at the center; available values retain their units and precision", () => {
   const axes = getRadarDisplayAxes(sample);
   assert.deepEqual(
     axes.map((axis) => axis.plotValue),
-    [null, null, 63.33016276861905, 118.38658775474602],
+    [0, 0, 63.33016276861905, 118.38658775474602],
   );
-  assert.equal(axes[0].actual, null);
-  assert.equal(axes[0].value, null);
+  assert.equal(axes[0].actual, 0);
+  assert.equal(axes[0].value, 0);
   assert.equal(axes[0].target, 100);
   assert.equal(axes[3].actual, available.actual);
   assert.equal(axes[3].target, available.target);
@@ -120,15 +120,15 @@ test("overflow preserves the raw percentage and uses the supplied capped plot va
   assert.equal(axis.overflow, true);
 });
 
-test("null or nonfinite metrics never become valid zero points", () => {
+test("null, missing and nonfinite plotting values fall back to the center", () => {
   for (const missing of [null, undefined, NaN, Infinity]) {
     const accessibility = { ...available, plot_value: missing };
     const axis = getRadarDisplayAxes({
       ...sample,
       axes: { ...sample.axes, accessibility },
     })[3];
-    assert.equal(axis.plotValue, null);
-    assert.equal(axis.value, null);
+    assert.equal(axis.plotValue, 0);
+    assert.equal(axis.value, 0);
   }
 });
 
@@ -158,5 +158,27 @@ test("missing original-unit metrics do not hide an available backend plotting va
     axes: { ...sample.axes, accessibility },
   });
   assert.equal(axes[3].plotValue, 0);
-  assert.equal(axes[3].value, null);
+  assert.equal(axes[3].value, 0);
+});
+
+test("all-null numeric fields normalize to zero without mutating the response", () => {
+  const data = structuredClone(sample);
+  for (const key of data.axis_order) {
+    data.axes[key] = {
+      ...available,
+      actual: null,
+      target: null,
+      value: null,
+      plot_value: null,
+    };
+  }
+  const axes = getRadarDisplayAxes(data);
+  assert.equal(axes.length, 4);
+  for (const axis of axes) {
+    assert.deepEqual(
+      [axis.actual, axis.target, axis.value, axis.plotValue],
+      [0, 0, 0, 0],
+    );
+    assert.equal(data.axes[axis.key].plot_value, null);
+  }
 });

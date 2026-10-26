@@ -14,8 +14,8 @@ export function getRadarDisplayAxes(data?: RadarData) {
     if (!axis)
       return {
         key,
-        actual: null,
-        target: null,
+        actual: 0,
+        target: 0,
         value: 0,
         plotValue: 0,
         overflow: false,
@@ -28,11 +28,12 @@ export function getRadarDisplayAxes(data?: RadarData) {
 
     return {
       key,
-      actual: available ? axis.actual : null,
-      target: Number.isFinite(axis.target) ? axis.target : null,
-      value: available && Number.isFinite(axis.value) ? axis.value : null,
+      actual: available && Number.isFinite(axis.actual) ? (axis.actual ?? 0) : 0,
+      target: Number.isFinite(axis.target) ? (axis.target ?? 0) : 0,
+      value: available && Number.isFinite(axis.value) ? (axis.value ?? 0) : 0,
       // Health is already an adherence score; never invert or recalculate it.
-      plotValue: available ? axis.plot_value : null,
+      // Missing/unavailable values use the center as a display-only fallback.
+      plotValue: available ? axis.plot_value : 0,
       overflow: available && axis.overflow,
     };
   });
