@@ -11,6 +11,7 @@ import {
 } from "react-icons/pi";
 import { logout } from "@/features/auth/api/auth.api";
 import BaseDrawer from "@/shared/base-components/base-drawer";
+import ScrollFade from "@/shared/base-components/scroll-fade";
 import { useUserProfileStore } from "@/shared/stores/user-profile.store";
 import ProfileHero from "../components/profile/profile-hero";
 import ProfileItem from "../components/profile/profile-item";
@@ -41,53 +42,60 @@ const ProfilePage = () => {
     ["ایمیل", user?.email],
   ];
   return (
-    <div dir="rtl" className="flex w-full flex-col gap-6 pb-6 font-peyda">
-      <ProfileHero onEditAvatar={() => setSection("avatar")} />
-      <motion.div
-        data-profile-menu
-        initial={reducedMotion ? false : { x: "-110%" }}
-        animate={{ x: "0%" }}
-        exit={{ x: "-110%" }}
-        transition={reducedMotion ? { duration: 0 } : profileLayoutTransition}
-        className="flex flex-col gap-6"
+    <div dir="rtl" className="flex h-full min-h-0 w-full flex-col gap-6 font-peyda">
+      <div className="shrink-0">
+        <ProfileHero onEditAvatar={() => setSection("avatar")} />
+      </div>
+      <ScrollFade
+        wrapperClassName="h-auto flex-1 [--scroll-fade-color:var(--color-blue-300)] dark:[--scroll-fade-color:var(--color-darker-blue-500)]"
+        className="overscroll-contain pb-(--dashboard-bottom-space) scroll-pb-(--dashboard-bottom-space)"
       >
-        <div className="flex flex-col gap-2">
+        <motion.div
+          data-profile-menu
+          initial={reducedMotion ? false : { x: "-110%" }}
+          animate={{ x: "0%" }}
+          exit={{ x: "-110%" }}
+          transition={reducedMotion ? { duration: 0 } : profileLayoutTransition}
+          className="flex flex-col gap-6"
+        >
+          <div className="flex flex-col gap-2">
+            <ProfileItem
+              title="حساب کاربری"
+              subtitle={user?.mobile || "اطلاعات حساب کاربری"}
+              icon={PiUser}
+              onClick={() => setSection("account")}
+            />
+            <ProfileItem
+              title="اطلاعات پایه"
+              subtitle="سن، قد، وزن"
+              icon={PiUserList}
+              onClick={() => setSection("basic")}
+            />
+            <ProfileItem
+              title="هدف رژیم"
+              subtitle="مشاهده و انتخاب رژیم"
+              icon={PiTarget}
+              onClick={() => setSection("goal")}
+            />
+            <ProfileItem
+              title="اشتراک"
+              subtitle="اطلاعات اشتراک در دسترس نیست"
+              icon={PiCreditCard}
+              onClick={() => setSection("subscription")}
+            />
+            <ProfileAppearance />
+          </div>
           <ProfileItem
-            title="حساب کاربری"
-            subtitle={user?.mobile || "اطلاعات حساب کاربری"}
-            icon={PiUser}
-            onClick={() => setSection("account")}
+            title="خروج از حساب"
+            icon={PiSignOut}
+            destructive
+            onClick={() => {
+              logout();
+              navigate("/auth/login", { replace: true });
+            }}
           />
-          <ProfileItem
-            title="اطلاعات پایه"
-            subtitle="سن، قد، وزن"
-            icon={PiUserList}
-            onClick={() => setSection("basic")}
-          />
-          <ProfileItem
-            title="هدف رژیم"
-            subtitle="مشاهده و انتخاب رژیم"
-            icon={PiTarget}
-            onClick={() => setSection("goal")}
-          />
-          <ProfileItem
-            title="اشتراک"
-            subtitle="اطلاعات اشتراک در دسترس نیست"
-            icon={PiCreditCard}
-            onClick={() => setSection("subscription")}
-          />
-          <ProfileAppearance />
-        </div>
-        <ProfileItem
-          title="خروج از حساب"
-          icon={PiSignOut}
-          destructive
-          onClick={() => {
-            logout();
-            navigate("/auth/login", { replace: true });
-          }}
-        />
-      </motion.div>
+        </motion.div>
+      </ScrollFade>
       <ProfileIdentityEditor
         open={section === "avatar"}
         onOpenChange={(open) => {

@@ -2,9 +2,11 @@ import { cn } from "../lib/utils";
 import {
   useCallback,
   useEffect,
+  useImperativeHandle,
   useRef,
   useState,
   type ReactNode,
+  type RefObject,
 } from "react";
 
 type ScrollFadeProps = {
@@ -12,6 +14,7 @@ type ScrollFadeProps = {
   className?: string;
   wrapperClassName?: string;
   showBottomFade?: boolean;
+  viewportRef?: RefObject<HTMLDivElement | null>;
 };
 
 const ScrollFade = ({
@@ -19,8 +22,10 @@ const ScrollFade = ({
   className = "",
   wrapperClassName,
   showBottomFade = true,
+  viewportRef,
 }: ScrollFadeProps) => {
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  useImperativeHandle(viewportRef, () => scrollRef.current!, []);
 
   const [hasContentAbove, setHasContentAbove] = useState(false);
   const [hasContentBelow, setHasContentBelow] = useState(false);

@@ -46,11 +46,10 @@ function ProfileScene({ children }: { children: ReactNode }) {
   // A transparent scene lets the returning Header remain visible during projection.
   return (
     <motion.main
-      layoutScroll
       data-dashboard-scene="profile"
       aria-hidden={!isPresent}
       inert={!isPresent}
-      className="absolute inset-0 z-10 overflow-x-hidden overflow-y-auto overscroll-contain compact:px-4 fold:px-6 pb-(--dashboard-bottom-space) scroll-pb-(--dashboard-bottom-space)"
+      className="absolute inset-0 z-10 overflow-hidden compact:px-4 fold:px-6"
     >
       <RouteContent>{children}</RouteContent>
     </motion.main>
@@ -150,7 +149,7 @@ const DashboardFlowContainer = ({
                 animate="center"
                 exit="exit"
                 transition={reducedMotion ? { duration: 0 } : tabTransition}
-                className="absolute inset-0 overflow-x-hidden overflow-y-auto overscroll-contain compact:px-4 fold:px-6 pt-3 pb-(--dashboard-bottom-space) scroll-pb-(--dashboard-bottom-space)"
+                className={`absolute inset-0 overflow-x-hidden ${background.pageKey === "/app/diets" ? "overflow-y-hidden" : "overflow-y-auto pt-3 pb-(--dashboard-bottom-space) scroll-pb-(--dashboard-bottom-space)"} overscroll-contain compact:px-4 fold:px-6`}
               >
                 <RouteContent>
                   {isProfile ? background.outlet : children}
