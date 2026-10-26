@@ -1,11 +1,11 @@
-import { type ReactNode } from "react";
+import { type ReactNode, useId } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 import { HiOutlineChevronDown } from "react-icons/hi";
 import { PiArrowClockwiseFill } from "react-icons/pi";
 
 type FoodGroupsCategoryAccordionProps = {
-  name: "past-week-intake" | "shopping" | "optimized-dietary";
+  name: "past-week-intake" | "shopping" | "optimized-dietary" | "diet-goals";
   title: string;
   color?: string;
   selectedItemCount?: number;
@@ -26,6 +26,7 @@ const FoodGroupsCategoryAccordion = ({
   onRefreshGroup,
 }: FoodGroupsCategoryAccordionProps) => {
   const shouldReduceMotion = useReducedMotion();
+  const contentId = useId();
 
   const layoutMethodClasses =
     name === "past-week-intake"
@@ -36,13 +37,21 @@ const FoodGroupsCategoryAccordion = ({
     <div className="w-full flex flex-col justify-start gap-2">
       <div
         role="button"
+        tabIndex={0}
         aria-expanded={open}
+        aria-controls={contentId}
+        onKeyDown={(event) => {
+          if (event.target !== event.currentTarget) return;
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            onToggle();
+          }
+        }}
         onClick={onToggle}
-        className="
-          bg-darker-blue-300
+        className={`
+          ${name === "diet-goals" ? "bg-[#A5DAEE] dark:bg-darker-blue-300 border-transparent dark:border-dark" : "bg-darker-blue-300 border-dark"}
           w-full
           border
-          border-dark
           rounded-2xl
           py-3
           px-4
@@ -52,19 +61,25 @@ const FoodGroupsCategoryAccordion = ({
           gap-3
           cursor-pointer
           select-none
-          outline-0
-        "
+          focus-visible:outline-2 focus-visible:outline-blue-600 focus-visible:outline-offset-2
+        `}
       >
         <div
           className="compact:w-4 compact:h-4 fold:w-5 fold:h-5 laptop:w-6 laptop:h-6 shrink-0 rounded-full"
           style={{ backgroundColor: color }}
         />
-        <span className="flex-1 text-white font-peyda compact:text-lg fold:text-xl laptop:text-2xl">
+        <span
+          className={`flex-1 font-peyda compact:text-lg fold:text-xl laptop:text-2xl ${name === "diet-goals" ? "text-darker-green-200 dark:text-white" : "text-white"}`}
+        >
           {title}
         </span>
         {selectedItemCount !== undefined && selectedItemCount !== null && (
-          <div className="compact:size-5.5 mobile-lg:size-6.5 fold:size-7.5 shrink-0 rounded-full bg-darker-blue-200 flex items-center justify-center">
-            <span className="font-rokh text-white leading-none translate-y-1 compact:text-lg fold:text-xl laptop:text-2xl">
+          <div
+            className={`compact:size-5.5 mobile-lg:size-6.5 fold:size-7.5 shrink-0 rounded-full flex items-center justify-center ${name === "diet-goals" ? "bg-blue-300 dark:bg-darker-blue-200" : "bg-darker-blue-200"}`}
+          >
+            <span
+              className={`font-rokh leading-none translate-y-1 compact:text-lg fold:text-xl laptop:text-2xl ${name === "diet-goals" ? "text-darker-green-200 dark:text-white" : "text-white"}`}
+            >
               {selectedItemCount}
             </span>
           </div>
@@ -111,6 +126,7 @@ const FoodGroupsCategoryAccordion = ({
       <AnimatePresence initial={false}>
         {open && (
           <motion.div
+            id={contentId}
             key="accordion-content"
             initial={{
               height: 0,
