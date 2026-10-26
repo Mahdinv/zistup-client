@@ -41,10 +41,10 @@ export default function DietAdherenceDetailsDrawer({
       theme={theme}
       appearance="quick-add-meal"
       closeIcon={<PiXCircle aria-hidden="true" className="size-6" />}
-      className="font-peyda [&_[data-slot=drawer-title]]:font-peyda [&>div>header]:px-5 [&_[data-slot=drawer-close]]:text-blue-900 [&_[data-slot=base-drawer-body]]:px-3 [&_[data-slot=base-drawer-body]]:py-4 [&_[data-slot=base-drawer-footer]]:px-3"
+      className="font-peyda **:data-[slot=drawer-title]:font-peyda [&>div>header]:px-5 **:data-[slot=drawer-close]:text-blue-900 **:data-[slot=base-drawer-body]:px-3 **:data-[slot=base-drawer-body]:py-4 **:data-[slot=base-drawer-footer]:px-3"
       stickyFooter={false}
       footer={
-        <section className="min-h-[88px] bg-green-200 dark:bg-darker-blue-300 p-3 flex flex-col gap-1 font-peyda text-base leading-[140%] shadow-[0_4px_4px_#0000000a] dark:shadow-none">
+        <section className="min-h-22 bg-green-200 dark:bg-darker-blue-300 p-3 flex flex-col gap-1 font-peyda text-base leading-[140%] shadow-[0_4px_4px_#0000000a] dark:shadow-none">
           <h3 className="font-bold text-green-400">توصیه زیستاپ</h3>
           <p className="font-medium text-darker-green-200 dark:text-green-100">
             {isLoading
@@ -56,7 +56,7 @@ export default function DietAdherenceDetailsDrawer({
         </section>
       }
     >
-      <div aria-busy={isLoading} className="min-h-[400px]">
+      <div aria-busy={isLoading} className="min-h-100">
         {isLoading ? (
           <div
             role="status"

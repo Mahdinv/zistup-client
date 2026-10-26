@@ -13,7 +13,7 @@ export default function ProfileHero({
   return (
     <section
       aria-label="پروفایل کاربر"
-      className="relative isolate flex min-h-[176px] items-center justify-center border border-transparent px-5 py-5"
+      className="relative isolate flex min-h-44 items-center justify-center border border-transparent px-5 py-5"
     >
       <motion.div
         layoutCrossfade={false}
@@ -81,7 +81,7 @@ export default function ProfileHero({
           {/* The profile contract does not expose level/XP yet; never display mock progress. */}
           <div
             aria-label="اطلاعات سطح در دسترس نیست"
-            className="flex size-[100px] shrink-0 flex-col items-center justify-center rounded-full border-[8px] border-blue-300 text-lg font-bold text-darker-green-200 dark:border-darker-blue-500 dark:text-white"
+            className="flex size-25 shrink-0 flex-col items-center justify-center rounded-full border-8 border-blue-300 text-lg font-bold text-darker-green-200 dark:border-darker-blue-500 dark:text-white"
           >
             <span>سطح</span>
             <span aria-hidden="true">—</span>

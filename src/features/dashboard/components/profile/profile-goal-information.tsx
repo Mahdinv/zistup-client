@@ -97,7 +97,7 @@ function GoalInformationForm({
         <button
           type="submit"
           disabled={isPending}
-          className="h-[42px] w-full cursor-pointer rounded-[20px] bg-green-400 font-peyda text-lg font-bold text-black disabled:cursor-wait disabled:opacity-60"
+          className="h-10.5 w-full cursor-pointer rounded-2xl bg-green-400 font-peyda text-lg font-bold text-black disabled:cursor-wait disabled:opacity-60"
         >
           {isPending ? "در حال ثبت…" : "ثبت اطلاعات"}
         </button>
@@ -125,7 +125,7 @@ export default function ProfileGoalInformation({
       }}
       title="انتخاب هدف"
       theme={theme}
-      className="bg-[#c3e6f3] dark:bg-darker-blue-200 [--scroll-fade-color:#c3e6f3] dark:[--scroll-fade-color:var(--color-darker-blue-200)] [&_[data-slot=base-drawer-body]]:px-3 [&_[data-slot=base-drawer-body]]:py-4 [&_[data-slot=drawer-title]]:text-[20px] [&_[data-slot=drawer-title]]:leading-[1.2]"
+      className="bg-[#c3e6f3] dark:bg-darker-blue-200 [--scroll-fade-color:#c3e6f3] dark:[--scroll-fade-color:var(--color-darker-blue-200)] **:data-[slot=base-drawer-body]:px-3 **:data-[slot=base-drawer-body]:py-4 **:data-[slot=drawer-title]:text-[20px] **:data-[slot=drawer-title]:leading-[1.2]"
     >
       {user ? (
         <GoalInformationForm
@@ -148,7 +148,7 @@ export default function ProfileGoalInformation({
         <div
           role="status"
           aria-label="در حال دریافت اطلاعات"
-          className="h-80 animate-pulse rounded-[20px] bg-blue-500/20 motion-reduce:animate-none"
+          className="h-80 animate-pulse rounded-2xl bg-blue-500/20 motion-reduce:animate-none"
         />
       )}
     </BaseDrawer>

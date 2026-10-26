@@ -27,10 +27,18 @@ const DietPage = () => {
     const content = contentRef.current;
     if (!viewport || !tabList || !content) return;
 
-    const gap = parseFloat(getComputedStyle(content.parentElement!).rowGap) || 0;
-    const top = viewport.scrollTop + content.getBoundingClientRect().top
-      - viewport.getBoundingClientRect().top - tabList.offsetHeight - gap;
-    viewport.scrollTo({ top: Math.max(0, top), behavior: shouldReduceMotion ? "instant" : "smooth" });
+    const gap =
+      parseFloat(getComputedStyle(content.parentElement!).rowGap) || 0;
+    const top =
+      viewport.scrollTop +
+      content.getBoundingClientRect().top -
+      viewport.getBoundingClientRect().top -
+      tabList.offsetHeight -
+      gap;
+    viewport.scrollTo({
+      top: Math.max(0, top),
+      behavior: shouldReduceMotion ? "instant" : "smooth",
+    });
   }, [activeTab, shouldReduceMotion]);
   return (
     <ScrollFade
@@ -76,7 +84,7 @@ const DietPage = () => {
               aria-selected={activeTab === tab.key}
               tabIndex={activeTab === tab.key ? 0 : -1}
               onClick={() => setActiveTab(tab.key)}
-              className={`flex-1 cursor-pointer rounded-[10px] px-2 py-1.5 font-peyda text-sm font-bold fold:text-lg laptop:text-xl focus-visible:outline-2 focus-visible:outline-blue-600 ${activeTab === tab.key ? "bg-green-500 text-darker-green-200" : "text-darker-green-200 dark:text-white"}`}
+              className={`flex-1 cursor-pointer rounded-xs px-2 py-1.5 font-peyda text-sm font-bold fold:text-lg laptop:text-xl focus-visible:outline-2 focus-visible:outline-blue-600 ${activeTab === tab.key ? "bg-green-500 text-darker-green-200" : "text-darker-green-200 dark:text-white"}`}
             >
               {tab.title}
             </button>

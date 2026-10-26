@@ -61,7 +61,7 @@ function BasicInformationForm({
       <fieldset
         disabled={isPending}
         inert={isPending}
-        className="flex min-w-0 flex-col gap-2 [&_[role=spinbutton]_span.w-px]:bg-blue-900 dark:[&_[role=spinbutton]_span.w-px]:bg-white/90 [&_[role=spinbutton]_span.w-10]:text-blue-900/60 dark:[&_[role=spinbutton]_span.w-10]:text-white/45 [&_[role=spinbutton]>div.keen-slider]:h-12 [&_[role=group]]:h-[70px] [&_.font-yekan>span.font-peyda]:text-xs [&_.text-right>span.font-peyda]:text-xs [&_[role=spinbutton]:has(output)]:h-[92px] disabled:opacity-60 [&_.text-white]:text-dark dark:[&_.text-white]:text-white [&_[role=spinbutton]]:rounded-[20px] [&_[role=spinbutton]]:border-blue-500 dark:[&_[role=spinbutton]]:border-darker-blue-100 [&_[role=spinbutton]]:bg-blue-100 dark:[&_[role=spinbutton]]:bg-darker-blue-400 [&_[role=group]]:rounded-[20px] [&_[role=group]]:bg-blue-100 dark:[&_[role=group]]:bg-darker-blue-400"
+        className="flex min-w-0 flex-col gap-2 [&_[role=spinbutton]_span.w-px]:bg-blue-900 dark:[&_[role=spinbutton]_span.w-px]:bg-white/90 [&_[role=spinbutton]_span.w-10]:text-blue-900/60 dark:[&_[role=spinbutton]_span.w-10]:text-white/45 [&_[role=spinbutton]>div.keen-slider]:h-12 **:[[role=group]]:h-17.5 [&_.font-yekan>span.font-peyda]:text-xs [&_.text-right>span.font-peyda]:text-xs [&_[role=spinbutton]:has(output)]:h-23 disabled:opacity-60 [&_.text-white]:text-dark dark:[&_.text-white]:text-white **:[[role=spinbutton]]:rounded-2xl **:[[role=spinbutton]]:border-blue-500 dark:**:[[role=spinbutton]]:border-darker-blue-100 **:[[role=spinbutton]]:bg-blue-100 dark:**:[[role=spinbutton]]:bg-darker-blue-400 **:[[role=group]]:rounded-2xl **:[[role=group]]:bg-blue-100 dark:**:[[role=group]]:bg-darker-blue-400"
       >
         <Controller
           name="sex"
@@ -131,7 +131,7 @@ function BasicInformationForm({
         <button
           type="submit"
           disabled={isPending}
-          className="h-[42px] w-full cursor-pointer rounded-[20px] bg-green-400 font-peyda text-lg font-bold text-black disabled:cursor-wait disabled:opacity-60"
+          className="h-10.5 w-full cursor-pointer rounded-2xl bg-green-400 font-peyda text-lg font-bold text-black disabled:cursor-wait disabled:opacity-60"
         >
           {isPending ? "در حال ثبت…" : "ثبت اطلاعات"}
         </button>
@@ -160,9 +160,9 @@ export default function ProfileBasicInformation({
       title="اطلاعات پایه"
       theme={theme}
       className={cn(
-        "[&_[data-slot=base-drawer-body]]:px-3 [&_[data-slot=base-drawer-body]]:pt-4 [&_[data-slot=base-drawer-body]]:pb-[18px] [&_[data-slot=drawer-title]]:text-xl",
+        "**:data-[slot=base-drawer-body]:px-3 **:data-[slot=base-drawer-body]:pt-4 **:data-[slot=base-drawer-body]:pb-4.5 **:data-[slot=drawer-title]:text-xl",
         theme === "light" &&
-          "bg-[#c3e6f3] text-darker-green-200 [--scroll-fade-color:#c3e6f3] [&>div>header]:border-green-400/40 [&_[data-slot=drawer-swipe-handle]]:after:bg-green-400/40 [&_[data-slot=drawer-close]]:text-blue-900 [&_form>div]:border-green-400/40 [&_fieldset]:gap-1 [&_fieldset_.font-yekan]:leading-[1.2] [&_fieldset>div>span[id]]:leading-[1.2] [&_fieldset_.font-yekan]:text-[20px] [&_fieldset_.text-right>span.font-peyda]:text-[12px] [&_fieldset_.font-yekan>span.font-peyda]:text-[12px] [&_fieldset>div:first-child_.grid>div]:border-blue-300! [&_fieldset>div:first-child_.grid>div]:bg-blue-300! [&_fieldset>div:first-child_.grid>div]:text-blue-600! [&_fieldset>div:first-child_.grid>div]:shadow-[0_4px_4px_rgba(0,0,0,0.04)] [&_fieldset>div:first-child_.grid>div.ring-1]:border-blue-400! [&_fieldset>div:first-child_.grid>div.ring-1]:bg-blue-500! [&_fieldset>div:first-child_.grid>div.ring-1]:text-darker-green-200! [&_fieldset_[role=spinbutton]]:bg-darker-blue-200! [&_fieldset_[role=spinbutton]]:border-darker-blue-100! [&_fieldset_[role=spinbutton]_.text-white]:text-white! [&_fieldset_[role=spinbutton]_span.w-px]:bg-white/90! [&_fieldset_[role=spinbutton]_span.w-10]:text-white/45! [&_fieldset_[role=spinbutton]_output]:text-blue-400 [&_fieldset_[role=group]]:bg-darker-blue-200! [&_fieldset_[role=group]]:border-dark [&_fieldset_[role=group]_.text-white]:text-white! [&_fieldset_[role=option][aria-selected=true]_.text-white]:text-blue-400! [&_fieldset_[role=spinbutton]>.keen-slider+div]:hidden",
+          "bg-[#c3e6f3] text-darker-green-200 [--scroll-fade-color:#c3e6f3] [&>div>header]:border-green-400/40 **:data-[slot=drawer-swipe-handle]:after:bg-green-400/40 **:data-[slot=drawer-close]:text-blue-900 [&_form>div]:border-green-400/40 [&_fieldset]:gap-1 [&_fieldset_.font-yekan]:leading-[1.2] [&_fieldset>div>span[id]]:leading-[1.2] [&_fieldset_.font-yekan]:text-[20px] [&_fieldset_.text-right>span.font-peyda]:text-[12px] [&_fieldset_.font-yekan>span.font-peyda]:text-[12px] [&_fieldset>div:first-child_.grid>div]:border-blue-300! [&_fieldset>div:first-child_.grid>div]:bg-blue-300! [&_fieldset>div:first-child_.grid>div]:text-blue-600! [&_fieldset>div:first-child_.grid>div]:shadow-[0_4px_4px_rgba(0,0,0,0.04)] [&_fieldset>div:first-child_.grid>div.ring-1]:border-blue-400! [&_fieldset>div:first-child_.grid>div.ring-1]:bg-blue-500! [&_fieldset>div:first-child_.grid>div.ring-1]:text-darker-green-200! [&_fieldset_[role=spinbutton]]:bg-darker-blue-200! [&_fieldset_[role=spinbutton]]:border-darker-blue-100! [&_fieldset_[role=spinbutton]_.text-white]:text-white! [&_fieldset_[role=spinbutton]_span.w-px]:bg-white/90! [&_fieldset_[role=spinbutton]_span.w-10]:text-white/45! [&_fieldset_[role=spinbutton]_output]:text-blue-400 [&_fieldset_[role=group]]:bg-darker-blue-200! [&_fieldset_[role=group]]:border-dark [&_fieldset_[role=group]_.text-white]:text-white! [&_fieldset_[role=option][aria-selected=true]_.text-white]:text-blue-400! [&_fieldset_[role=spinbutton]>.keen-slider+div]:hidden",
       )}
     >
       {user ? (
@@ -186,7 +186,7 @@ export default function ProfileBasicInformation({
         <div
           role="status"
           aria-label="در حال دریافت اطلاعات"
-          className="h-80 animate-pulse rounded-[20px] bg-blue-500/20 motion-reduce:animate-none"
+          className="h-80 animate-pulse rounded-2xl bg-blue-500/20 motion-reduce:animate-none"
         />
       )}
     </BaseDrawer>

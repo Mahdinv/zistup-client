@@ -44,7 +44,7 @@ const CircularScore = ({ value, max, progress, tone }: CircularScoreProps) => {
       aria-valuemin={value === null ? undefined : 0}
       aria-valuemax={value === null ? undefined : max}
       aria-valuenow={value ?? undefined}
-      className="relative shrink-0 overflow-visible size-[140px] fold:size-40 laptop:size-44"
+      className="relative shrink-0 overflow-visible size-35 fold:size-40 laptop:size-44"
     >
       <svg
         viewBox="0 0 140 140"

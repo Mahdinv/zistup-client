@@ -2,6 +2,7 @@ export type Diet = {
   id: number;
   title: string;
   subTitle: string;
+  name: string;
   image: string;
   focus: string;
   duration: string;

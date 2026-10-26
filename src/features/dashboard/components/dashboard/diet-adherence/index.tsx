@@ -46,7 +46,7 @@ const DietAdherenceScore = ({
         aria-busy={isLoading}
         className="w-full bg-blue-100 dark:bg-darker-blue-400 border border-gray-100 dark:border-dark rounded-2xl p-5 shadow-[0_4px_4px_0_rgba(0,0,0,0.04)] flex flex-col justify-center items-center gap-4"
       >
-        <div className="w-full min-h-[22px] flex flex-row items-center justify-between gap-2">
+        <div className="w-full min-h-5.5 flex flex-row items-center justify-between gap-2">
           <h2 className="font-yekan font-extrabold leading-[135%] compact:text-lg fold:text-xl laptop:text-2xl">
             {isToday ? "امتیاز تعادل امروز" : "امتیاز تعادل روز انتخاب‌شده"}
           </h2>
@@ -80,7 +80,7 @@ const DietAdherenceScore = ({
             tone={unavailable ? "neutral" : display.tone}
           />
         </div>
-        <div className="w-full min-h-[33px] fold:min-h-10 laptop:min-h-11 border border-blue-300 dark:border-dark text-center rounded-[42px] px-3 flex items-center justify-center">
+        <div className="w-full min-h-8.25 fold:min-h-10 laptop:min-h-11 border border-blue-300 dark:border-dark text-center rounded-[42px] px-3 flex items-center justify-center">
           {error ? (
             <button
               type="button"
@@ -105,7 +105,7 @@ const DietAdherenceScore = ({
                       : `color-mix(in srgb, ${adherenceScoreColors[messageTone]} 45%, black)`,
                 } as CSSProperties
               }
-              className={`w-full whitespace-normal break-words py-1 font-yekan font-extrabold leading-[135%] text-base fold:text-lg laptop:text-xl text-[color:var(--adherence-message-color)] ${darkMessageColors[messageTone]}`}
+              className={`w-full whitespace-normal wrap-break-word py-1 font-yekan font-extrabold leading-[135%] text-base fold:text-lg laptop:text-xl text-(--adherence-message-color) ${darkMessageColors[messageTone]}`}
             >
               {message}
             </p>
