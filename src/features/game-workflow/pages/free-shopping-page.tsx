@@ -1,4 +1,5 @@
 import PlaygroundFlowContainer from "@/app/layouts/playground-flow/playground-flow-container";
+import { latestDietQueryKey } from "@/features/dashboard/constants/latest-diet-query.constants";
 import Button from "@/shared/base-components/button";
 import ScrollFade from "@/shared/base-components/scroll-fade";
 import { FaCheck } from "react-icons/fa6";
@@ -120,6 +121,7 @@ const FreeShoppingPage = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: addShopping,
     onSuccess: async () => {
+      void queryClient.invalidateQueries({ queryKey: latestDietQueryKey });
       if (actionType === "create") {
         setModal(true);
       } else {

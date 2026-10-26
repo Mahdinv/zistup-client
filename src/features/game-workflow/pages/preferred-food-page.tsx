@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { latestDietQueryKey } from "@/features/dashboard/constants/latest-diet-query.constants";
 import { getFoodGroupsCategories } from "../api/past-week-intake.api";
 import PlaygroundFlowContainer from "@/app/layouts/playground-flow/playground-flow-container";
 import Button from "@/shared/base-components/button";
@@ -118,6 +119,7 @@ const PreferredFoodPage = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: addPreferredFood,
     onSuccess: async () => {
+      void queryClient.invalidateQueries({ queryKey: latestDietQueryKey });
       if (actionType === "create") {
         setModal(true);
       } else {

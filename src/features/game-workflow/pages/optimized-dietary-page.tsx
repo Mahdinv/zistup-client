@@ -141,8 +141,13 @@ const OptimizedDietaryPage = () => {
     return () => window.clearTimeout(timeoutId);
   }, []);
 
-  const optimizedDietQuery = useOptimizedDietaryQuery(canStartPolling);
-  const isRequestDone = optimizedDietQuery.data?.success === true;
+  const optimizedDietQuery = useOptimizedDietaryQuery(canStartPolling, {
+    staleTime: 0,
+    refetchOnMount: "always",
+  });
+  const isRequestDone =
+    optimizedDietQuery.isFetchedAfterMount &&
+    optimizedDietQuery.data?.success === true;
 
   const { loaderSteps, isLoaderCompleted } = useDietLoader({
     steps: initialLoaderSteps,

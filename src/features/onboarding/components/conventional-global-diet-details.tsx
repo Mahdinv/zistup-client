@@ -12,7 +12,8 @@ import { AnimatePresence, easeInOut, motion } from "framer-motion";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Controller, useForm, type SubmitHandler } from "react-hook-form";
 import type { ConventionalGlobalDiet } from "../schemas/conventional-global-diet.schema";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { latestDietQueryKey } from "@/features/dashboard/constants/latest-diet-query.constants";
 import { normalizeApiError } from "../../../shared/api";
 import { toast } from "sonner";
 import { addConventionalGlobalDiet } from "../api/diet.api";
@@ -28,6 +29,7 @@ const priorityOptions = [
 ];
 
 const ConventionalGlobalDietDetails = () => {
+  const queryClient = useQueryClient();
   const location = useLocation();
   const navigate = useNavigate();
   const [priorityBox, setPriorityBox] = useState<boolean>(true);
@@ -36,7 +38,8 @@ const ConventionalGlobalDietDetails = () => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: addConventionalGlobalDiet,
-    onSuccess: () => {
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: latestDietQueryKey });
       toast.success("رژیم شما انتخاب شد");
       navigate("/dashboard");
     },

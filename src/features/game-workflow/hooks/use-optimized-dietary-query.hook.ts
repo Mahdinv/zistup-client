@@ -1,5 +1,9 @@
 import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 import { getOptimizedDietary } from "../api/optimized-dietary.api";
+import {
+  latestDietCacheOptions,
+  latestDietQueryKey,
+} from "@/features/dashboard/constants/latest-diet-query.constants";
 
 type QueryOptions = Pick<
   UseQueryOptions<Awaited<ReturnType<typeof getOptimizedDietary>>>,
@@ -11,7 +15,8 @@ const useOptimizedDietaryQuery = (
   options: QueryOptions = {},
 ) => {
   return useQuery({
-    queryKey: ["optimized-dietary-result"],
+    queryKey: latestDietQueryKey,
+    ...latestDietCacheOptions,
     queryFn: getOptimizedDietary,
     enabled,
     refetchInterval: (query) => {

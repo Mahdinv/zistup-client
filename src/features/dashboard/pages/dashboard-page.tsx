@@ -24,14 +24,10 @@ import { useQuickAddMealDrawer } from "../hooks/use-quick-add-meal-drawer.hook";
 import type { DietMeal } from "../api/types/diet-day.types";
 
 const DashboardPage = () => {
-  const dietQuery = useOptimizedDietaryQuery(true, {
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnMount: "always",
-  });
+  const dietQuery = useOptimizedDietaryQuery(true);
 
   const planDates = usePlanDates(
-    dietQuery.isFetchedAfterMount && dietQuery.data?.success
+    dietQuery.data?.success
       ? dietQuery.data.data
       : undefined,
   );
@@ -62,9 +58,8 @@ const DashboardPage = () => {
     );
   }
 
-  // A cached result from the generation flow must not be shown on entry.
+  // Successful cached plans are shared with Diets and the generation flow.
   if (
-    !dietQuery.isFetchedAfterMount ||
     dietQuery.isPending ||
     !dietQuery.data?.success
   ) {

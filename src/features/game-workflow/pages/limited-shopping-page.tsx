@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { latestDietQueryKey } from "@/features/dashboard/constants/latest-diet-query.constants";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getFoodGroupsCategories } from "../api/past-week-intake.api";
 import {
@@ -190,6 +191,7 @@ const LimitedShoppingPage = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: addShopping,
     onSuccess: async () => {
+      void queryClient.invalidateQueries({ queryKey: latestDietQueryKey });
       if (actionType === "create") {
         setModal(true);
       } else {

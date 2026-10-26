@@ -1,7 +1,9 @@
 import CurrentDiet from "../components/diets/current-diet";
 import TargetDiet from "../components/diets/target-diet";
+import useDietsQuery from "../hooks/use-diets-query.hook";
 
 const DietPage = () => {
+  useDietsQuery();
   return (
     <div className="w-full flex flex-col justify-start items-center gap-4">
       <CurrentDiet />

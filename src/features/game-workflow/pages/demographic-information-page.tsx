@@ -1,4 +1,5 @@
 import PlaygroundFlowContainer from "@/app/layouts/playground-flow/playground-flow-container";
+import { latestDietQueryKey } from "@/features/dashboard/constants/latest-diet-query.constants";
 import ScrollFade from "@/shared/base-components/scroll-fade";
 import { PiCity, PiForkKnife, PiPersonSimpleRun } from "react-icons/pi";
 import QuestionCard from "../components/question-card";
@@ -68,6 +69,7 @@ const DemographicInformationPage = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: addDemographicInformation,
     onSuccess: async () => {
+      void queryClient.invalidateQueries({ queryKey: latestDietQueryKey });
       await queryClient.invalidateQueries({ queryKey: userProfileQueryKey });
       if (actionType === "create") {
         setModal(true);
