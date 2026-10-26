@@ -208,7 +208,7 @@ const LineChart = ({ nutrients }: LineChartProps) => {
                   10,
                   Math.min(
                     parseFloat(font.fontSize),
-                    chart.width / nutrients.length / 3,
+                    chart.width / Math.max(1, nutrients.length) / 3,
                   ),
                 ),
                 weight: 700,

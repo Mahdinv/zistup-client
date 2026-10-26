@@ -14,9 +14,13 @@ const tabs = [
 
 type DietGoalMealSuggestionsProps = {
   meals: DietMeal[] | undefined;
+  registrationDisabled: boolean;
 };
 
-const DietGoalMealSuggestions = ({ meals }: DietGoalMealSuggestionsProps) => {
+const DietGoalMealSuggestions = ({
+  meals,
+  registrationDisabled,
+}: DietGoalMealSuggestionsProps) => {
   const [activePlan, setActivePlan] = useState<PlanType>("primary");
 
   const displayDiets = useMemo(() => {
@@ -85,7 +89,11 @@ const DietGoalMealSuggestions = ({ meals }: DietGoalMealSuggestionsProps) => {
             getKey={(item) => item.mealId}
             items={displayDiets}
             renderItem={(item) => (
-              <SuggestedMealsCard item={item} initialTab={activePlan} />
+              <SuggestedMealsCard
+                item={item}
+                initialTab={activePlan}
+                registrationDisabled={registrationDisabled}
+              />
             )}
           />
         </div>

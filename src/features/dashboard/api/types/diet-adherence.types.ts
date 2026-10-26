@@ -18,5 +18,5 @@ export type DietAdherenceData = {
 
 export type DietAdherenceResponse = {
   success: boolean;
-  data: DietAdherenceData;
+  data: DietAdherenceData | null;
 };

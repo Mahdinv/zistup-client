@@ -19,6 +19,9 @@ import DetailedMonitoring from "../components/dashboard/detailed-monitoring";
 import ZistupRecommendation from "../components/dashboard/zistup-recommendation";
 import TodayLoggedMeals from "../components/dashboard/today-logged-meals";
 import { formatPlanDateForApi } from "../lib/plan-date.utils";
+import { useLayoutEffect } from "react";
+import { useQuickAddMealDrawer } from "../hooks/use-quick-add-meal-drawer.hook";
+import type { DietMeal } from "../api/types/diet-day.types";
 
 const DashboardPage = () => {
   const dietQuery = useOptimizedDietaryQuery(true, {
@@ -33,23 +36,18 @@ const DashboardPage = () => {
       : undefined,
   );
 
-  const meals = planDates.selectedDietDay?.meals;
-
   const selectedDate =
     planDates.selectedDate !== null
       ? formatPlanDateForApi(planDates.selectedDate)
       : null;
-  const adherenceQuery = useDietAdherenceQuery(selectedDate);
-  const caloriesQuery = useCaloriesQuery(selectedDate);
-  const radarQuery = useRadarQuery(
-    selectedDate ?? formatPlanDateForApi(planDates.today),
-  );
-  const nutritionQuery = useNutritionQuery(
-    selectedDate ?? formatPlanDateForApi(planDates.today),
-  );
-  const nutrition = nutritionQuery.data?.success
-    ? nutritionQuery.data.data
-    : undefined;
+  const { setDashboardDate } = useQuickAddMealDrawer();
+  // Registration endpoints write to today only, including after Tehran midnight.
+  const registrationDate =
+    planDates.selectedDate === planDates.today ? selectedDate : null;
+  useLayoutEffect(() => {
+    setDashboardDate(registrationDate);
+    return () => setDashboardDate(null);
+  }, [registrationDate, setDashboardDate]);
 
   if (dietQuery.isError) {
     return (
@@ -85,7 +83,8 @@ const DashboardPage = () => {
   if (
     !planDates.range ||
     !planDates.navigationRange ||
-    planDates.selectedDate === null
+    planDates.selectedDate === null ||
+    selectedDate === null
   ) {
     return <p role="alert">تاریخ یا روزهای برنامه غذایی معتبر نیست.</p>;
   }
@@ -98,41 +97,90 @@ const DashboardPage = () => {
         range={planDates.navigationRange}
         onSelectDate={planDates.selectDate}
       />
+      <DashboardDayContent
+        key={selectedDate}
+        date={selectedDate}
+        isFuture={planDates.isFuture}
+        isToday={planDates.selectedDate === planDates.today}
+        meals={planDates.selectedDietDay?.meals}
+      />
+    </div>
+  );
+};
+
+// A date owns its queries, sliders and drawers; switching dates resets them together.
+const DashboardDayContent = ({
+  date,
+  isFuture,
+  isToday,
+  meals,
+}: {
+  date: string;
+  isFuture: boolean;
+  isToday: boolean;
+  meals: DietMeal[] | undefined;
+}) => {
+  const queryDate = isFuture ? null : date;
+  const adherenceQuery = useDietAdherenceQuery(queryDate);
+  const caloriesQuery = useCaloriesQuery(queryDate);
+  const radarQuery = useRadarQuery(queryDate);
+  const nutritionQuery = useNutritionQuery(queryDate);
+  const nutrition =
+    nutritionQuery.isFetchedAfterMount && nutritionQuery.data?.success
+      ? nutritionQuery.data.data
+      : undefined;
+
+  return (
+    <>
       <DietAdherence
-        data={adherenceQuery.data?.data}
-        isLoading={adherenceQuery.isPending}
+        isToday={isToday}
+        data={
+          adherenceQuery.isFetchedAfterMount && adherenceQuery.data?.success
+            ? (adherenceQuery.data.data ?? undefined)
+            : undefined
+        }
+        isLoading={!isFuture && !adherenceQuery.isFetchedAfterMount}
         error={adherenceQuery.error}
         onRetry={() => void adherenceQuery.refetch()}
       />
-      <DietGoalMealSuggestions meals={meals} />
+      <DietGoalMealSuggestions meals={meals} registrationDisabled={!isToday} />
       <div className="w-full flex flex-row items-stretch gap-3">
         <DailyCalories
-          data={caloriesQuery.data?.data}
-          isLoading={caloriesQuery.isPending}
+          data={
+            caloriesQuery.isFetchedAfterMount && caloriesQuery.data?.success
+              ? (caloriesQuery.data.data ?? undefined)
+              : undefined
+          }
+          isLoading={!isFuture && !caloriesQuery.isFetchedAfterMount}
           error={caloriesQuery.error}
           onRetry={() => void caloriesQuery.refetch()}
         />
-        <DailyWater
-          key={planDates.selectedDate}
-          date={formatPlanDateForApi(planDates.selectedDate)}
-        />
+        <DailyWater date={date} readOnly={isFuture} />
       </div>
-      <DailyPhysicalActivity />
+      <DailyPhysicalActivity
+        date={date}
+        isFuture={isFuture}
+        isToday={isToday}
+      />
       <ZistupRadar
-        data={radarQuery.data?.data}
-        isLoading={radarQuery.isPending}
+        data={
+          radarQuery.isFetchedAfterMount && radarQuery.data?.success
+            ? (radarQuery.data.data ?? undefined)
+            : undefined
+        }
+        isLoading={!isFuture && !radarQuery.isFetchedAfterMount}
         error={radarQuery.error}
         onRetry={() => void radarQuery.refetch()}
       />
       <DetailedMonitoring
-        nutrients={nutrition?.nutrients}
-        isLoading={nutritionQuery.isPending}
+        nutrients={nutrition?.nutrients ?? undefined}
+        isLoading={!isFuture && !nutritionQuery.isFetchedAfterMount}
         error={nutritionQuery.error}
         onRetry={() => void nutritionQuery.refetch()}
       />
-      <ZistupRecommendation advices={nutrition?.advices} />
-      <TodayLoggedMeals />
-    </div>
+      <ZistupRecommendation advices={nutrition?.advices ?? undefined} />
+      <TodayLoggedMeals date={date} isFuture={isFuture} isToday={isToday} />
+    </>
   );
 };
 

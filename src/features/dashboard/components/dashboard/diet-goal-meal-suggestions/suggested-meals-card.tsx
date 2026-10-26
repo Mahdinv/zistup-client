@@ -30,8 +30,13 @@ type MealPlanTab = (typeof mealPlanTabs)[number]["value"];
 type SuggestedMealsCardProps = {
   item: DietFood & { meal: DietMeal; mealTitle: string; mealColor?: string };
   initialTab: MealPlanTab;
+  registrationDisabled: boolean;
 };
-const SuggestedMealsCard = ({ item, initialTab }: SuggestedMealsCardProps) => {
+const SuggestedMealsCard = ({
+  item,
+  initialTab,
+  registrationDisabled,
+}: SuggestedMealsCardProps) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<MealPlanTab>(initialTab);
   const { submitMeal, isPending, submissionInFlight } = useAddMealMutation();
@@ -41,7 +46,7 @@ const SuggestedMealsCard = ({ item, initialTab }: SuggestedMealsCardProps) => {
     "alternative-2": item.meal.alternatives[1],
   };
   const submit = async () => {
-    if (submissionInFlight.current) return;
+    if (registrationDisabled || submissionInFlight.current) return;
     const food = foods[activeTab];
     if (!food) {
       toast.error("پیشنهاد انتخاب‌شده در پاسخ برنامه غذایی موجود نیست");
@@ -195,7 +200,7 @@ const SuggestedMealsCard = ({ item, initialTab }: SuggestedMealsCardProps) => {
               <Button
                 classes="h-[42px] rounded-full bg-green-400 text-darker-green-200 font-peyda font-bold !text-[18px] leading-[1.45] hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
                 title={isPending ? "در حال ثبت..." : "ثبت این غذا"}
-                disable={isPending || !foods[activeTab]}
+                disable={registrationDisabled || isPending || !foods[activeTab]}
                 onClick={() => void submit()}
               />
             }
@@ -320,11 +325,13 @@ const SuggestedMealsCard = ({ item, initialTab }: SuggestedMealsCardProps) => {
                           <ul className="mt-1 flex flex-col gap-1 text-[14px] text-blue-900 dark:text-blue-700">
                             {food.companions.map((companion) => (
                               <li key={companion.id} className="wrap-anywhere">
-                                <span>{companion.title}</span>{" — "}
+                                <span>{companion.title}</span>
+                                {" — "}
                                 <bdi className="font-rokh">
                                   {companion.quantity.servings}
                                 </bdi>{" "}
-                                {companion.quantity.unit}{" / "}
+                                {companion.quantity.unit}
+                                {" / "}
                                 <bdi className="font-rokh">
                                   {Math.round(companion.quantity.grams)}
                                 </bdi>{" "}

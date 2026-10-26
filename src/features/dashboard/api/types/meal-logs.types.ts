@@ -24,5 +24,5 @@ export type MealLogsResponse = {
   success: boolean;
   date: string;
   count: number;
-  items: LoggedMeal[];
+  items: LoggedMeal[] | null;
 };

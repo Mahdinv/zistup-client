@@ -1,6 +1,6 @@
 import useDeleteMealLogsMutation from "../../../hooks/use-delete-meal-logs-mutation.hook";
 import type { MealType } from "../../../api/types/add-meal.types";
-import useTodayMealLogsQuery from "../../../hooks/use-today-meal-logs-query.hook";
+import useMealLogsQuery from "../../../hooks/use-today-meal-logs-query.hook";
 import { PiTrash } from "react-icons/pi";
 import { memo, useMemo } from "react";
 import { LuArrowUpLeft } from "react-icons/lu";
@@ -15,15 +15,29 @@ const mealOrder = {
   dinner: 3,
 } satisfies Record<MealType, number>;
 
-const TodayLoggedMeals = () => {
-  const mealLogsQuery = useTodayMealLogsQuery();
+const TodayLoggedMeals = ({
+  date,
+  isFuture,
+  isToday,
+}: {
+  date: string;
+  isFuture: boolean;
+  isToday: boolean;
+}) => {
+  const mealLogsQuery = useMealLogsQuery(isFuture ? null : date);
   const deletion = useDeleteMealLogsMutation();
   const sortedMeals = useMemo(
     () =>
-      [...(mealLogsQuery.data?.items ?? [])].sort(
-        (a, b) => mealOrder[a.meal] - mealOrder[b.meal],
-      ),
-    [mealLogsQuery.data?.items],
+      [
+        ...(mealLogsQuery.isFetchedAfterMount && mealLogsQuery.isSuccess
+          ? (mealLogsQuery.data?.items ?? [])
+          : []),
+      ].sort((a, b) => mealOrder[a.meal] - mealOrder[b.meal]),
+    [
+      mealLogsQuery.data?.items,
+      mealLogsQuery.isFetchedAfterMount,
+      mealLogsQuery.isSuccess,
+    ],
   );
 
   const { openQuickAddMeal } = useQuickAddMealDrawer();
@@ -46,20 +60,21 @@ const TodayLoggedMeals = () => {
                 "
       >
         <h2 className="flex-1 font-yekan font-extrabold leading-[135%] compact:text-lg fold:text-xl laptop:text-2xl">
-          وعده‌های ثبت‌شده امروز
+          {isToday
+            ? "وعده‌های ثبت‌شده امروز"
+            : "وعده‌های ثبت‌شده روز انتخاب‌شده"}
         </h2>
         {sortedMeals.length > 0 && (
           <button
             type="button"
             disabled={
+              isFuture ||
               deletion.isPending ||
               !mealLogsQuery.isSuccess ||
               sortedMeals.length === 0
             }
             aria-busy={deletion.isPending && deletion.variables?.kind === "day"}
-            onClick={() =>
-              deletion.remove({ kind: "day", date: mealLogsQuery.date })
-            }
+            onClick={() => !isFuture && deletion.remove({ kind: "day", date })}
             className="text-red-400 hover:text-red-500 active:text-red-500 flex flex-row justify-end items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2"
           >
             <span className="font-peyda font-bold compact:text-sm fold:text-base laptop:text-lg cursor-pointer">
@@ -72,10 +87,10 @@ const TodayLoggedMeals = () => {
           </button>
         )}
       </div>
-      {mealLogsQuery.isPending ? (
+      {!isFuture && !mealLogsQuery.isFetchedAfterMount ? (
         <div
           role="status"
-          aria-label="در حال دریافت وعده‌های امروز"
+          aria-label="در حال دریافت وعده‌های روز انتخاب‌شده"
           className="w-full space-y-2"
         >
           {[0, 1].map((row) => (
@@ -99,16 +114,19 @@ const TodayLoggedMeals = () => {
             تلاش مجدد
           </button>
         </div>
-      ) : mealLogsQuery.data.items.length === 0 ? (
+      ) : sortedMeals.length === 0 ? (
         <div className="w-full bg-transparent border-2 border-dashed border-gray-200 dark:border-darker-blue-100 rounded-xs p-8 flex justify-center items-center">
           <button
             type="button"
-            onClick={openQuickAddMeal}
+            onClick={() => {
+              if (isToday) openQuickAddMeal();
+            }}
+            disabled={!isToday}
             aria-haspopup="dialog"
-            className="text-green-400 hover:text-green-500 active:text-green-500 flex flex-row items-center gap-1 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
+            className="text-green-400 hover:text-green-500 active:text-green-500 flex flex-row items-center gap-1 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
           >
             <span className="font-peyda font-bold compact:text-sm fold:text-base laptop:text-lg">
-              ثبت غذای امروز
+              {isToday ? "ثبت غذای امروز" : "وعده‌ای برای این روز ثبت نشده است"}
             </span>
             <LuArrowUpLeft
               aria-hidden="true"
@@ -123,17 +141,18 @@ const TodayLoggedMeals = () => {
             <TodayLoggedMealCard
               key={item.id}
               item={item}
-              deleteDisabled={deletion.isPending}
+              deleteDisabled={isFuture || deletion.isPending}
               isDeleting={
                 deletion.isPending &&
                 deletion.variables?.kind === "single" &&
                 deletion.variables.id === item.id
               }
               onDelete={() =>
+                !isFuture &&
                 deletion.remove({
                   kind: "single",
                   id: item.id,
-                  date: mealLogsQuery.date,
+                  date,
                 })
               }
             />

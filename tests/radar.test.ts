@@ -46,6 +46,20 @@ const sample: RadarData = {
   },
 };
 
+test("empty data preserves four radar axes with an empty current pattern", () => {
+  for (const data of [undefined, { axis_order: [], axes: {} } as RadarData]) {
+    const axes = getRadarDisplayAxes(data);
+    assert.equal(axes.length, 4);
+    assert.deepEqual(axes.map((axis) => axis.key), sample.axis_order);
+    assert.equal(new Set(axes.map((axis) => axis.key)).size, 4);
+    assert.deepEqual(
+      axes.map((axis) => axis.plotValue),
+      [0, 0, 0, 0],
+    );
+    assert.ok(axes.every((axis) => !axis.overflow));
+  }
+});
+
 test("sample unavailable zeros become gaps; available values retain their units and precision", () => {
   const axes = getRadarDisplayAxes(sample);
   assert.deepEqual(

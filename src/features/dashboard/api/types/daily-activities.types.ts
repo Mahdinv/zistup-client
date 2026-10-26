@@ -11,7 +11,7 @@ export type DailyActivity = {
 
 export type DailyActivitiesResponse = {
   success: boolean;
-  activities: DailyActivity[];
+  activities: DailyActivity[] | null;
   bmr: number;
   bmr_reason: string | null;
   total_calories: number;

@@ -10,6 +10,5 @@ export async function getNutrition(date: string, signal?: AbortSignal) {
     },
   );
 
-  console.log("Dashboard nutrition response:", response.data);
-  return response.data;
+  return response.data || null;
 }

@@ -7,7 +7,6 @@ import {
   formatPlanDateForApi,
   getDietDayForDate,
   getDietDayIndex,
-  getDashboardDateRange,
   getPlanDateRange,
   getTehranCalendarDate,
   getWeeklyProgressDays,
@@ -16,14 +15,18 @@ import {
 import type { DietResponse } from "../src/features/dashboard/api/types/diet-response.types.ts";
 
 type JalaliTuple = [number, number, number];
-test("dashboard navigation runs from plan start through today or plan expiry", () => {
+test("dashboard navigation includes future dates through plan expiry", () => {
   const plan = getPlanDateRange("2026-10-12 08:00:00");
   assert.ok(plan);
-  for (const date of [plan.planStartDate, plan.planStartDate + 5, plan.planEndDate, plan.planEndDate + 10]) {
-    const range = getDashboardDateRange(date, plan);
-    assert.ok(range);
+  for (const date of [
+    plan.planStartDate,
+    plan.planStartDate + 5,
+    plan.planEndDate,
+    plan.planEndDate + 10,
+  ]) {
+    const range = plan;
     assert.equal(range.planStartDate, plan.planStartDate);
-    assert.equal(range.planEndDate, Math.min(date, plan.planEndDate));
+    assert.equal(range.planEndDate, plan.planEndDate);
     assert.equal(isWithinPlan(range.planStartDate, range), true);
     assert.equal(isWithinPlan(range.planEndDate, range), true);
     assert.equal(isWithinPlan(range.planStartDate - 1, range), false);
@@ -32,33 +35,48 @@ test("dashboard navigation runs from plan start through today or plan expiry", (
       clampPlanDate(range.planStartDate - 1, range),
       range.planStartDate,
     );
-    assert.equal(clampPlanDate(date + 1, range), range.planEndDate);
+    assert.equal(
+      clampPlanDate(date + 1, range),
+      Math.min(date + 1, range.planEndDate),
+    );
+    if (date < range.planEndDate)
+      assert.equal(isWithinPlan(date + 1, range), true);
   }
 });
 
-test("dashboard has no selectable dates without a plan or before its start", () => {
+test("a future plan starts selection at its first valid date", () => {
   const today = j2d(1405, 8, 2);
-  assert.equal(getDashboardDateRange(today, null), null);
-  assert.equal(getDashboardDateRange(today, {
+  const range = {
     planStartDate: today + 1,
     planEndDate: today + 31,
-  }), null);
+  };
+  assert.equal(clampPlanDate(today, range), today + 1);
+  assert.equal(isWithinPlan(today, range), false);
+  assert.equal(getDietDayIndex(today + 1, range), 0);
 });
 
-test("dashboard limits roll forward at Tehran midnight", () => {
+test("Tehran midnight advances today's status without moving plan bounds", () => {
   const plan = getPlanDateRange("2026-10-12 08:00:00");
   assert.ok(plan);
-  const before = getDashboardDateRange(
-    getTehranCalendarDate(new Date("2026-10-24T20:29:59Z")),
-    plan,
+  const before = getTehranCalendarDate(new Date("2026-10-24T20:29:59Z"));
+  const after = getTehranCalendarDate(new Date("2026-10-24T20:30:00Z"));
+  assert.equal(after, before + 1);
+  assert.equal(isWithinPlan(after + 1, plan), true);
+  assert.equal(
+    getWeeklyProgressDays(before, plan).find((day) => day.date === before)
+      ?.status,
+    "in-progress",
   );
-  const after = getDashboardDateRange(
-    getTehranCalendarDate(new Date("2026-10-24T20:30:00Z")),
-    plan,
+  assert.equal(
+    getWeeklyProgressDays(after, plan).find((day) => day.date === before)
+      ?.status,
+    "completed",
   );
-  assert.ok(before && after);
-  assert.equal(after.planEndDate, before.planEndDate + 1);
-  assert.equal(after.planStartDate, before.planStartDate);
+  assert.equal(
+    getWeeklyProgressDays(after, plan).find((day) => day.date === after)
+      ?.status,
+    "in-progress",
+  );
 });
 
 const utcTimestamp = ([year, month, day]: JalaliTuple) => {

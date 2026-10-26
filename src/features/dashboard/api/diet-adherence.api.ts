@@ -4,7 +4,7 @@ import type { DietAdherenceResponse } from "./types/diet-adherence.types";
 export async function getDietAdherence(
   date: string,
   signal?: AbortSignal,
-): Promise<DietAdherenceResponse> {
+): Promise<DietAdherenceResponse | null> {
   const response = await httpClient.get<DietAdherenceResponse>(
     "/dashboard/diet-adherence",
     {
@@ -13,5 +13,5 @@ export async function getDietAdherence(
     },
   );
 
-  return response.data;
+  return response.data || null;
 }

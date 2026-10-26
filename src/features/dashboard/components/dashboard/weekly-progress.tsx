@@ -1,4 +1,9 @@
 import type { WeeklyProgressDay } from "../../lib/plan-date.utils";
+import { AnimatePresence } from "framer-motion";
+import {
+  ProgressCircleDot,
+  ProgressCirclePulse,
+} from "@/shared/base-components/progress-circle";
 import { memo } from "react";
 import { PiCheckFatFill } from "react-icons/pi";
 import { useUserProfileStore } from "@/shared/stores/user-profile.store";
@@ -57,20 +62,15 @@ const WeeklyProgress = ({ days }: WeeklyProgressProps) => {
             }
           `}
             >
-              {dayStatus.status === "in-progress" && (
-                <div
-                  className="
-                            absolute
-                            inset-0
-                            origin-center
-                            rounded-full
-                            border
-                            border-blue-600 dark:border-blue-900
-                            pointer-events-none
-                            will-change-[transform,opacity]
-                        "
-                />
-              )}
+              {/* Start the pulse even when the route disables initial animations. */}
+              <AnimatePresence initial>
+                {dayStatus.status === "in-progress" && (
+                  <ProgressCirclePulse
+                    key={dayStatus.date}
+                    className="border-blue-600 dark:border-blue-900"
+                  />
+                )}
+              </AnimatePresence>
               {dayStatus.status === "completed" ? (
                 <div
                   key="completed"
@@ -90,6 +90,11 @@ const WeeklyProgress = ({ days }: WeeklyProgressProps) => {
                             "
                   />
                 </div>
+              ) : dayStatus.status === "in-progress" ? (
+                <ProgressCircleDot
+                  isInProgress
+                  className="border-blue-500 dark:border-blue-900"
+                />
               ) : (
                 <div
                   className={`
@@ -101,14 +106,7 @@ const WeeklyProgress = ({ days }: WeeklyProgressProps) => {
                                 rounded-full
                                 transition-[background-color,box-shadow]
                                 duration-500
-                  ${
-                    dayStatus.status === "in-progress"
-                      ? `
-                        bg-blue-400
-                        shadow-[0_0_10.7px_0_rgba(117,213,230,0.4)]
-                      `
-                      : "bg-transparent"
-                  }
+                  bg-transparent
                 `}
                 />
               )}

@@ -10,15 +10,19 @@ import {
 
 type DailyWaterProps = {
   date: string;
+  readOnly: boolean;
 };
 
 // The dashboard keys this card by date so each selection loads its own count.
-const DailyWater = ({ date }: DailyWaterProps) => {
-  const [glasses, setGlasses] = useState(() => readDailyWater(date));
+const DailyWater = ({ date, readOnly }: DailyWaterProps) => {
+  const [storedGlasses, setGlasses] = useState(() =>
+    readOnly ? 0 : readDailyWater(date),
+  );
+  const glasses = readOnly ? 0 : storedGlasses;
   const complete = glasses === DAILY_WATER_GOAL;
 
   const addGlass = () => {
-    if (complete) return;
+    if (readOnly || complete) return;
     const next = Math.min(glasses + 1, DAILY_WATER_GOAL);
     setGlasses(next);
     writeDailyWater(date, next);
@@ -68,7 +72,7 @@ const DailyWater = ({ date }: DailyWaterProps) => {
       <button
         type="button"
         onClick={addGlass}
-        disabled={complete}
+        disabled={readOnly || complete}
         aria-label={complete ? "هدف آب روزانه تکمیل شد" : "افزودن یک لیوان آب"}
         className="
           mt-auto w-full

@@ -1,4 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
+import {
+  ProgressCircleDot,
+  ProgressCirclePulse,
+} from "@/shared/base-components/progress-circle";
 import { PiCheckFatFill } from "react-icons/pi";
 import type { LoaderStepType } from "../../api/optimized-dietary.types";
 
@@ -85,34 +89,7 @@ const LoaderStep = ({ step, isLastStep }: LoaderStepProps) => {
             }
           `}
         >
-          {isInProgress && (
-            <motion.div
-              key={`pulse-${step.id}`}
-              className="
-                absolute
-                inset-0
-                origin-center
-                rounded-full
-                border
-                border-blue-900
-                pointer-events-none
-                will-change-[transform,opacity]
-              "
-              initial={{
-                scale: 1,
-                opacity: 0,
-              }}
-              animate={{
-                scale: [1, 1.05, 1.5, 1.5, 1],
-                opacity: [0, 0.8, 0.7, 0, 0],
-              }}
-              transition={{
-                duration: 1.6,
-                ease: "linear",
-                repeat: Infinity,
-              }}
-            />
-          )}
+          {isInProgress && <ProgressCirclePulse key={`pulse-${step.id}`} />}
 
           <AnimatePresence mode="sync" initial={false}>
             {isCompleted ? (
@@ -148,40 +125,9 @@ const LoaderStep = ({ step, isLastStep }: LoaderStepProps) => {
                 />
               </motion.div>
             ) : (
-              <motion.div
+              <ProgressCircleDot
                 key={step.status}
-                className={`
-                  absolute
-                  compact:size-3
-                  fold:size-4
-                  laptop:size-5
-                  border
-                  border-blue-900
-                  rounded-full
-                  transition-[background-color,box-shadow]
-                  duration-500
-                  ${
-                    isInProgress
-                      ? `
-                        bg-blue-400
-                        shadow-[0_0_10.7px_0_rgba(117,213,230,0.4)]
-                      `
-                      : "bg-transparent"
-                  }
-                `}
-                initial={false}
-                animate={{
-                  opacity: 1,
-                  scale: 1,
-                }}
-                exit={{
-                  opacity: 0,
-                  scale: 0.8,
-                }}
-                transition={{
-                  duration: 0.15,
-                  ease: "easeOut",
-                }}
+                isInProgress={isInProgress}
               />
             )}
           </AnimatePresence>

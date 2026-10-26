@@ -1,8 +1,25 @@
-import type { RadarData } from "../api/types/radar.types";
+import type { RadarAxisKey, RadarData } from "../api/types/radar.types";
 
-export function getRadarDisplayAxes(data: RadarData) {
-  return data.axis_order.map((key) => {
-    const axis = data.axes[key];
+const defaultAxisOrder: RadarAxisKey[] = [
+  "health",
+  "environment",
+  "cost",
+  "accessibility",
+];
+
+export function getRadarDisplayAxes(data?: RadarData) {
+  const order = data?.axis_order?.length ? data.axis_order : defaultAxisOrder;
+  return order.map((key) => {
+    const axis = data?.axes?.[key];
+    if (!axis)
+      return {
+        key,
+        actual: null,
+        target: null,
+        value: 0,
+        plotValue: 0,
+        overflow: false,
+      };
     const available =
       axis.status !== "unavailable" &&
       // Only the plotting value controls geometry. Zero is a valid center point.

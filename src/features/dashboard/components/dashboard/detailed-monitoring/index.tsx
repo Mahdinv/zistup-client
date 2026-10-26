@@ -120,10 +120,18 @@ const DetailedMonitoring = ({
         </button>
       ) : isLoading ? (
         <p role="status">در حال دریافت اطلاعات تغذیه</p>
-      ) : filteredNutrients.length ? (
-        <LineChart nutrients={filteredNutrients} />
       ) : (
-        <p>داده‌ای موجود نیست</p>
+        <div className="relative w-full min-w-0">
+          <LineChart nutrients={filteredNutrients} />
+          {filteredNutrients.length === 0 && (
+            <p
+              role="status"
+              className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            >
+              داده‌ای موجود نیست
+            </p>
+          )}
+        </div>
       )}
     </div>
   );

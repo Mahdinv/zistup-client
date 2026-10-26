@@ -4,7 +4,6 @@ import {
   clampPlanDate,
   getDietDayForDate,
   getDietDayIndex,
-  getDashboardDateRange,
   isWithinPlan,
   getPlanDateRange,
   getTehranCalendarDate,
@@ -37,7 +36,7 @@ const usePlanDates = (plan: DietResponse | undefined) => {
       : null;
 
   // Keep only user selection in state; derive API data and defaults directly.
-  const navigationRange = getDashboardDateRange(today, range);
+  const navigationRange = range;
   const selectedDate = navigationRange
     ? clampPlanDate(
         selection && selection.planCreatedAtUtc === plan?.createdAtUtc
@@ -48,7 +47,8 @@ const usePlanDates = (plan: DietResponse | undefined) => {
     : null;
 
   const selectDate = (date: number) => {
-    if (!plan || !navigationRange || !isWithinPlan(date, navigationRange)) return;
+    if (!plan || !navigationRange || !isWithinPlan(date, navigationRange))
+      return;
     setSelection({ planCreatedAtUtc: plan.createdAtUtc, date });
   };
 
@@ -56,6 +56,7 @@ const usePlanDates = (plan: DietResponse | undefined) => {
     range,
     navigationRange,
     selectedDate,
+    isFuture: selectedDate !== null && selectedDate > today,
     selectDate,
     activeDietDayIndex: range ? getDietDayIndex(today, range) : null,
     selectedDietDayIndex:

@@ -65,10 +65,8 @@ const ZistupRadar = ({ data, isLoading, error, onRetry }: ZistupRadarProps) => {
         <div className="w-full" role="status" aria-label="در حال دریافت رادار">
           <Skeleton height={240} borderRadius={16} />
         </div>
-      ) : data ? (
-        <RadarChart radar={data} />
       ) : (
-        <p role="status">اطلاعات رادار در دسترس نیست.</p>
+        <RadarChart radar={data} />
       )}
     </div>
   );

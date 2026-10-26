@@ -1,7 +1,7 @@
 import useRegisterActivityMutation from "../../../hooks/use-register-activity-mutation.hook";
 import { toast } from "sonner";
 import { getApiErrorMessage } from "@/shared/api/error.helpers";
-import useTodayActivitiesQuery from "../../../hooks/use-today-activities-query.hook";
+import useDailyActivitiesQuery from "../../../hooks/use-today-activities-query.hook";
 
 import { memo, useRef, useState } from "react";
 import { LuArrowUpLeft } from "react-icons/lu";
@@ -10,19 +10,31 @@ import PhysicalActivityDrawer from "./physical-activity-drawer";
 import ScrollFade from "@/shared/base-components/scroll-fade";
 import type { PhysicalActivitySubmission } from "../../../api/types/exercise.types";
 
-const DailyPhysicalActivity = () => {
+const DailyPhysicalActivity = ({
+  date,
+  isFuture,
+  isToday,
+}: {
+  date: string;
+  isFuture: boolean;
+  isToday: boolean;
+}) => {
   const registration = useRegisterActivityMutation();
   const submissionInFlight = useRef(false);
-  const activitiesQuery = useTodayActivitiesQuery();
-  const activities = activitiesQuery.data?.activities ?? [];
+  const activitiesQuery = useDailyActivitiesQuery(isFuture ? null : date);
+  const activities =
+    activitiesQuery.isFetchedAfterMount && activitiesQuery.isSuccess
+      ? (activitiesQuery.data?.activities ?? [])
+      : [];
   const [open, setOpen] = useState(false);
   const startActivity = () => {
+    if (!isToday) return;
     setOpen(true);
   };
   const submitActivity = async (
     submission: PhysicalActivitySubmission,
   ): Promise<boolean> => {
-    if (submissionInFlight.current) return false;
+    if (!isToday || submissionInFlight.current) return false;
     submissionInFlight.current = true;
     try {
       await registration.mutateAsync({
@@ -42,13 +54,14 @@ const DailyPhysicalActivity = () => {
     <div className="w-full bg-blue-100 dark:bg-darker-blue-400 border border-gray-100 dark:border-dark rounded-2xl p-5 shadow-[0_4px_4px_0_rgba(0,0,0,0.04)] flex flex-col justify-center items-start gap-4">
       <div className="w-full compact:min-h-6 fold:min-h-8 laptop:min-h-10 flex flex-row justify-between items-center gap-2">
         <h2 className="font-yekan font-extrabold leading-[135%] compact:text-lg fold:text-xl laptop:text-2xl">
-          تحرک بدنی امروز شما
+          {isToday ? "تحرک بدنی امروز شما" : "تحرک بدنی روز انتخاب‌شده"}
         </h2>
         {activities.length > 0 && (
           <button
             type="button"
             onClick={startActivity}
-            className="text-orange-200 hover:text-orange-300 active:text-orange-300 flex flex-row items-center gap-1 cursor-pointer"
+            disabled={!isToday}
+            className="text-orange-200 hover:text-orange-300 active:text-orange-300 flex flex-row items-center gap-1 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
           >
             <span className="font-peyda font-bold compact:text-xs mobile:text-sm fold:text-base laptop:text-lg">
               ثبت فعالیت جدید
@@ -61,10 +74,10 @@ const DailyPhysicalActivity = () => {
           </button>
         )}
       </div>
-      {activitiesQuery.isPending ? (
+      {!isFuture && !activitiesQuery.isFetchedAfterMount ? (
         <div
           role="status"
-          aria-label="در حال دریافت فعالیت‌های امروز"
+          aria-label="در حال دریافت فعالیت‌های روز انتخاب‌شده"
           className="w-full space-y-2"
         >
           {[0, 1, 2].map((row) => (
@@ -93,10 +106,13 @@ const DailyPhysicalActivity = () => {
           <button
             type="button"
             onClick={startActivity}
-            className="text-orange-200 hover:text-orange-300 active:text-orange-300 flex flex-row items-center gap-1 cursor-pointer"
+            disabled={!isToday}
+            className="text-orange-200 hover:text-orange-300 active:text-orange-300 flex flex-row items-center gap-1 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
           >
             <span className="font-peyda font-bold compact:text-sm fold:text-base laptop:text-lg">
-              ثبت فعالیت امروز
+              {isToday
+                ? "ثبت فعالیت امروز"
+                : "فعالیتی برای این روز ثبت نشده است"}
             </span>
             <LuArrowUpLeft
               aria-hidden
@@ -118,7 +134,7 @@ const DailyPhysicalActivity = () => {
         </ScrollFade>
       )}
       <PhysicalActivityDrawer
-        open={open}
+        open={open && isToday}
         pending={registration.isPending}
         onClose={() => setOpen(false)}
         onSubmit={submitActivity}

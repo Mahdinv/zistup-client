@@ -3,6 +3,10 @@ import { useCallback, useState } from "react";
 import type { DashboardOutletContext } from "@/features/dashboard/hooks/use-quick-add-meal-drawer.hook";
 import DashboardThemeProvider from "@/features/dashboard/context/dashboard-theme-context";
 import { useLocation, useOutlet } from "react-router-dom";
+import {
+  formatPlanDateForApi,
+  getTehranCalendarDate,
+} from "@/features/dashboard/lib/plan-date.utils";
 
 import DashboardFlowBottomNav from "./dashboard-flow-bottom-nav";
 import DashboardFlowContainer from "./dashboard-flow-container";
@@ -11,9 +15,21 @@ const DashboardFlowContent = () => {
   useUserProfileQuery();
   const { pathname } = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const openQuickAddMeal = useCallback(() => setDrawerOpen(true), []);
+  const [dashboardDate, updateDashboardDate] = useState<string | null>(null);
+  const setDashboardDate = useCallback((date: string | null) => {
+    updateDashboardDate(date);
+    setDrawerOpen(false);
+  }, []);
+  const today = formatPlanDateForApi(getTehranCalendarDate());
+  const registrationDate =
+    pathname === "/app/dashboard" ? dashboardDate : today;
+  const registrationDisabled = registrationDate !== today;
+  const openQuickAddMeal = useCallback(() => {
+    if (!registrationDisabled) setDrawerOpen(true);
+  }, [registrationDisabled]);
   const outlet = useOutlet({
     openQuickAddMeal,
+    setDashboardDate,
   } satisfies DashboardOutletContext);
 
   return (
@@ -29,6 +45,7 @@ const DashboardFlowContent = () => {
       </div>
 
       <DashboardFlowBottomNav
+        registrationDisabled={registrationDisabled}
         drawerOpen={drawerOpen}
         onOpen={openQuickAddMeal}
         onClose={() => setDrawerOpen(false)}

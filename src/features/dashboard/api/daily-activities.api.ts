@@ -4,7 +4,7 @@ import type { DailyActivitiesResponse } from "./types/daily-activities.types";
 export async function getDailyActivities(
   date: string,
   signal?: AbortSignal,
-): Promise<DailyActivitiesResponse> {
+): Promise<DailyActivitiesResponse | null> {
   const response = await httpClient.get<DailyActivitiesResponse>(
     "/dashboard/activities",
     {
@@ -12,5 +12,5 @@ export async function getDailyActivities(
       signal,
     },
   );
-  return response.data;
+  return response.data || null;
 }

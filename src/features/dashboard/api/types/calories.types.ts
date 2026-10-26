@@ -5,5 +5,5 @@ export type CaloriesData = {
 
 export type CaloriesResponse = {
   success: boolean;
-  data: CaloriesData;
+  data: CaloriesData | null;
 };

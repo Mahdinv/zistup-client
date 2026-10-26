@@ -15,7 +15,7 @@ import { getRadarDisplayAxes } from "../../../lib/radar.utils";
 ChartJS.register(RadialLinearScale, Filler);
 
 type RadarChartProps = {
-  radar: RadarData;
+  radar?: RadarData;
 };
 
 // The project's Tailwind blue-400 token (src/index.css).

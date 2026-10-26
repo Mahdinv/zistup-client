@@ -16,7 +16,7 @@ export type NutritionAdvice = {
 export type NutritionResponse = {
   success: boolean;
   data: {
-    nutrients: Nutrient[];
-    advices: NutritionAdvice[];
-  };
+    nutrients: Nutrient[] | null;
+    advices: NutritionAdvice[] | null;
+  } | null;
 };

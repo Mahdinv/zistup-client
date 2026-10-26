@@ -16,5 +16,5 @@ export type RadarData = {
 
 export type RadarResponse = {
   success: boolean;
-  data: RadarData;
+  data: RadarData | null;
 };

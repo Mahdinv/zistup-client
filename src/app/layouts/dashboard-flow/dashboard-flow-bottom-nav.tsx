@@ -15,12 +15,18 @@ import {
 import { NavLink } from "react-router-dom";
 
 type Props = {
+  registrationDisabled: boolean;
   drawerOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
 };
 
-const DashboardFlowBottomNav = ({ drawerOpen, onOpen, onClose }: Props) => {
+const DashboardFlowBottomNav = ({
+  drawerOpen,
+  onOpen,
+  onClose,
+  registrationDisabled,
+}: Props) => {
   const { submitMeal, isPending, isSuccess, submissionInFlight } =
     useAddMealMutation();
   const navRef = useRef<HTMLDivElement>(null);
@@ -66,6 +72,7 @@ const DashboardFlowBottomNav = ({ drawerOpen, onOpen, onClose }: Props) => {
       >
         <button
           type="button"
+          disabled={registrationDisabled}
           aria-label="افزودن وعده"
           aria-haspopup="dialog"
           aria-expanded={drawerOpen}
@@ -73,7 +80,7 @@ const DashboardFlowBottomNav = ({ drawerOpen, onOpen, onClose }: Props) => {
             onOpen();
           }}
           ref={plusRef}
-          className="absolute -top-1/2 translate-y-1/5 cursor-pointer
+          className="absolute -top-1/2 translate-y-1/5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed
                        bg-green-400 active:bg-green-500 hover:bg-green-500 shadow-[0_4px_12px_0_rgba(44,229,127,0.3)]
                        compact:size-14 mobile:size-16 fold:size-17 laptop:size-18
                        rounded-full flex justify-center items-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
@@ -178,12 +185,14 @@ const DashboardFlowBottomNav = ({ drawerOpen, onOpen, onClose }: Props) => {
         </NavLink>
       </div>
       <QuickAddMeal
-        open={drawerOpen}
+        open={drawerOpen && !registrationDisabled}
         onClose={() => {
           if (submissionInFlight.current) return;
           onClose();
         }}
-        onSubmit={submitMeal}
+        onSubmit={(payload) =>
+          registrationDisabled ? Promise.resolve(false) : submitMeal(payload)
+        }
         isSubmitting={isPending}
       />
       <span role="status" className="sr-only">

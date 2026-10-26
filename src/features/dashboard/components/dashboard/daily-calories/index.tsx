@@ -10,10 +10,17 @@ type DailyCaloriesProps = {
   onRetry: () => void;
 };
 
-const DailyCalories = ({ data, isLoading, error, onRetry }: DailyCaloriesProps) => {
-  const consumed = data ? Math.round(data.consumed) : 0;
-  const target = data ? Math.round(data.target) : 0;
-  const unavailable = isLoading || Boolean(error) || !data;
+const DailyCalories = ({
+  data,
+  isLoading,
+  error,
+  onRetry,
+}: DailyCaloriesProps) => {
+  const consumed =
+    data && Number.isFinite(data.consumed) ? Math.round(data.consumed) : 0;
+  const target =
+    data && Number.isFinite(data.target) ? Math.round(data.target) : 0;
+  const unavailable = isLoading || Boolean(error);
 
   return (
     <div

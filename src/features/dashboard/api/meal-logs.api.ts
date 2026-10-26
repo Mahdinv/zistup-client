@@ -4,7 +4,7 @@ import type { MealLogsResponse } from "./types/meal-logs.types";
 export async function getMealLogs(
   date: string,
   signal?: AbortSignal,
-): Promise<MealLogsResponse> {
+): Promise<MealLogsResponse | null> {
   const response = await httpClient.get<MealLogsResponse>(
     "/dashboard/meal-logs",
     {
@@ -12,19 +12,13 @@ export async function getMealLogs(
       signal,
     },
   );
-  return response.data;
+  return response.data || null;
 }
 
 export async function deleteMealLog(id: number): Promise<void> {
-  await httpClient.post(
-    "/dashboard/meal-logs/delete",
-    { id },
-  );
+  await httpClient.post("/dashboard/meal-logs/delete", { id });
 }
 
 export async function deleteDayMealLogs(date: string): Promise<void> {
-  await httpClient.post(
-    "/dashboard/meal-logs/delete-day",
-    { date },
-  );
+  await httpClient.post("/dashboard/meal-logs/delete-day", { date });
 }

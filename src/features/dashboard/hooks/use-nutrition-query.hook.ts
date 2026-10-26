@@ -1,13 +1,13 @@
-import { useQuery } from "@tanstack/react-query";
+import { skipToken, useQuery } from "@tanstack/react-query";
 import { getNutrition } from "../api/nutrition.api";
 import { nutritionQueryKeys } from "../constants/nutrition-query.constants";
+import { dashboardDateQueryOptions } from "../constants/dashboard-date-query.constants";
 
-export default function useNutritionQuery(date: string) {
+export default function useNutritionQuery(date: string | null) {
   return useQuery({
     queryKey: nutritionQueryKeys.daily(date),
-    queryFn: ({ signal }) => getNutrition(date, signal),
-    staleTime: 0,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
+    queryFn:
+      date !== null ? ({ signal }) => getNutrition(date, signal) : skipToken,
+    ...dashboardDateQueryOptions,
   });
 }
