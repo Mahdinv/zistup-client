@@ -4,6 +4,13 @@ export type FoodGroup = {
   title: string;
   name: string;
   categoryId: number;
+  wanted?: {
+    value: number | null;
+  };
+  provided?: {
+    grams: number;
+    value: number | null;
+  };
   properties: FoodGroupProperties;
 };
 
