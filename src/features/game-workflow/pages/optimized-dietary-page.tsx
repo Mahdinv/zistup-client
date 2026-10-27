@@ -4,6 +4,7 @@ import ScrollFade from "@/shared/base-components/scroll-fade";
 import PlaygroundFlowContainer from "@/app/layouts/playground-flow/playground-flow-container";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   PiAlarm,
   PiCoins,
@@ -129,6 +130,7 @@ const resultItemVariants = {
 };
 
 const OptimizedDietaryPage = () => {
+  const navigate = useNavigate();
   const [canStartPolling, setCanStartPolling] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const [accordionOpen, setAccordionOpen] = useState<string | null>(null);
@@ -146,8 +148,11 @@ const OptimizedDietaryPage = () => {
     refetchOnMount: "always",
   });
   const isRequestDone =
+    canStartPolling &&
     optimizedDietQuery.isFetchedAfterMount &&
-    optimizedDietQuery.data?.success === true;
+    optimizedDietQuery.isSuccess &&
+    optimizedDietQuery.data?.success === true &&
+    !!optimizedDietQuery.data.data;
 
   const { loaderSteps, isLoaderCompleted } = useDietLoader({
     steps: initialLoaderSteps,
@@ -265,7 +270,7 @@ const OptimizedDietaryPage = () => {
             variants={resultItemVariants}
             className="w-full flex flex-col items-center gap-3 mt-2 px-6"
           >
-            {(optimizedDietQuery.data?.data.shopping.groups ?? []).map(
+            {(optimizedDietQuery.data?.data?.shopping.groups ?? []).map(
               (group) => {
                 if (!group.items || group.items.length === 0) return;
                 return (
@@ -299,9 +304,10 @@ const OptimizedDietaryPage = () => {
 
       <motion.div variants={resultItemVariants} className="w-full px-6">
         <Button
-          type="submit"
+          type="button"
           classes="btn btn-primary-green"
           title="شروع و پیگیری وعده ها در داشبورد"
+          onClick={() => void navigate("/app/dashboard", { replace: true })}
         />
       </motion.div>
     </motion.div>

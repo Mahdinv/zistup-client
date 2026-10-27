@@ -28,11 +28,11 @@ export type DietMealDto = {
   nutrition: DietNutritionDto;
   total_grams: number;
   alternatives: DietFoodDto[];
-  replacement: {
+  replacement?: {
     target: string;
     keep_companions: boolean;
     requires_revalidation: boolean;
-  };
+  } | null;
 };
 
 export type DietDayDto = {

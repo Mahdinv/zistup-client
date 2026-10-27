@@ -41,7 +41,10 @@ httpClient.interceptors.request.use((config) => {
 });
 
 httpClient.interceptors.response.use((response) => {
-  if (response.data?.success === false) {
+  if (
+    response.data?.success === false &&
+    !response.config.allowUnsuccessfulResponse
+  ) {
     const failure = isApiFailureResponse(response.data) ? response.data : undefined;
     throw new ApiError({
       type: "api",

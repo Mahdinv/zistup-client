@@ -39,10 +39,12 @@ export const mapDietDay = (dto: DietDayDto): DietDay => ({
     nutrition: mapNutrition(meal.nutrition),
     totalGrams: meal.total_grams,
     alternatives: (meal.alternatives ?? []).map(mapFood),
-    replacement: {
-      target: meal.replacement.target,
-      keepCompanions: meal.replacement.keep_companions,
-      requiresRevalidation: meal.replacement.requires_revalidation,
-    },
+    replacement: meal.replacement
+      ? {
+          target: meal.replacement.target,
+          keepCompanions: meal.replacement.keep_companions,
+          requiresRevalidation: meal.replacement.requires_revalidation,
+        }
+      : null,
   })),
 });

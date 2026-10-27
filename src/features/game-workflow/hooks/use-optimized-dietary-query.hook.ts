@@ -17,14 +17,18 @@ const useOptimizedDietaryQuery = (
   return useQuery({
     queryKey: latestDietQueryKey,
     ...latestDietCacheOptions,
-    queryFn: getOptimizedDietary,
+    queryFn: ({ signal }) => getOptimizedDietary(signal),
     enabled,
     refetchInterval: (query) => {
-      const status = query.state.data?.success;
-      return status === false ? 5_000 : false;
+      const isReady =
+        query.state.status === "success" &&
+        query.state.data?.success === true &&
+        !!query.state.data.data;
+      return isReady ? false : 5_000;
     },
     retry: false,
     refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     refetchIntervalInBackground: true,
     ...options,
   });

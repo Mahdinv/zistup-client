@@ -32,7 +32,7 @@ export type DietMeal = {
     target: string;
     keepCompanions: boolean;
     requiresRevalidation: boolean;
-  };
+  } | null;
 };
 
 export type DietDay = {

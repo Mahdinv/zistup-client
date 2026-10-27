@@ -7,7 +7,6 @@ export type LoaderStepType = {
   status: "in-progress" | "pending" | "completed";
 };
 
-export type OptimizedDietaryResponse = {
-  success: boolean;
-  data: DietResponse;
-};
+export type OptimizedDietaryResponse =
+  | { success: true; data: DietResponse }
+  | { success: false; data: null };
