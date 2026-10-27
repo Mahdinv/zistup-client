@@ -1,6 +1,16 @@
-import { Component, useEffect, type ErrorInfo, type ReactNode } from "react";
+import {
+  Component,
+  useContext,
+  useEffect,
+  type ErrorInfo,
+  type ReactNode,
+} from "react";
 import { toast } from "sonner";
 import { getApiErrorMessage } from "@/shared/api/error.helpers";
+import {
+  DashboardThemeContext,
+  type DashboardTheme,
+} from "@/features/dashboard/context/dashboard-theme-context";
 import Button from "./button";
 
 type ErrorBoundaryProps = {
@@ -8,6 +18,7 @@ type ErrorBoundaryProps = {
   resetKey?: string;
   onReset?: () => void;
   fallback?: ReactNode;
+  theme?: DashboardTheme;
 };
 
 function ErrorNotification({
@@ -33,12 +44,20 @@ function ErrorNotification({
   return null;
 }
 
-export function ErrorFallback({ onRetry }: { onRetry: () => void }) {
+export function ErrorFallback({
+  onRetry,
+  theme,
+}: {
+  onRetry: () => void;
+  theme?: DashboardTheme;
+}) {
+  const dashboardTheme = useContext(DashboardThemeContext);
+  const resolvedTheme = theme ?? dashboardTheme?.theme ?? "dark";
   return (
     <section
       role="alert"
       dir="rtl"
-      className="m-4 flex flex-col items-center gap-3 rounded-2xl bg-blue-100 p-4 text-center text-dark dark:bg-darker-blue-200 dark:text-white"
+      className={`dashboard-theme m-4 flex min-w-0 flex-col items-center gap-3 rounded-2xl border p-4 text-center font-peyda shadow-[0_4px_4px_0_rgba(0,0,0,0.04)] ${resolvedTheme === "light" ? "border-gray-100 bg-blue-100 text-dark scheme-light" : "border-darker-blue-100 bg-darker-blue-200 text-white scheme-dark"}`}
     >
       <p>نمایش این بخش با مشکل مواجه شد.</p>
       <div className="w-full max-w-60">
@@ -94,7 +113,7 @@ export default class ErrorBoundary extends Component<
       <>
         <ErrorNotification error={this.state.error} retry={this.reset} />
         {this.props.fallback === undefined ? (
-          <ErrorFallback onRetry={this.reset} />
+          <ErrorFallback onRetry={this.reset} theme={this.props.theme} />
         ) : (
           this.props.fallback
         )}

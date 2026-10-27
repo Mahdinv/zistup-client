@@ -2,6 +2,11 @@ import { memo } from "react";
 import { getApiErrorMessage } from "@/shared/api/error.helpers";
 import type { CaloriesData } from "../../../api/types/calories.types";
 import CircularDailyCaloriesProgress from "./circular-daily-calories-progress";
+import {
+  LoadingRegion,
+  LoadingShape,
+  RingSkeleton,
+} from "../dashboard-skeleton";
 
 type DailyCaloriesProps = {
   data?: CaloriesData;
@@ -38,10 +43,16 @@ const DailyCalories = ({
         کالری روزانه
       </h2>
 
-      <CircularDailyCaloriesProgress
-        value={unavailable ? 0 : consumed}
-        max={unavailable ? 0 : target}
-      />
+      {isLoading ? (
+        <LoadingRegion label="در حال دریافت کالری">
+          <RingSkeleton calories />
+        </LoadingRegion>
+      ) : (
+        <CircularDailyCaloriesProgress
+          value={unavailable ? 0 : consumed}
+          max={unavailable ? 0 : target}
+        />
+      )}
 
       <div
         aria-live="polite"
@@ -51,36 +62,41 @@ const DailyCalories = ({
           flex flex-row justify-center items-center
         "
       >
-        <div
-          className={`text-orange-200 flex flex-row-reverse items-center gap-0.5 ${error ? "invisible" : ""}`}
-        >
-          <label className="font-rokh font-extrabold leading-none compact:text-4xl mobile:text-5xl fold:text-[28px] laptop:text-6xl">
-            {unavailable ? "—" : consumed}
-          </label>
+        {isLoading ? (
+          <LoadingShape className="h-8 w-3/4 rounded-lg" />
+        ) : (
+          <>
+            <div
+              className={`text-orange-200 flex flex-row-reverse items-center gap-0.5 ${error ? "invisible" : ""}`}
+            >
+              <label className="font-rokh font-extrabold leading-none compact:text-4xl mobile:text-5xl fold:text-[28px] laptop:text-6xl">
+                {unavailable ? "—" : consumed}
+              </label>
 
-          <small className="font-yekan font-normal leading-none compact:text-xs mobile:text-sm fold:text-base laptop:text-lg">
-            kcal
-          </small>
-        </div>
+              <small className="font-yekan font-normal leading-none compact:text-xs mobile:text-sm fold:text-base laptop:text-lg">
+                kcal
+              </small>
+            </div>
 
-        <label
-          className={`font-rokh font-extrabold leading-none compact:text-base mobile:text-lg fold:text-xl laptop:text-2xl text-blue-500 dark:text-darker-blue-100 ${error ? "invisible" : ""}`}
-        >
-          /{unavailable ? "—" : target}
-        </label>
-        {isLoading && <span className="sr-only">در حال دریافت کالری</span>}
-        {Boolean(error) && (
-          <button
-            type="button"
-            onClick={onRetry}
-            title={getApiErrorMessage(error)}
-            className="absolute inset-0 w-full truncate text-sm font-yekan text-red-400 dark:text-red-200 cursor-pointer rounded focus-visible:outline-2 focus-visible:outline-offset-2"
-          >
-            <span role="alert" className="sr-only">
-              {getApiErrorMessage(error)}
-            </span>
-            تلاش مجدد
-          </button>
+            <label
+              className={`font-rokh font-extrabold leading-none compact:text-base mobile:text-lg fold:text-xl laptop:text-2xl text-blue-500 dark:text-darker-blue-100 ${error ? "invisible" : ""}`}
+            >
+              /{unavailable ? "—" : target}
+            </label>
+            {Boolean(error) && (
+              <button
+                type="button"
+                onClick={onRetry}
+                title={getApiErrorMessage(error)}
+                className="absolute inset-0 w-full truncate text-sm font-yekan text-red-400 dark:text-red-200 cursor-pointer rounded focus-visible:outline-2 focus-visible:outline-offset-2"
+              >
+                <span role="alert" className="sr-only">
+                  {getApiErrorMessage(error)}
+                </span>
+                تلاش مجدد
+              </button>
+            )}
+          </>
         )}
       </div>
     </div>

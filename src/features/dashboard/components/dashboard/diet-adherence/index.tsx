@@ -9,6 +9,11 @@ import {
 } from "../../../lib/diet-adherence.utils";
 import DietAdherenceCircularScore from "./diet-adherence-circular-score";
 import DietAdherenceDetailsDrawer from "./diet-adherence-details-drawer";
+import {
+  LoadingRegion,
+  LoadingShape,
+  RingSkeleton,
+} from "../dashboard-skeleton";
 
 type DietAdherenceProps = {
   isToday: boolean;
@@ -52,6 +57,7 @@ const DietAdherenceScore = ({
           </h2>
           <button
             type="button"
+            disabled={isLoading}
             onClick={() => setDetailsOpen(true)}
             aria-haspopup="dialog"
             aria-expanded={detailsOpen}
@@ -68,20 +74,24 @@ const DietAdherenceScore = ({
             />
           </button>
         </div>
-        <div
-          className={
-            isLoading ? "animate-pulse motion-reduce:animate-none" : ""
-          }
-        >
-          <DietAdherenceCircularScore
-            value={unavailable ? null : display.value}
-            max={display.max}
-            progress={unavailable ? 0 : display.progress}
-            tone={unavailable ? "neutral" : display.tone}
-          />
-        </div>
+        {isLoading ? (
+          <LoadingRegion label="در حال دریافت امتیاز">
+            <RingSkeleton />
+          </LoadingRegion>
+        ) : (
+          <div>
+            <DietAdherenceCircularScore
+              value={unavailable ? null : display.value}
+              max={display.max}
+              progress={unavailable ? 0 : display.progress}
+              tone={unavailable ? "neutral" : display.tone}
+            />
+          </div>
+        )}
         <div className="w-full min-h-8.25 fold:min-h-10 laptop:min-h-11 border border-blue-300 dark:border-dark text-center rounded-[42px] px-3 flex items-center justify-center">
-          {error ? (
+          {isLoading ? (
+            <LoadingShape className="h-4 w-2/3 rounded" />
+          ) : error ? (
             <button
               type="button"
               onClick={onRetry}

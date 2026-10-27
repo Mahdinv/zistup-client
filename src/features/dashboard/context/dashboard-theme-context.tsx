@@ -20,7 +20,7 @@ const STORAGE_KEY = "zistup-dashboard-theme";
 export const DashboardThemeContext =
   createContext<DashboardThemeContextValue | null>(null);
 
-const readTheme = (): DashboardTheme => {
+export const readDashboardTheme = (): DashboardTheme => {
   try {
     return localStorage.getItem(STORAGE_KEY) === "dark" ? "dark" : "light";
   } catch {
@@ -29,7 +29,7 @@ const readTheme = (): DashboardTheme => {
 };
 
 const DashboardThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [theme, setTheme] = useState<DashboardTheme>(readTheme);
+  const [theme, setTheme] = useState<DashboardTheme>(readDashboardTheme);
 
   // Apply theme styles before descendants measure layout. Otherwise those reads
   // can resolve light styles and start a color transition on a dark-theme mount.

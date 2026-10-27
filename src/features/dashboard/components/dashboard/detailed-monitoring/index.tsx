@@ -1,4 +1,5 @@
 import ComboBox from "@/shared/base-components/combo-box";
+import { MonitoringSkeleton } from "../dashboard-skeleton";
 import { memo, useMemo, useState } from "react";
 import LineChart from "./line-chart";
 import type { Nutrient } from "../../../api/types/nutrition.types";
@@ -119,7 +120,7 @@ const DetailedMonitoring = ({
           <span role="alert">{getApiErrorMessage(error)}</span> — تلاش مجدد
         </button>
       ) : isLoading ? (
-        <p role="status">در حال دریافت اطلاعات تغذیه</p>
+        <MonitoringSkeleton />
       ) : (
         <div className="relative w-full min-w-0">
           <LineChart nutrients={filteredNutrients} />

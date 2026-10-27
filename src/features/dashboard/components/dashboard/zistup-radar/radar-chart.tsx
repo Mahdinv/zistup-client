@@ -11,11 +11,13 @@ import ChartJS from "@/shared/lib/chartjs-setup";
 import { useDashboardTheme } from "@/features/dashboard/hooks/use-dashboard-theme.hook";
 import type { RadarData } from "../../../api/types/radar.types";
 import { getRadarDisplayAxes } from "../../../lib/radar.utils";
+import { LoadingShape } from "../dashboard-skeleton";
 
 ChartJS.register(RadialLinearScale, Filler);
 
 type RadarChartProps = {
   radar?: RadarData;
+  isLoading?: boolean;
 };
 
 // The project's Tailwind blue-400 token (src/index.css).
@@ -59,7 +61,7 @@ const percentFormatter = new Intl.NumberFormat("fa-IR", {
 });
 const formatPercent = (value: number) => `${percentFormatter.format(value)}٪`;
 
-const RadarChart = ({ radar }: RadarChartProps) => {
+const RadarChart = ({ radar, isLoading = false }: RadarChartProps) => {
   const { theme } = useDashboardTheme();
   const isDark = theme === "dark";
   const gridColor = isDark ? "#416574" : "#70bdd8";
@@ -133,18 +135,26 @@ const RadarChart = ({ radar }: RadarChartProps) => {
       className="mx-auto grid w-full min-w-0 max-w-116 grid-cols-[18%_64%_18%] items-center gap-y-1 font-peyda fold:grid-cols-[max-content_minmax(0,1fr)_max-content] fold:gap-y-2"
     >
       <div className="relative col-start-2 row-start-2 aspect-square w-full min-h-0 min-w-0">
-        <Radar
-          className="absolute inset-0"
-          data={data}
-          options={options}
-          role="img"
-          aria-label={axes
-            .map(
-              ({ key, value, overflow }) =>
-                `${categories[key].label}: الگوی کنونی ${formatPercent(value)}، توازن بهینه ۱۰۰٪${overflow ? "، فراتر از مقیاس ۲۰۰٪" : ""}`,
-            )
-            .join("؛ ")}
-        />
+        {isLoading ? (
+          <div className="absolute inset-2">
+            <LoadingShape className="size-full rounded-full" />
+            <div className="absolute inset-[20%] rounded-full border border-blue-100 dark:border-darker-blue-400" />
+            <div className="absolute inset-[36%] rounded-full border border-blue-100 dark:border-darker-blue-400" />
+          </div>
+        ) : (
+          <Radar
+            className="absolute inset-0"
+            data={data}
+            options={options}
+            role="img"
+            aria-label={axes
+              .map(
+                ({ key, value, overflow }) =>
+                  `${categories[key].label}: الگوی کنونی ${formatPercent(value)}، توازن بهینه ۱۰۰٪${overflow ? "، فراتر از مقیاس ۲۰۰٪" : ""}`,
+              )
+              .join("؛ ")}
+          />
+        )}
       </div>
       {axes.map(({ key, overflow }, index) => {
         const { label, Icon, background, labelWidth } = categories[key];

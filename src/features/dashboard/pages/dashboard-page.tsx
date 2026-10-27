@@ -3,9 +3,9 @@ import useDietAdherenceQuery from "../hooks/use-diet-adherence-query.hook";
 import useCaloriesQuery from "../hooks/use-calories-query.hook";
 import useRadarQuery from "../hooks/use-radar-query.hook";
 import useNutritionQuery from "../hooks/use-nutrition-query.hook";
-import Skeleton from "react-loading-skeleton";
+import DashboardSkeleton from "../components/dashboard/dashboard-skeleton";
 import Button from "@/shared/base-components/button";
-import { getApiErrorMessage, isConnectionError } from "@/shared/api/error.helpers";
+import { getApiErrorMessage } from "@/shared/api/error.helpers";
 import useOptimizedDietaryQuery from "@/features/game-workflow/hooks/use-optimized-dietary-query.hook";
 import Calendar from "../components/dashboard/calendar";
 import DailyCalories from "../components/dashboard/daily-calories";
@@ -27,9 +27,7 @@ const DashboardPage = () => {
   const dietQuery = useOptimizedDietaryQuery(true);
 
   const planDates = usePlanDates(
-    dietQuery.data?.success
-      ? dietQuery.data.data
-      : undefined,
+    dietQuery.data?.success ? dietQuery.data.data : undefined,
   );
 
   const selectedDate =
@@ -45,10 +43,7 @@ const DashboardPage = () => {
     return () => setDashboardDate(null);
   }, [registrationDate, setDashboardDate]);
 
-  if (
-    dietQuery.isError &&
-    (!dietQuery.data || !isConnectionError(dietQuery.error))
-  ) {
+  if (dietQuery.isError && !dietQuery.data?.success) {
     return (
       <div className="w-full flex flex-col gap-4" role="alert">
         <p>{getApiErrorMessage(dietQuery.error)}</p>
@@ -62,20 +57,8 @@ const DashboardPage = () => {
   }
 
   // Successful cached plans are shared with Diets and the generation flow.
-  if (
-    dietQuery.isPending ||
-    !dietQuery.data?.success
-  ) {
-    return (
-      <div
-        className="w-full"
-        role="status"
-        aria-label="در حال دریافت برنامه غذایی"
-      >
-        <Skeleton height={180} borderRadius={16} />
-        <Skeleton height={64} borderRadius={32} />
-      </div>
-    );
+  if (dietQuery.isPending || !dietQuery.data?.success) {
+    return <DashboardSkeleton />;
   }
 
   if (
@@ -123,34 +106,33 @@ const DashboardDayContent = ({
   const caloriesQuery = useCaloriesQuery(queryDate);
   const radarQuery = useRadarQuery(queryDate);
   const nutritionQuery = useNutritionQuery(queryDate);
-  const nutrition =
-    nutritionQuery.isFetchedAfterMount && nutritionQuery.data?.success
-      ? nutritionQuery.data.data
-      : undefined;
+  const nutrition = nutritionQuery.data?.success
+    ? nutritionQuery.data.data
+    : undefined;
 
   return (
     <>
       <DietAdherence
         isToday={isToday}
         data={
-          adherenceQuery.isFetchedAfterMount && adherenceQuery.data?.success
+          adherenceQuery.data?.success
             ? (adherenceQuery.data.data ?? undefined)
             : undefined
         }
-        isLoading={!isFuture && !adherenceQuery.isFetchedAfterMount}
-        error={adherenceQuery.error}
+        isLoading={!isFuture && adherenceQuery.isPending}
+        error={adherenceQuery.data?.success ? null : adherenceQuery.error}
         onRetry={() => void adherenceQuery.refetch()}
       />
       <DietGoalMealSuggestions meals={meals} registrationDisabled={!isToday} />
       <div className="w-full flex flex-row items-stretch gap-3">
         <DailyCalories
           data={
-            caloriesQuery.isFetchedAfterMount && caloriesQuery.data?.success
+            caloriesQuery.data?.success
               ? (caloriesQuery.data.data ?? undefined)
               : undefined
           }
-          isLoading={!isFuture && !caloriesQuery.isFetchedAfterMount}
-          error={caloriesQuery.error}
+          isLoading={!isFuture && caloriesQuery.isPending}
+          error={caloriesQuery.data?.success ? null : caloriesQuery.error}
           onRetry={() => void caloriesQuery.refetch()}
         />
         <DailyWater date={date} readOnly={isFuture} />
@@ -162,21 +144,24 @@ const DashboardDayContent = ({
       />
       <ZistupRadar
         data={
-          radarQuery.isFetchedAfterMount && radarQuery.data?.success
+          radarQuery.data?.success
             ? (radarQuery.data.data ?? undefined)
             : undefined
         }
-        isLoading={!isFuture && !radarQuery.isFetchedAfterMount}
-        error={radarQuery.error}
+        isLoading={!isFuture && radarQuery.isPending}
+        error={radarQuery.data?.success ? null : radarQuery.error}
         onRetry={() => void radarQuery.refetch()}
       />
       <DetailedMonitoring
         nutrients={nutrition?.nutrients ?? undefined}
-        isLoading={!isFuture && !nutritionQuery.isFetchedAfterMount}
-        error={nutritionQuery.error}
+        isLoading={!isFuture && nutritionQuery.isPending}
+        error={nutritionQuery.data?.success ? null : nutritionQuery.error}
         onRetry={() => void nutritionQuery.refetch()}
       />
-      <ZistupRecommendation advices={nutrition?.advices ?? undefined} />
+      <ZistupRecommendation
+        advices={nutrition?.advices ?? undefined}
+        isLoading={!isFuture && nutritionQuery.isPending}
+      />
       <TodayLoggedMeals date={date} isFuture={isFuture} isToday={isToday} />
     </>
   );

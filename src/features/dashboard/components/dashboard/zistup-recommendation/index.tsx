@@ -10,6 +10,7 @@ import RecommendationAccordion, {
   type Recommendation,
 } from "./recommendation-accordion";
 import ScrollFade from "@/shared/base-components/scroll-fade";
+import { RecommendationSkeleton } from "../dashboard-skeleton";
 
 import type { NutritionAdvice } from "../../../api/types/nutrition.types";
 
@@ -19,10 +20,12 @@ const VISIBLE_ITEM_COUNT = 10;
 
 type ZistupRecommendationProps = {
   advices?: readonly NutritionAdvice[];
+  isLoading?: boolean;
 };
 
 const ZistupRecommendation = ({
   advices = emptyAdvices,
+  isLoading = false,
 }: ZistupRecommendationProps) => {
   const recommendations = useMemo<Recommendation[]>(
     () =>
@@ -90,6 +93,7 @@ const ZistupRecommendation = ({
   );
   return (
     <div
+      aria-busy={isLoading}
       className="
                     w-full
                     bg-blue-100 dark:bg-darker-blue-400
@@ -101,7 +105,13 @@ const ZistupRecommendation = ({
       <h2 className="font-yekan font-extrabold leading-[135%] compact:text-lg fold:text-xl laptop:text-2xl">
         توصیه‌های زیستاپ
       </h2>
-      {shouldScroll ? (
+      {isLoading ? (
+        <RecommendationSkeleton />
+      ) : recommendations.length === 0 ? (
+        <p className="w-full text-center font-peyda compact:text-sm fold:text-base laptop:text-lg text-blue-900 dark:text-blue-300">
+          هنوز توصیه‌ای برای این روز ثبت نشده است
+        </p>
+      ) : shouldScroll ? (
         <div
           ref={viewportRef}
           className="w-full min-h-0 [--scroll-fade-color:var(--color-blue-100)] dark:[--scroll-fade-color:var(--color-darker-blue-400)]"

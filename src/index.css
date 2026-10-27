@@ -5,6 +5,11 @@
 
 @custom-variant dark (&:where([data-dashboard-theme="dark"], [data-dashboard-theme="dark"] *));
 
+/* Include portaled dashboard drawers; other routes retain their focus styles. */
+:root:has([data-dashboard-page="true"]) .dashboard-theme :is(button, [role="button"]) {
+  outline: none;
+}
+
 @layer base {
   @media (prefers-reduced-motion: no-preference) {
     :where(.dashboard-theme, .dashboard-theme *):where(:not([style])) {
@@ -253,5 +258,25 @@ body {
 @supports (-webkit-touch-callout: none) {
   .ios-textbox {
     font-size: 16px !important;
+  }
+}
+
+.dashboard-skeleton {
+  --dashboard-skeleton-base: var(--color-blue-300);
+  --dashboard-skeleton-highlight: var(--color-blue-100);
+}
+
+.dashboard-skeleton .react-loading-skeleton {
+  vertical-align: top;
+}
+
+[data-dashboard-theme="dark"] .dashboard-skeleton {
+  --dashboard-skeleton-base: var(--color-darker-blue-200);
+  --dashboard-skeleton-highlight: var(--color-darker-blue-100);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-skeleton .react-loading-skeleton::after {
+    animation: none;
   }
 }

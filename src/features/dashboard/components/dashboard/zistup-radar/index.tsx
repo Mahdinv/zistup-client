@@ -1,5 +1,4 @@
 import { memo } from "react";
-import Skeleton from "react-loading-skeleton";
 import { getApiErrorMessage } from "@/shared/api/error.helpers";
 import type { RadarData } from "../../../api/types/radar.types";
 
@@ -63,7 +62,7 @@ const ZistupRadar = ({ data, isLoading, error, onRetry }: ZistupRadarProps) => {
         </div>
       ) : isLoading ? (
         <div className="w-full" role="status" aria-label="در حال دریافت رادار">
-          <Skeleton height={240} borderRadius={16} />
+          <RadarChart isLoading />
         </div>
       ) : (
         <RadarChart radar={data} />

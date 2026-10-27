@@ -25,6 +25,8 @@ const ScrollFade = ({
   viewportRef,
 }: ScrollFadeProps) => {
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const frameRef = useRef<number | null>(null);
+  const edgesRef = useRef({ above: false, below: false });
   useImperativeHandle(viewportRef, () => scrollRef.current!, []);
 
   const [hasContentAbove, setHasContentAbove] = useState(false);
@@ -38,9 +40,21 @@ const ScrollFade = ({
     const { scrollTop, scrollHeight, clientHeight } = element;
     const maxScrollTop = scrollHeight - clientHeight;
 
-    setHasContentAbove(scrollTop > 2);
-    setHasContentBelow(maxScrollTop > 2 && scrollTop < maxScrollTop - 2);
+    const above = scrollTop > 2;
+    const below = maxScrollTop > 2 && scrollTop < maxScrollTop - 2;
+    // Scrolling within the same edges should not schedule React updates.
+    if (above !== edgesRef.current.above) setHasContentAbove(above);
+    if (below !== edgesRef.current.below) setHasContentBelow(below);
+    edgesRef.current = { above, below };
   }, []);
+
+  const scheduleFadeUpdate = useCallback(() => {
+    if (frameRef.current !== null) return;
+    frameRef.current = requestAnimationFrame(() => {
+      frameRef.current = null;
+      updateFadeVisibility();
+    });
+  }, [updateFadeVisibility]);
 
   useEffect(() => {
     const element = scrollRef.current;
@@ -49,7 +63,8 @@ const ScrollFade = ({
 
     updateFadeVisibility();
 
-    const resizeObserver = new ResizeObserver(updateFadeVisibility);
+    const resizeObserver = new ResizeObserver(scheduleFadeUpdate);
+    element.addEventListener("scroll", scheduleFadeUpdate, { passive: true });
 
     const observeContent = () => {
       resizeObserver.disconnect();
@@ -58,7 +73,7 @@ const ScrollFade = ({
       Array.from(element.children).forEach((child) =>
         resizeObserver.observe(child),
       );
-      updateFadeVisibility();
+      scheduleFadeUpdate();
     };
     observeContent();
     const mutationObserver = new MutationObserver(observeContent);
@@ -67,8 +82,11 @@ const ScrollFade = ({
     return () => {
       resizeObserver.disconnect();
       mutationObserver.disconnect();
+      element.removeEventListener("scroll", scheduleFadeUpdate);
+      if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
+      frameRef.current = null;
     };
-  }, [updateFadeVisibility]);
+  }, [updateFadeVisibility, scheduleFadeUpdate]);
 
   return (
     <div
@@ -79,7 +97,6 @@ const ScrollFade = ({
     >
       <div
         ref={scrollRef}
-        onScroll={updateFadeVisibility}
         className={cn(
           `
                     h-full
@@ -103,7 +120,7 @@ const ScrollFade = ({
         from-[var(--scroll-fade-color,var(--color-darker-blue-200))]
         via-[var(--scroll-fade-color,var(--color-darker-blue-200))]/35
         to-transparent
-        transition-opacity duration-150 ease-out
+        transition-opacity duration-150 ease-out motion-reduce:transition-none
         ${hasContentAbove ? "opacity-100" : "opacity-0"}
       `}
       />
@@ -117,7 +134,7 @@ const ScrollFade = ({
           from-[var(--scroll-fade-color,var(--color-darker-blue-200))]
           via-[var(--scroll-fade-color,var(--color-darker-blue-200))]/30
           to-transparent
-          transition-opacity duration-150 ease-out
+          transition-opacity duration-150 ease-out motion-reduce:transition-none
           ${hasContentBelow ? "opacity-100" : "opacity-0"}
         `}
         />
