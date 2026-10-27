@@ -90,7 +90,7 @@ function IdentityForm({
                 className="relative size-16 max-w-full rounded-full border border-dark bg-darker-blue-400 outline-none"
               >
                 <span className="block size-full overflow-hidden rounded-full">
-                  <PiUserFill className="size-full translate-y-[10%] scale-110 text-darker-blue-100" />
+                  <PiUserFill className="size-full translate-y-[10%] scale-110 text-blue-500 dark:text-darker-blue-100" />
                 </span>
                 <span className="absolute bottom-0 right-0 flex size-4 items-center justify-center rounded-full bg-blue-500 text-black">
                   <PiPlus size={12} />

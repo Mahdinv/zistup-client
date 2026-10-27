@@ -36,7 +36,7 @@ export function ProfileAvatar() {
         ) : user ? (
           <PiUserFill
             aria-label="تصویر پیش‌فرض کاربر"
-            className="size-full translate-y-[10%] scale-110 text-darker-blue-100"
+            className="size-full translate-y-[10%] scale-110 text-blue-500 dark:text-darker-blue-100"
           />
         ) : null}
       </motion.div>

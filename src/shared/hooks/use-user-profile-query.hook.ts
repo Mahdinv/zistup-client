@@ -8,6 +8,8 @@ export const userProfileQueryKey = ["userProfile"] as const;
 export const userProfileQueryOptions = queryOptions({
   queryKey: userProfileQueryKey,
   queryFn: ({ signal }) => getUserProfile(signal),
+  // Startup loaders must settle even when the browser reports itself offline.
+  networkMode: "always",
   staleTime: 5 * 60 * 1000,
   gcTime: 10 * 60 * 1000,
   refetchOnWindowFocus: false,

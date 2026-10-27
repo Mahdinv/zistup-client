@@ -119,7 +119,7 @@ const DietSlider = ({ items, autoplayDelay = 3500 }: DietSliderProps) => {
     <section className="w-full overflow-hidden">
       <div ref={sliderRef} dir="ltr" className="keen-slider">
         {items.map((item) => (
-          <div key={item.name} className="keen-slider__slide">
+          <div key={item.name} className="keen-slider__slide flex">
             <SliderCard item={item} />
           </div>
         ))}
@@ -168,7 +168,7 @@ const SliderCard = memo(({ item }: { item: SliderItem }) => {
     <article
       dir="rtl"
       className="
-          flex h-40 w-full
+          flex flex-1 w-full
           flex-col items-start gap-4
           rounded-2xl
           bg-darker-blue-300

@@ -1,6 +1,6 @@
 import { useEffect, useReducer, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useQueryClient, type Mutation } from "@tanstack/react-query";
+import { notifyManager, useQueryClient, type Mutation } from "@tanstack/react-query";
 import {
   getApiErrorMessage,
   isConnectionError,
@@ -21,6 +21,8 @@ export default function ConnectionErrorBoundary({
   const [dismissed, setDismissed] = useState<Set<object>>(() => new Set());
 
   useEffect(() => {
+    // Cache notifications can fire while another component is rendering a query.
+    const refreshCacheState = notifyManager.batchCalls(refresh);
     const unsubscribeQueries = client.getQueryCache().subscribe((event) => {
       if (event.type === "updated") {
         const { query, action } = event;
@@ -47,7 +49,7 @@ export default function ConnectionErrorBoundary({
           toast.dismiss(id);
         }
       }
-      refresh();
+      refreshCacheState();
     });
     const unsubscribeMutations = client
       .getMutationCache()
@@ -59,7 +61,7 @@ export default function ConnectionErrorBoundary({
         ) {
           setCandidate(event.mutation);
         }
-        refresh();
+        refreshCacheState();
       });
     return () => {
       unsubscribeQueries();

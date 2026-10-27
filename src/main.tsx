@@ -8,7 +8,7 @@ import "@/index.css";
 import Providers from "@/app/providers";
 import ConnectionErrorBoundary from "@/app/connection-error-boundary";
 import ErrorBoundary from "@/shared/base-components/error-boundary";
-import router from "@/app/router";
+import createAppRouter from "@/app/router";
 
 import { configureHttpClient, queryClient } from "@/shared/api";
 import { setupImageRetry } from "./shared/lib/image-retry";
@@ -27,6 +27,8 @@ configureHttpClient({
 });
 
 setupImageRetry();
+// Loaders start immediately; configure API/session error handling first.
+const router = createAppRouter();
 
 /* ---------------------------------- */
 /* React Root                         */
@@ -68,10 +70,18 @@ const hideStartupScreen = async () => {
     return;
   }
 
+  let fontTimeout: ReturnType<typeof setTimeout> | undefined;
   try {
-    await document.fonts.ready;
+    // A stalled font download must not cover the loader or recovery screen forever.
+    await Promise.race([
+      document.fonts.ready,
+      new Promise<void>((resolve) => {
+        fontTimeout = setTimeout(resolve, 1500);
+      }),
+    ]);
     await waitForNextPaint();
   } finally {
+    clearTimeout(fontTimeout);
     startupScreen.classList.add("startup-screen--hide");
     await Promise.allSettled(
       startupScreen.getAnimations().map((animation) => animation.finished),

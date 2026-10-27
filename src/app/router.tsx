@@ -303,7 +303,7 @@ const routes: RouteObject[] = [
   },
 ];
 
-const router = createBrowserRouter(withErrorBoundaries([
+const createAppRouter = () => createBrowserRouter(withErrorBoundaries([
   {
     loader: initializeSession,
     hydrateFallbackElement: <AppLoader fullScreen theme={readDashboardTheme()} />,
@@ -311,4 +311,4 @@ const router = createBrowserRouter(withErrorBoundaries([
   },
 ]));
 
-export default router;
+export default createAppRouter;
