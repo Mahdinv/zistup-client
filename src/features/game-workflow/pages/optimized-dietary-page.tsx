@@ -2,9 +2,11 @@ import Button from "@/shared/base-components/button";
 import { groupsColor } from "@/shared/constants/food-group-colors.constants";
 import ScrollFade from "@/shared/base-components/scroll-fade";
 import PlaygroundFlowContainer from "@/app/layouts/playground-flow/playground-flow-container";
+import { getPlaygroundFlowOrigin } from "@/app/layouts/playground-flow/playground-flow-navigation";
+import AppLoader from "@/shared/base-components/app-loader";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   PiAlarm,
   PiCoins,
@@ -131,22 +133,25 @@ const resultItemVariants = {
 
 const OptimizedDietaryPage = () => {
   const navigate = useNavigate();
+  const { state } = useLocation();
+  const isExistingDiet = getPlaygroundFlowOrigin(state) === "/app/diets";
   const [canStartPolling, setCanStartPolling] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const [accordionOpen, setAccordionOpen] = useState<string | null>(null);
 
   useEffect(() => {
+    if (isExistingDiet) return;
     const timeoutId = window.setTimeout(() => {
       setCanStartPolling(true);
     }, 30_000);
 
     return () => window.clearTimeout(timeoutId);
-  }, []);
+  }, [isExistingDiet]);
 
-  const optimizedDietQuery = useOptimizedDietaryQuery(canStartPolling, {
-    staleTime: 0,
-    refetchOnMount: "always",
-  });
+  const optimizedDietQuery = useOptimizedDietaryQuery(
+    isExistingDiet || canStartPolling,
+    isExistingDiet ? {} : { staleTime: 0, refetchOnMount: "always" },
+  );
   const isRequestDone =
     canStartPolling &&
     optimizedDietQuery.isFetchedAfterMount &&
@@ -158,19 +163,24 @@ const OptimizedDietaryPage = () => {
     steps: initialLoaderSteps,
     durations: loaderStepDurations,
     isRequestDone,
+    enabled: !isExistingDiet,
   });
 
   useEffect(() => {
-    if (!isLoaderCompleted) return;
+    if (isExistingDiet || !isLoaderCompleted) return;
 
     const timeoutId = window.setTimeout(() => {
       setShowResult(true);
     }, 650);
 
     return () => window.clearTimeout(timeoutId);
-  }, [isLoaderCompleted]);
+  }, [isLoaderCompleted, isExistingDiet]);
 
-  return !showResult ? (
+  if (isExistingDiet && !optimizedDietQuery.data?.success) {
+    return <AppLoader label="در حال دریافت برنامه..." />;
+  }
+
+  return !isExistingDiet && !showResult ? (
     <PlaygroundFlowContainer>
       <ScrollFade>
         <div className="w-full h-full flex flex-col justify-start items-center gap-2 pt-4">

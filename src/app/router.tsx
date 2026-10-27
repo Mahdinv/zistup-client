@@ -10,7 +10,8 @@ import { requireCompleteProfile } from "@/features/auth/loaders/require-complete
 import { redirectIfAuthenticated } from "@/features/auth/loaders/redirect-if-authenticated";
 import DashboardFlowLayout from "./layouts/dashboard-flow/dashboard-flow-layout";
 import NotFoundPage from "./layouts/not-found-page";
-// Keep Profile ready before navigation so its slide never starts with a lazy fallback.
+// Keep Dashboard and Profile ready before navigation, including after generation.
+import DashboardPage from "@/features/dashboard/pages/dashboard-page";
 import ProfilePage from "@/features/dashboard/pages/profile-page";
 import { withErrorBoundaries } from "./route-error-boundary";
 import { initializeSession } from "./initialize-session";
@@ -76,10 +77,6 @@ const OptimizedDietaryPage = lazy(
 );
 
 /* Dashboard */
-const DashboardPage = lazy(
-  () => import("@/features/dashboard/pages/dashboard-page"),
-);
-
 const DietsPage = lazy(() => import("@/features/dashboard/pages/diet-page"));
 
 const ZistyarPage = lazy(

@@ -5,23 +5,25 @@ type UseDietLoaderProps = {
   steps: LoaderStepType[];
   durations: number[];
   isRequestDone: boolean;
+  enabled?: boolean;
 };
 
 const useDietLoader = ({
   steps,
   durations,
   isRequestDone,
+  enabled = true,
 }: UseDietLoaderProps) => {
   const [activeStepIndex, setActiveStepIndex] = useState(0);
   const lastStepIndex = steps.length - 1;
 
   useEffect(() => {
-    if (activeStepIndex >= lastStepIndex) return;
+    if (!enabled || activeStepIndex >= lastStepIndex) return;
     const timeoutId = window.setTimeout(() => {
       setActiveStepIndex((prev) => Math.min(prev + 1, lastStepIndex));
     }, durations[activeStepIndex]);
     return () => window.clearTimeout(timeoutId);
-  }, [activeStepIndex, durations, lastStepIndex]);
+  }, [activeStepIndex, durations, lastStepIndex, enabled]);
 
   const isLoaderCompleted = activeStepIndex === lastStepIndex && isRequestDone;
 

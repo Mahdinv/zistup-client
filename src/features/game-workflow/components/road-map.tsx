@@ -6,7 +6,7 @@ import {
 } from "react-icons/pi";
 import type { RoadMapStep } from "../api/road-map.types";
 import Button from "@/shared/base-components/button";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 type RoadMapProps = {
   step: RoadMapStep;
@@ -14,6 +14,7 @@ type RoadMapProps = {
 
 const RoadMap = ({ step }: RoadMapProps) => {
   const navigate = useNavigate();
+  const { state } = useLocation();
 
   return (
     <li className="w-full h-auto flex flex-row justify-center items-stretch">
@@ -89,7 +90,7 @@ const RoadMap = ({ step }: RoadMapProps) => {
                 itemsGap={2}
                 onClick={() =>
                   navigate(`/game-workflow${step.link}`, {
-                    state: { actionType: "edit" },
+                    state: { ...state, actionType: "edit" },
                   })
                 }
               />
@@ -104,7 +105,7 @@ const RoadMap = ({ step }: RoadMapProps) => {
                 itemsGap={2}
                 onClick={() =>
                   navigate(`/game-workflow${step.link}`, {
-                    state: { actionType: "edit" },
+                    state: { ...state, actionType: "edit" },
                   })
                 }
               />
@@ -117,7 +118,7 @@ const RoadMap = ({ step }: RoadMapProps) => {
             title="شروع این مرحله"
             onClick={() =>
               navigate(`/game-workflow${step.link}`, {
-                state: { actionType: "create" },
+                state: { ...state, actionType: "create" },
               })
             }
           />
