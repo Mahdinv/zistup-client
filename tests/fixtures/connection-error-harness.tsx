@@ -1,5 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { useState } from "react";
+import { Toaster } from "sonner";
 import {
   QueryClient,
   QueryClientProvider,
@@ -53,6 +54,7 @@ function Harness() {
   const [saved, setSaved] = useState(false);
   const query = useQuery({
     queryKey: ["connection-test"],
+    initialData: scenario === "background" ? "cached content" : undefined,
     queryFn: request,
     enabled: !home && scenario !== "mutation",
   });
@@ -62,6 +64,7 @@ function Harness() {
   });
   return (
     <>
+      <Toaster />
       <button onClick={() => mutation.mutate()}>submit</button>
       <output>
         {home ? "home" : saved ? "saved" : (query.data ?? query.status)}

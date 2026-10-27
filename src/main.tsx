@@ -7,6 +7,7 @@ import "@/index.css";
 
 import Providers from "@/app/providers";
 import ConnectionErrorBoundary from "@/app/connection-error-boundary";
+import ErrorBoundary from "@/shared/base-components/error-boundary";
 import router from "@/app/router";
 
 import { configureHttpClient, queryClient } from "@/shared/api";
@@ -41,7 +42,9 @@ createRoot(rootElement).render(
   <StrictMode>
     <Providers>
       <RouterProvider router={router} />
-      <ConnectionErrorBoundary onHome={() => void router.navigate("/app/dashboard")} />
+      <ErrorBoundary fallback={null}>
+        <ConnectionErrorBoundary onHome={() => void router.navigate("/app/dashboard")} />
+      </ErrorBoundary>
     </Providers>
   </StrictMode>,
 );

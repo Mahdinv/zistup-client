@@ -8,6 +8,7 @@ import PwaUpdatePrompt from "@/app/pwa/components/pwa-update-prompt";
 import "react-loading-skeleton/dist/skeleton.css";
 import { RxCrossCircled } from "react-icons/rx";
 import { PiCheckCircle } from "react-icons/pi";
+import ErrorBoundary from "@/shared/base-components/error-boundary";
 
 type ProvidersProps = {
   children: ReactNode;
@@ -16,10 +17,6 @@ type ProvidersProps = {
 const Providers = ({ children }: ProvidersProps) => {
   return (
     <QueryClientProvider client={queryClient}>
-      <SkeletonTheme baseColor="#313131" highlightColor="#525252">
-        {children}
-      </SkeletonTheme>
-
       <Toaster
         position="top-center"
         icons={{
@@ -43,8 +40,18 @@ const Providers = ({ children }: ProvidersProps) => {
         }}
       />
 
-      <PwaInstallPrompt />
-      <PwaUpdatePrompt />
+      <ErrorBoundary>
+        <SkeletonTheme baseColor="#313131" highlightColor="#525252">
+          {children}
+        </SkeletonTheme>
+      </ErrorBoundary>
+
+      <ErrorBoundary fallback={null}>
+        <PwaInstallPrompt />
+      </ErrorBoundary>
+      <ErrorBoundary fallback={null}>
+        <PwaUpdatePrompt />
+      </ErrorBoundary>
     </QueryClientProvider>
   );
 };

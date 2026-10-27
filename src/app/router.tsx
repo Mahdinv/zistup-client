@@ -11,6 +11,7 @@ import DashboardFlowLayout from "./layouts/dashboard-flow/dashboard-flow-layout"
 import NotFoundPage from "./layouts/not-found-page";
 // Keep Profile ready before navigation so its slide never starts with a lazy fallback.
 import ProfilePage from "@/features/dashboard/pages/profile-page";
+import { withErrorBoundaries } from "./route-error-boundary";
 
 /* Auth */
 const LoginPage = lazy(() => import("@/features/auth/pages/login-page"));
@@ -81,7 +82,7 @@ const ZistyarPage = lazy(
   () => import("@/features/dashboard/pages/zistyar-page"),
 );
 
-const router = createBrowserRouter([
+const router = createBrowserRouter(withErrorBoundaries([
   {
     element: <AccountFlowLayout />,
     children: [
@@ -296,6 +297,6 @@ const router = createBrowserRouter([
     path: "*",
     element: <NotFoundPage />,
   },
-]);
+]));
 
 export default router;

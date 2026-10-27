@@ -119,6 +119,20 @@ try {
   await page.getByRole("button", { name: "برگشت به صفحه اصلی" }).click();
   await page.getByText("home", { exact: true }).waitFor();
   await page.getByRole("dialog").waitFor({ state: "detached" });
+  await page.goto(`${base}?scenario=background`);
+  await page.getByText("cached content", { exact: true }).waitFor();
+  const backgroundToast = page.locator(
+    '[data-sonner-toast][data-removed="false"]',
+  );
+  await backgroundToast.waitFor();
+  assert.equal(
+    await page.getByRole("dialog").count(),
+    0,
+    "cached UI remains usable during background failures",
+  );
+  await page.evaluate(() => window.recoverConnection());
+  await backgroundToast.getByRole("button", { name: "تلاش مجدد" }).click();
+  await page.getByText("recovered", { exact: true }).waitFor();
   assert.deepEqual(errors, []);
   console.log(
     "Passed: responsive light/dark layouts, retry failure/recovery, API classification, offline pause, mutation callbacks, home action.",

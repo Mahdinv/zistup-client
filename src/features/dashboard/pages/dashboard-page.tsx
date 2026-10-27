@@ -5,7 +5,7 @@ import useRadarQuery from "../hooks/use-radar-query.hook";
 import useNutritionQuery from "../hooks/use-nutrition-query.hook";
 import Skeleton from "react-loading-skeleton";
 import Button from "@/shared/base-components/button";
-import { getApiErrorMessage } from "@/shared/api/error.helpers";
+import { getApiErrorMessage, isConnectionError } from "@/shared/api/error.helpers";
 import useOptimizedDietaryQuery from "@/features/game-workflow/hooks/use-optimized-dietary-query.hook";
 import Calendar from "../components/dashboard/calendar";
 import DailyCalories from "../components/dashboard/daily-calories";
@@ -45,7 +45,10 @@ const DashboardPage = () => {
     return () => setDashboardDate(null);
   }, [registrationDate, setDashboardDate]);
 
-  if (dietQuery.isError) {
+  if (
+    dietQuery.isError &&
+    (!dietQuery.data || !isConnectionError(dietQuery.error))
+  ) {
     return (
       <div className="w-full flex flex-col gap-4" role="alert">
         <p>{getApiErrorMessage(dietQuery.error)}</p>

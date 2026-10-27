@@ -1,7 +1,11 @@
 import { useEffect, useReducer, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useQueryClient, type Mutation } from "@tanstack/react-query";
-import { isConnectionError } from "@/shared/api/error.helpers";
+import {
+  getApiErrorMessage,
+  isConnectionError,
+} from "@/shared/api/error.helpers";
+import { toast } from "sonner";
 import ServerConnectionError from "@/shared/base-components/server-connection-error";
 
 /** Keep request owners mounted so retries retain their data and success callbacks. */
@@ -17,9 +21,34 @@ export default function ConnectionErrorBoundary({
   const [dismissed, setDismissed] = useState<Set<object>>(() => new Set());
 
   useEffect(() => {
-    const unsubscribeQueries = client
-      .getQueryCache()
-      .subscribe(() => refresh());
+    const unsubscribeQueries = client.getQueryCache().subscribe((event) => {
+      if (event.type === "updated") {
+        const { query, action } = event;
+        const id = `connection-${query.queryHash}`;
+        if (
+          action.type === "error" &&
+          query.isActive() &&
+          query.state.data !== undefined &&
+          isConnectionError(query.state.error)
+        ) {
+          toast.error(getApiErrorMessage(query.state.error), {
+            id,
+            action: {
+              label: "تلاش مجدد",
+              onClick: () => {
+                // Query state continues to own failures and their existing UI.
+                void query
+                  .fetch(undefined, { cancelRefetch: false })
+                  .catch(() => {});
+              },
+            },
+          });
+        } else if (action.type === "success") {
+          toast.dismiss(id);
+        }
+      }
+      refresh();
+    });
     const unsubscribeMutations = client
       .getMutationCache()
       .subscribe((event) => {
@@ -44,6 +73,7 @@ export default function ConnectionErrorBoundary({
     .filter(
       (query) =>
         query.isActive() &&
+        query.state.data === undefined &&
         !dismissed.has(query.state) &&
         (isConnectionError(query.state.error) ||
           query.state.fetchStatus === "paused"),
