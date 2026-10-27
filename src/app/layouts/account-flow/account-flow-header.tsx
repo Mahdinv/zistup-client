@@ -1,4 +1,5 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import ImageWithSkeleton from "@/shared/base-components/image-with-skeleton";
 
 import { PiCaretRight } from "react-icons/pi";
 
@@ -158,12 +159,9 @@ const AccountFlowHeader = ({
       </AnimatePresence>
 
       {imageName && (
-        <motion.img
+        <motion.div
           key={imageName}
-          src={imageName}
-          alt={secondLineTitle}
           aria-hidden="true"
-          loading="lazy"
           initial={{
             opacity: 0,
 
@@ -195,7 +193,13 @@ const AccountFlowHeader = ({
             tablet:w-[45%]
             desktop:w-2/5
           "
-        />
+        >
+          <ImageWithSkeleton
+            src={imageName}
+            alt={secondLineTitle}
+            className="w-full h-auto"
+          />
+        </motion.div>
       )}
     </header>
   );

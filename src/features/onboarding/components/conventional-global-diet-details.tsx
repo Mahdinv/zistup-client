@@ -7,7 +7,7 @@ import {
 import Button from "@/shared/base-components/button";
 import ScrollFade from "@/shared/base-components/scroll-fade";
 import Range from "@/shared/base-components/range";
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, easeInOut, motion } from "framer-motion";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Controller, useForm, type SubmitHandler } from "react-hook-form";
@@ -34,6 +34,32 @@ const ConventionalGlobalDietDetails = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [priorityBox, setPriorityBox] = useState<boolean>(true);
+  const [isBottomVisible, setIsBottomVisible] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const bottomElement = bottomRef.current;
+
+    if (!bottomElement) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsBottomVisible(entry.isIntersecting);
+      },
+      { threshold: 0 },
+    );
+
+    observer.observe(bottomElement);
+
+    return () => observer.disconnect();
+  }, []);
+
+  const handleScrollToBottom = useCallback(() => {
+    bottomRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
+  }, []);
 
   const { control, handleSubmit } = useForm<ConventionalGlobalDiet>();
 
@@ -240,12 +266,14 @@ const ConventionalGlobalDietDetails = () => {
               )}
             </AnimatePresence>
           </div>
+          <div ref={bottomRef} className="w-full h-px shrink-0" />
         </div>
       </ScrollFade>
       <Button
-        type="submit"
+        type={isBottomVisible ? "submit" : "button"}
         classes="w-full! btn btn-primary-blue"
-        title="شروع رژیم"
+        title={isBottomVisible ? "شروع رژیم" : "مشخص کردن اولویت‌ها"}
+        onClick={isBottomVisible ? undefined : handleScrollToBottom}
         disable={isPending}
       />
     </form>
