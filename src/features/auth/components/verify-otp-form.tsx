@@ -10,6 +10,7 @@ import { normalizeApiError, tokenStorage } from "../../../shared/api";
 import { useNavigate } from "react-router-dom";
 import type { AuthIdentifierDTO } from "../api/auth.types";
 import { validateUser } from "../api/auth.api";
+import { getPostAuthPath } from "../loaders/get-post-auth-path";
 
 const VerifyOtpForm = ({
   identifier,
@@ -37,23 +38,7 @@ const VerifyOtpForm = ({
     onSuccess: (data) => {
       toast.success("خوش آمدید");
       tokenStorage.set(data.token);
-      // if (!data.isRegister) {
-      //   if (data.user.name === "کاربر جدید" || data.user.sex === null) {
-      //     navigate("/onboarding/basic-information");
-      //   } else {
-      //     navigate("/onboarding/choose-plan");
-      //   }
-      // } else {
-      //   console.log("Dashboard");
-      // }
-      if (
-        (!data.isRegister && data.user.name === "کاربر جدید") ||
-        data.user.sex === null
-      ) {
-        navigate("/onboarding/basic-information");
-      } else {
-        navigate("/onboarding/choose-plan");
-      }
+      navigate(getPostAuthPath(data.user));
     },
     onError: (error) => {
       const apiError = normalizeApiError(error);

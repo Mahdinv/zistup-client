@@ -18,6 +18,7 @@ export type User = {
   married: number;
   familyMembers: number;
   city: string;
+  diet?: { key?: string | null; title?: string | null } | null;
   province: string;
   dietIncomePercent: number;
   sportDayPerWeek: number;

@@ -3,22 +3,6 @@
 <html lang="fa" dir="rtl">
   <head>
     <meta charset="UTF-8" />
-    <script>
-      (() => {
-        if (!/^\/dashboard(?:\/|$)/.test(window.location.pathname)) return;
-
-        // Match DashboardThemeProvider before the first paint.
-        let theme = "light";
-        try {
-          if (localStorage.getItem("zistup-dashboard-theme") === "dark") {
-            theme = "dark";
-          }
-        } catch {
-          // Use the same light fallback when storage is unavailable.
-        }
-        document.documentElement.dataset.dashboardTheme = theme;
-      })();
-    </script>
     <!-- Browser favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <!-- PWA icon for Apple devices -->
@@ -49,8 +33,12 @@
         z-index: 999999;
         display: grid;
         place-items: center;
-        width: 100%;
+        width: 100dvw;
         height: 100dvh;
+        max-width: none;
+        max-height: none;
+        margin: 0;
+        padding: 0;
         background: #ffffff;
         opacity: 1;
         visibility: visible;
@@ -62,6 +50,7 @@
       #startup-screen__logo {
         display: block;
         width: clamp(180px, 45vw, 240px);
+        max-width: 100%;
         height: auto;
         animation:
           startup-logo-enter 550ms cubic-bezier(0.22, 1, 0.36, 1) both,

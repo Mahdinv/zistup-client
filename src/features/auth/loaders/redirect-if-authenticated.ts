@@ -4,7 +4,7 @@ import { tokenStorage } from "@/shared/api";
 
 export const redirectIfAuthenticated = () => {
   if (tokenStorage.has()) {
-    throw redirect("/onboarding/choose-plan");
+    throw redirect("/app/dashboard");
   }
 
   return null;

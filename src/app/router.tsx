@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter, redirect, type RouteObject } from "react-router-dom";
 import { lazy } from "react";
 import AccountFlowLayout from "./layouts/account-flow/account-flow-layout";
 import type { AccountFlowRouteHandle } from "./layouts/account-flow/account-flow.types";
@@ -6,12 +6,16 @@ import type { PlaygroundFlowRouteHandle } from "./layouts/playground-flow/playgr
 import PlaygroundFlowLayout from "./layouts/playground-flow/playground-flow-layout";
 import ChoosePlan from "@/features/onboarding/pages/choose-plan-page";
 import { requireAuth } from "@/features/auth/loaders/require-auth";
+import { requireCompleteProfile } from "@/features/auth/loaders/require-complete-profile";
 import { redirectIfAuthenticated } from "@/features/auth/loaders/redirect-if-authenticated";
 import DashboardFlowLayout from "./layouts/dashboard-flow/dashboard-flow-layout";
 import NotFoundPage from "./layouts/not-found-page";
 // Keep Profile ready before navigation so its slide never starts with a lazy fallback.
 import ProfilePage from "@/features/dashboard/pages/profile-page";
 import { withErrorBoundaries } from "./route-error-boundary";
+import { initializeSession } from "./initialize-session";
+import AppLoader from "@/shared/base-components/app-loader";
+import { readDashboardTheme } from "@/features/dashboard/context/dashboard-theme-context";
 
 /* Auth */
 const LoginPage = lazy(() => import("@/features/auth/pages/login-page"));
@@ -82,11 +86,14 @@ const ZistyarPage = lazy(
   () => import("@/features/dashboard/pages/zistyar-page"),
 );
 
-const router = createBrowserRouter(withErrorBoundaries([
+const routes: RouteObject[] = [
+  {
+    path: "/",
+    loader: () => redirect("/app/dashboard"),
+  },
   {
     element: <AccountFlowLayout />,
     children: [
-      { index: true, element: <Navigate to="/auth/login" replace /> },
       {
         path: "/auth/login",
         loader: redirectIfAuthenticated,
@@ -263,7 +270,7 @@ const router = createBrowserRouter(withErrorBoundaries([
     ],
   },
   {
-    loader: requireAuth,
+    loader: requireCompleteProfile,
     children: [
       {
         path: "/app",
@@ -271,7 +278,7 @@ const router = createBrowserRouter(withErrorBoundaries([
         children: [
           {
             index: true,
-            element: <Navigate to="dashboard" replace />,
+            loader: () => redirect("/app/dashboard"),
           },
           {
             path: "dashboard",
@@ -296,6 +303,14 @@ const router = createBrowserRouter(withErrorBoundaries([
   {
     path: "*",
     element: <NotFoundPage />,
+  },
+];
+
+const router = createBrowserRouter(withErrorBoundaries([
+  {
+    loader: initializeSession,
+    hydrateFallbackElement: <AppLoader fullScreen theme={readDashboardTheme()} />,
+    children: routes,
   },
 ]));
 
