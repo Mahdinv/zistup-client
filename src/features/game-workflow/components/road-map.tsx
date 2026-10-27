@@ -115,7 +115,7 @@ const RoadMap = ({ step }: RoadMapProps) => {
         {step.status === "current" && (
           <Button
             classes="btn btn-primary-green compact:text-sm! fold:text-base! laptop:text-lg! py-1! rounded-sm! font-bold!"
-            title="شروع این مرحله"
+            title={step.key === "optimized_dietary" ? "مشاهده برنامه" : "شروع این مرحله"}
             onClick={() =>
               navigate(`/game-workflow${step.link}`, {
                 state: { ...state, actionType: "create" },
