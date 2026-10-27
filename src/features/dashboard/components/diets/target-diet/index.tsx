@@ -11,19 +11,19 @@ import {
   PiWallet,
 } from "react-icons/pi";
 import Skeleton from "react-loading-skeleton";
-import { useNavigate } from "react-router-dom";
 import TargetDietOption from "./target-diet-option";
 
 const TargetDiet = ({
   activeDietKey,
   diets,
   isLoading,
+  onNavigate,
 }: {
   activeDietKey?: string;
   diets?: Diet[];
   isLoading: boolean;
+  onNavigate: (to: string, state: object) => Promise<void>;
 }) => {
-  const navigate = useNavigate();
   const isZistupActive = activeDietKey === "zistpa";
   return (
     <>
@@ -88,7 +88,9 @@ const TargetDiet = ({
         {isZistupActive ? (
           <button
             type="button"
-            onClick={() => navigate("/game-workflow", { state: { origin: "/app/diets" } })}
+            onClick={() =>
+              void onNavigate("/game-workflow", { origin: "/app/diets" })
+            }
             className="flex h-12 w-full items-center justify-between gap-3 rounded-2xl bg-[#2CE57F] px-3 py-4 font-peyda font-bold text-black cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400"
           >
             <div className="flex-11 flex flex-row items-center justify-start compact:gap-2 mobile:gap-3 mobile-lg:gap-4 fold:gap-5 laptop:gap-6">
@@ -107,7 +109,7 @@ const TargetDiet = ({
             title="شروع ساخت رژیم اختصاصی"
             icon={<PiCaretLeftBold />}
             onClick={() => {
-              navigate("/game-workflow", { state: { origin: "/app/diets" } });
+              void onNavigate("/game-workflow", { origin: "/app/diets" });
             }}
           />
         )}
@@ -146,6 +148,7 @@ const TargetDiet = ({
               <TargetDietOption
                 key={diet.id}
                 routeState={routeState}
+                onNavigate={onNavigate}
                 isActive={!isZistupActive && diet.name === activeDietKey}
               />
             );

@@ -42,7 +42,7 @@ const AccountFlowLayout = () => {
   }, []);
 
   const handleBack: (() => void) | undefined = header.backTo
-    ? () => navigate(header.backTo!)
+    ? () => navigate(header.backTo!, { state: navigationState?.returnState })
     : (backHandlerState ?? undefined);
 
   return (

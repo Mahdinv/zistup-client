@@ -26,6 +26,8 @@ const PlaygroundFlowLayout = () => {
     () => getPlaygroundFlowOrigin(location.state) ?? "/onboarding/choose-plan",
   );
   const origin = getPlaygroundFlowOrigin(location.state) ?? entryOrigin;
+  const [entryReturnState] = useState(() => location.state?.returnState);
+  const returnState = location.state?.returnState ?? entryReturnState;
 
   // Carry the entry route through steps and roadmap returns, including reloads.
   useEffect(() => {
@@ -35,10 +37,10 @@ const PlaygroundFlowLayout = () => {
       {
         replace: true,
         preventScrollReset: true,
-        state: { ...location.state, origin },
+        state: { ...location.state, origin, returnState },
       },
     );
-  }, [location, navigate, origin]);
+  }, [location, navigate, origin, returnState]);
 
   const [headerOverrideState, setHeaderOverrideState] =
     useState<HeaderOverrideState>({
@@ -86,10 +88,11 @@ const PlaygroundFlowLayout = () => {
     }
 
     if (routeHeader.backTo) {
+      const returningToOrigin =
+        location.pathname.replace(/\/+$/, "") === "/game-workflow";
       navigate(
-        location.pathname.replace(/\/+$/, "") === "/game-workflow"
-          ? origin
-          : routeHeader.backTo,
+        returningToOrigin ? origin : routeHeader.backTo,
+        { state: returningToOrigin ? returnState : { origin, returnState } },
       );
     }
   };

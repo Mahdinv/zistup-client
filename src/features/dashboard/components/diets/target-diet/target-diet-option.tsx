@@ -6,9 +6,11 @@ import { Link } from "react-router-dom";
 const TargetDietOption = ({
   routeState,
   isActive = false,
+  onNavigate,
 }: {
   routeState: AccountFlowNavigationState<Diet>;
   isActive?: boolean;
+  onNavigate: (to: string, state: object) => Promise<void>;
 }) => {
   const charNumToSlice =
     routeState.data!.title === "مدیترانه ای"
@@ -30,6 +32,20 @@ const TargetDietOption = ({
       <Link
         to={`/onboarding/choose-plan/conventional-global-diets/${routeState.data!.id}`}
         state={routeState}
+        onClick={(event) => {
+          if (
+            event.button !== 0 ||
+            event.metaKey ||
+            event.ctrlKey ||
+            event.shiftKey ||
+            event.altKey
+          ) return;
+          event.preventDefault();
+          void onNavigate(
+            `/onboarding/choose-plan/conventional-global-diets/${routeState.data!.id}`,
+            routeState,
+          );
+        }}
         className="w-full 
                  bg-[#A5DAEE]
                  hover:bg-blue-500

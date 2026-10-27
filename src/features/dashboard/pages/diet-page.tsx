@@ -7,6 +7,7 @@ import ScrollFade from "@/shared/base-components/scroll-fade";
 import useOptimizedDietaryQuery from "@/features/game-workflow/hooks/use-optimized-dietary-query.hook";
 import { useQuery } from "@tanstack/react-query";
 import { getDiets } from "@/features/onboarding/api/diet.api";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const tabs = [
   { key: "goals", title: "اهداف رژیم" },
@@ -14,6 +15,13 @@ const tabs = [
 ] as const;
 
 const DietPage = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [savedView] = useState(
+    () => location.state?.dietsView as
+      | { activeTab: "goals" | "target"; scrollTop: number }
+      | undefined,
+  );
   const planQuery = useOptimizedDietaryQuery(true);
   const activeDiet = planQuery.data?.success
     ? planQuery.data.data.diet
@@ -28,13 +36,41 @@ const DietPage = () => {
     planQuery.data?.success
       ? planQuery.data.data.dietGoalsSummary?.diet.title
       : undefined;
-  const [activeTab, setActiveTab] = useState<"goals" | "target">("goals");
+  const [activeTab, setActiveTab] = useState<"goals" | "target">(
+    savedView?.activeTab === "target" ? "target" : "goals",
+  );
   const shouldReduceMotion = useReducedMotion();
   const tabsId = useId();
   const viewportRef = useRef<HTMLDivElement>(null);
   const tabListRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const previousTab = useRef(activeTab);
+
+  useLayoutEffect(() => {
+    if (!savedView || planQuery.isPending || dietsQuery.isPending) return;
+    const restore = () =>
+      viewportRef.current?.scrollTo({
+        top: savedView.scrollTop,
+        behavior: "instant",
+      });
+    restore();
+    // Reapply after the layout measures its header and bottom navigation.
+    const frame = requestAnimationFrame(restore);
+    return () => cancelAnimationFrame(frame);
+  }, [savedView, planQuery.isPending, dietsQuery.isPending]);
+
+  const openDiet = async (to: string, state: object) => {
+    const returnState = {
+      ...location.state,
+      dietsView: { activeTab, scrollTop: viewportRef.current?.scrollTop ?? 0 },
+    };
+    // Preserve this history entry for browser Back as well as the detail header.
+    await navigate(
+      { pathname: location.pathname, search: location.search, hash: location.hash },
+      { replace: true, preventScrollReset: true, state: returnState },
+    );
+    await navigate(to, { state: { ...state, returnState } });
+  };
 
   useLayoutEffect(() => {
     if (previousTab.current === activeTab) return;
@@ -136,6 +172,7 @@ const DietPage = () => {
                     activeDietKey={activeDiet?.key}
                     diets={dietsQuery.data}
                     isLoading={dietsQuery.isPending}
+                    onNavigate={openDiet}
                   />
                 </div>
               )}

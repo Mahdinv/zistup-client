@@ -17,6 +17,7 @@ export type AccountFlowRouteHandle = {
 export type AccountFlowNavigationState<T = unknown> = {
   data?: T;
   accountFlowHeader?: AccountFlowHeaderConfig;
+  returnState?: unknown;
 };
 
 export type AccountFlowOutletContext = {
