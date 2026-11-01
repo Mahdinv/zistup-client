@@ -275,7 +275,7 @@ const SocialAlignmentPage = () => {
         <GameCompletedModal
           open={modal}
           step={6}
-          nextGameLink="/game-workflow/limited-shopping"
+          nextGameLink="/game-workflow/optimized-dietary"
         />
       )}
 

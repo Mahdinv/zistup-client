@@ -53,7 +53,7 @@ const GameCompletedModal = ({
               duration: 0.25,
               ease: "easeOut",
             }}
-            className="compact:w-4/5 mobile-lg:w-2/3 fold:w-3/5 tablet:w-2/3 laptop:w-9/12 text-white bg-darker-blue-200 border-2 border-dark rounded-3xl px-4 py-4.5 z-9999 flex flex-col justify-cneter items-center gap-6"
+            className="compact:w-4/5 mobile-lg:w-2/3 fold:w-3/5 tablet:w-3/5 laptop:w-2/5 desktop:w-1/3 max-w-full tablet:max-w-[calc(50%-2rem)] laptop:max-w-[calc(35%-2rem)] desktop:max-w-[calc(85%/3-2rem)] mx-auto text-white bg-darker-blue-200 border-2 border-dark rounded-3xl px-4 py-4.5 z-9999 flex flex-col justify-cneter items-center gap-6"
           >
             <div className="relative compact:w-24 compact:h-24 mobile-lg:w-32 mobile-lg:h-32 fold:w-36 fold:h-36 laptop:w-44 laptop:h-44 flex items-center justify-center">
               <svg
