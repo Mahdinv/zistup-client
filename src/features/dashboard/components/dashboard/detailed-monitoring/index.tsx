@@ -78,14 +78,14 @@ const DetailedMonitoring = ({
         className="
                   w-full
                   compact:min-h-6 fold:min-h-8 laptop:min-h-10
-                  flex flex-row flex-wrap justify-between items-start gap-3
+                  flex flex-row flex-nowrap justify-between items-start gap-2 mobile:gap-3
                 "
       >
-        <div className="flex-1 min-w-max flex flex-col items-start compact:gap-1 fold:gap-2 laptop:gap-3">
-          <h2 className="font-yekan font-extrabold leading-[135%] compact:text-lg fold:text-xl desktop:text-2xl">
+        <div className="flex-1 min-w-0 flex flex-col items-start compact:gap-1 fold:gap-2 laptop:gap-3">
+          <h2 className="max-w-full truncate font-yekan font-extrabold leading-[135%] compact:text-lg fold:text-xl desktop:text-2xl">
             پایش جزئی
           </h2>
-          <div className="flex flex-row items-center gap-2 desktop:gap-4">
+          <div className="flex max-w-full flex-row items-center gap-2 overflow-hidden whitespace-nowrap desktop:gap-4">
             <div className="flex flex-row items-center gap-1 desktop:gap-2">
               <div className="bg-blue-400 compact:size-2 fold:size-3 desktop:size-4 rounded-full" />
               <label className="text-blue-400 font-peyda font-bold compact:text-xxs mobile:text-xs fold:text-base laptop:text-xs desktop:text-lg">
@@ -103,7 +103,7 @@ const DetailedMonitoring = ({
 
         <ComboBox
           variant="blue"
-          className="w-auto! max-w-full min-w-44 desktop:min-w-56 [&_button>span:first-child]:whitespace-normal"
+          className="w-28! mobile:w-36! fold:w-auto! max-w-[50%] min-w-0 shrink-0 fold:min-w-44 desktop:min-w-56 [&_button]:min-w-0 [&_button]:gap-1 fold:[&_button]:gap-3 [&_button]:px-2 fold:[&_button]:px-4 [&_button>span:first-child]:min-w-0 [&_button>span:first-child]:truncate [&_button>span:last-child]:shrink-0"
           placeholder="مواد معدنی"
           options={chartFilterOptions}
           value={selectedSubgroup}
