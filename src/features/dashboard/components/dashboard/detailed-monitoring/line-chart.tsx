@@ -118,7 +118,7 @@ const LineChart = ({ nutrients }: LineChartProps) => {
           label: "توازن بهینه",
           data: referenceValues,
           borderColor: color(isDark ? "blue-200" : "darker-blue-400"),
-          borderWidth: 1.5,
+          borderWidth: isDark ? 1.5 : 2,
           borderDash: [6, 4],
           borderCapStyle: "round",
           tension: 0.35,
@@ -128,7 +128,8 @@ const LineChart = ({ nutrients }: LineChartProps) => {
           pointRadius: ({ dataIndex }) =>
             referenceValues[dataIndex] === 0 ? 3 : 0,
           pointHoverRadius: 0,
-          order: 1,
+          // Chart.js draws lower orders last, above the current pattern's fill.
+          order: isDark ? 1 : -1,
         },
       ],
     };

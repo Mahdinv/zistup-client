@@ -1,47 +1,104 @@
-import { PiCircleHalf, PiMoon, PiSun } from "react-icons/pi";
+import { motion, useReducedMotion } from "framer-motion";
+import { HiOutlineMoon, HiSun } from "react-icons/hi";
+import { PiCircleHalf } from "react-icons/pi";
 import { useDashboardTheme } from "../../hooks/use-dashboard-theme.hook";
 import ProfileItem from "./profile-item";
-import { cn } from "@/shared/lib/utils";
 
 export default function ProfileAppearance() {
   const { theme, toggleTheme } = useDashboardTheme();
+  const reducedMotion = useReducedMotion();
+  const dark = theme === "dark";
+  const transition = { duration: reducedMotion ? 0 : 0.25 };
   return (
     <ProfileItem
       title="ظاهر برنامه"
       subtitle="انتخاب تم محیط برنامه"
       icon={PiCircleHalf}
+      className="gap-2 pl-4 pr-2.75 [&>span:nth-child(2)]:gap-1 [&>span:nth-child(2)]:mr-1 dark:shadow-none"
     >
-      <div
-        role="group"
-        aria-label="ظاهر برنامه"
+      <motion.button
+        type="button"
+        role="switch"
+        aria-label="حالت تاریک"
+        aria-checked={dark}
+        onClick={toggleTheme}
         dir="ltr"
-        className="flex h-8 w-[113px] shrink-0 items-center rounded-[10px] bg-blue-200 p-[3px] dark:bg-darker-blue-500"
+        initial={false}
+        animate={{
+          backgroundColor: dark
+            ? "var(--color-darker-blue-500)"
+            : "var(--color-blue-100)",
+        }}
+        transition={transition}
+        className="relative h-9 w-22.25 shrink-0 cursor-pointer rounded-full outline-none focus-visible:ring-2 focus-visible:ring-blue-800 focus-visible:ring-offset-2 dark:focus-visible:ring-blue-400"
       >
-        {(
-          [
-            { value: "light", label: "روشن", icon: PiSun },
-            { value: "dark", label: "تاریک", icon: PiMoon },
-          ] as const
-        ).map(({ value, label, icon: Icon }) => (
-          <button
-            key={value}
-            type="button"
-            aria-pressed={theme === value}
-            onClick={() => {
-              if (theme !== value) toggleTheme();
-            }}
-            className={cn(
-              "flex h-[26px] flex-1 cursor-pointer items-center justify-center gap-[3px] rounded-[6px] text-xs font-bold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-800",
-              theme === value
-                ? "bg-green-500 text-darker-green-200"
-                : "text-blue-800",
-            )}
+        <motion.span
+          initial={false}
+          animate={{
+            x: dark ? 0 : 38,
+            color: dark
+              ? "var(--color-white)"
+              : "var(--color-darker-green-200)",
+          }}
+          transition={transition}
+          className="absolute left-1 top-0 flex h-full w-10.75 items-center justify-center font-peyda text-[14.68px] font-bold leading-[1.4]"
+        >
+          <motion.span
+            initial={false}
+            animate={{ opacity: dark ? 1 : 0 }}
+            transition={transition}
+            className="absolute pt-1"
+            aria-hidden="true"
           >
-            <span>{label}</span>
-            <Icon size={12} aria-hidden="true" />
-          </button>
-        ))}
-      </div>
+            تاریک
+          </motion.span>
+          <motion.span
+            initial={false}
+            animate={{ opacity: dark ? 0 : 1 }}
+            transition={transition}
+            className="absolute pt-1"
+            aria-hidden="true"
+          >
+            روشن
+          </motion.span>
+        </motion.span>
+        <motion.span
+          initial={false}
+          animate={{
+            x: dark ? 51 : 0,
+            backgroundColor: dark
+              ? "var(--color-green-500)"
+              : "var(--color-blue-400)",
+          }}
+          transition={transition}
+          className="absolute left-1 top-0.75 flex size-7.5 items-center justify-center rounded-full text-darker-green-200"
+        >
+          <motion.span
+            initial={false}
+            animate={{
+              opacity: dark ? 1 : 0,
+              rotate: dark ? 0 : -60,
+              scale: dark ? 1 : 0.5,
+            }}
+            transition={transition}
+            className="absolute"
+          >
+            <HiOutlineMoon size={20} aria-hidden="true" />
+          </motion.span>
+          <motion.span
+            initial={false}
+            animate={{
+              opacity: dark ? 0 : 1,
+              rotate: dark ? 60 : 0,
+              scale: dark ? 0.5 : 1,
+            }}
+            transition={transition}
+            className="absolute"
+          >
+            <HiSun size={20} aria-hidden="true" />
+          </motion.span>
+        </motion.span>
+      </motion.button>
     </ProfileItem>
   );
 }

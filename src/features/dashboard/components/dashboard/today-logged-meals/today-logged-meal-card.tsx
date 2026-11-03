@@ -20,8 +20,8 @@ const TodayLoggedMealCard = ({
   return (
     <li className="w-full flex flex-col justify-start items-center gap-1.5">
       <label
-        style={{ color: tag.color, borderColor: tag.color }}
-        className="w-full border rounded-lg font-peyda font-bold compact:text-sm fold:text-base laptop:text-lg text-center p-1"
+        style={{ backgroundColor: tag.color }}
+        className="w-full border border-transparent text-black rounded-lg font-peyda font-bold compact:text-sm fold:text-base laptop:text-lg text-center p-1"
       >
         {tag.title}
       </label>

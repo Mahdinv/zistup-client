@@ -10,7 +10,7 @@ import { PiAlarm, PiCoins, PiHeartbeat, PiPlant } from "react-icons/pi";
 import ChartJS from "@/shared/lib/chartjs-setup";
 import { useDashboardTheme } from "@/features/dashboard/hooks/use-dashboard-theme.hook";
 import type { RadarData } from "../../../api/types/radar.types";
-import { getRadarDisplayAxes } from "../../../lib/radar.utils";
+import { getRadarDisplayAxes, getRadarRadius } from "../../../lib/radar.utils";
 import { LoadingShape } from "../dashboard-skeleton";
 
 ChartJS.register(RadialLinearScale, Filler);
@@ -66,7 +66,7 @@ const RadarChart = ({ radar, isLoading = false }: RadarChartProps) => {
   const isDark = theme === "dark";
   const gridColor = isDark ? "#416574" : "#70bdd8";
   const axes = getRadarDisplayAxes(radar);
-  const currentValues = axes.map(({ plotValue }) => plotValue);
+  const currentValues = axes.map(({ plotValue }) => getRadarRadius(plotValue));
 
   const options: ChartOptions<"radar"> = {
     responsive: true,
@@ -81,9 +81,9 @@ const RadarChart = ({ radar, isLoading = false }: RadarChartProps) => {
     scales: {
       r: {
         min: 0,
-        max: 200,
+        max: 4,
         startAngle: 0,
-        ticks: { display: false, stepSize: 50 },
+        ticks: { display: false, stepSize: 1 },
         pointLabels: { display: false },
 
         grid: { circular: true, color: gridColor, lineWidth: 1 },
@@ -116,7 +116,7 @@ const RadarChart = ({ radar, isLoading = false }: RadarChartProps) => {
       },
       {
         label: "توازن بهینه",
-        data: axes.map(() => 100),
+        data: axes.map(() => getRadarRadius(100)),
         borderColor: isDark ? "#fcfcfc" : "#000000",
         borderWidth: 1.5,
         borderDash: [4, 5],

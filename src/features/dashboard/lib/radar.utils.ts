@@ -7,6 +7,21 @@ const defaultAxisOrder: RadarAxisKey[] = [
   "accessibility",
 ];
 
+const radarRingValues = [0, 25, 50, 100, 200] as const;
+
+// Convert API percentages to equally spaced ring positions (0–4).
+export function getRadarRadius(value: number | null | undefined): number {
+  if (typeof value !== "number" || !Number.isFinite(value) || value <= 0) return 0;
+
+  for (let ring = 1; ring < radarRingValues.length; ring++) {
+    const start = radarRingValues[ring - 1];
+    const end = radarRingValues[ring];
+    if (value <= end) return ring - 1 + (value - start) / (end - start);
+  }
+
+  return radarRingValues.length - 1;
+}
+
 export function getRadarDisplayAxes(data?: RadarData) {
   const order = data?.axis_order?.length ? data.axis_order : defaultAxisOrder;
   return order.map((key) => {

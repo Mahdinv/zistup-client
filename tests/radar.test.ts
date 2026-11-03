@@ -4,7 +4,34 @@ import type {
   RadarAxis,
   RadarData,
 } from "../src/features/dashboard/api/types/radar.types.ts";
-import { getRadarDisplayAxes } from "../src/features/dashboard/lib/radar.utils.ts";
+import {
+  getRadarDisplayAxes,
+  getRadarRadius,
+} from "../src/features/dashboard/lib/radar.utils.ts";
+
+test("non-linear scale places each threshold on an equally spaced ring", () => {
+  assert.deepEqual([0, 25, 50, 100, 200].map(getRadarRadius), [0, 1, 2, 3, 4]);
+});
+
+test("radar radius interpolates within each interval, including above the target", () => {
+  for (const [value, radius] of [
+    [12.5, 0.5],
+    [37.5, 1.5],
+    [75, 2.5],
+    [118, 3.18],
+    [150, 3.5],
+  ]) {
+    assert.ok(Math.abs(getRadarRadius(value) - radius) < 1e-10);
+  }
+});
+
+test("radar radius remains within the chart bounds", () => {
+  assert.equal(getRadarRadius(-10), 0);
+  assert.equal(getRadarRadius(247.8), 4);
+  assert.equal(getRadarRadius(NaN), 0);
+  assert.equal(getRadarRadius(null), 0);
+  assert.equal(getRadarRadius(undefined), 0);
+});
 
 const available: RadarAxis = {
   actual: 0.759294874016737,
