@@ -46,11 +46,11 @@ export default function SearchBox({
         aria-busy={loading || undefined}
         onChange={(event) => onChange(event.target.value)}
         className={cn(
-          "h-12 min-w-0 w-full bg-transparent text-base outline-none placeholder:text-blue-600 dark:placeholder:text-blue-900 disabled:cursor-not-allowed disabled:opacity-50",
+          "ios-textbox h-12 min-w-0 w-full bg-transparent text-base outline-none placeholder:text-blue-600 dark:placeholder:text-blue-900 disabled:cursor-not-allowed disabled:opacity-50",
           appearance === "physical-activity" &&
             "text-sm font-bold placeholder:text-blue-500 dark:placeholder:text-blue-900",
           appearance === "quick-add-meal" &&
-            "h-[46px] placeholder:text-sm placeholder:text-blue-500",
+            "h-11.5 placeholder:text-sm placeholder:text-blue-500",
         )}
       />
     </div>
