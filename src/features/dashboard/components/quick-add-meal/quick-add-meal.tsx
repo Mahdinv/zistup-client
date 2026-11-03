@@ -1,5 +1,6 @@
 import MealIcon from "./meal-icon";
 import SearchBox from "@/shared/base-components/search-box";
+import VoiceBox from "@/shared/base-components/voice-box";
 import { toast } from "sonner";
 import { createSubmission } from "../../lib/quick-add-meal/meal-submission";
 import type { AddMealPayload } from "../../api/types/add-meal.types";
@@ -114,35 +115,34 @@ export default function QuickAddMeal({
       description="انتخاب وعده، جستجوی غذا و تنظیم مقدار مصرف"
       headerContent={
         state.step === "search" ? (
-          <SearchBox
-            appearance="quick-add-meal"
-            icon={
-              <>
-                <MealIcon
-                  name={state.query ? "search" : "search-light"}
-                  className="size-6 dark:hidden"
-                />
-                <MealIcon
-                  name="search"
-                  className="hidden size-6 dark:inline-flex"
-                />
-              </>
-            }
-            value={state.query}
-            aria-label="جستجوی غذا"
-            placeholder="نام غذا یا خوراکی رو اینجا سرچ کن"
-            action={
-              <button
-                type="button"
-                aria-label="جستجوی صوتی (به‌زودی)"
-                onClick={() => toast.info("جستجوی صوتی هنوز فعال نیست")}
-                className="flex size-12 shrink-0 items-center justify-center rounded-2xl border border-blue-500 bg-blue-300 text-blue-500 dark:border-blue-900 dark:bg-darker-blue-400 focus-visible:outline-2 focus-visible:outline-blue-400"
-              >
-                <MealIcon name="mic" className="size-6" />
-              </button>
-            }
-            onChange={(query) => dispatch({ type: "query", query })}
-          />
+          <div className="flex flex-row-reverse gap-1">
+            <SearchBox
+              appearance="quick-add-meal"
+              icon={
+                <>
+                  <MealIcon
+                    name={state.query ? "search" : "search-light"}
+                    className="size-6 dark:hidden"
+                  />
+                  <MealIcon
+                    name="search"
+                    className="hidden size-6 dark:inline-flex"
+                  />
+                </>
+              }
+              value={state.query}
+              aria-label="جستجوی غذا"
+              placeholder="نام غذا یا خوراکی رو اینجا سرچ کن"
+              onChange={(query) => dispatch({ type: "query", query })}
+            />
+            <VoiceBox
+              appearance="quick-add-meal"
+              value={state.query}
+              onChange={(query) => dispatch({ type: "query", query })}
+              disabled={!open || !!state.nextStep || isSubmitting}
+              icon={<MealIcon name="mic" className="size-6" />}
+            />
+          </div>
         ) : undefined
       }
       footer={

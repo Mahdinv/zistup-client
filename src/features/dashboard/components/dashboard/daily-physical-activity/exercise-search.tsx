@@ -1,7 +1,7 @@
 import { useId, useState } from "react";
-import { PiMagnifyingGlass, PiMicrophone, PiX } from "react-icons/pi";
-import { toast } from "sonner";
+import { PiMagnifyingGlass, PiX } from "react-icons/pi";
 import SearchBox from "@/shared/base-components/search-box";
+import VoiceBox from "@/shared/base-components/voice-box";
 import useDebouncedValue from "@/shared/hooks/use-debounced-value.hook";
 import { getApiErrorMessage } from "@/shared/api/error.helpers";
 import useExerciseSearchQuery from "../../../hooks/use-exercise-search-query.hook";
@@ -42,6 +42,12 @@ export default function ExerciseSearch({
   const expanded =
     open && focused && !value && (Boolean(term) || recent.length > 0);
   const loading = !showRecent && (waiting || query.isPending);
+  const changeText = (next: string) => {
+    setText(next);
+    onChange(null);
+    setFocused(true);
+    setActiveIndex(-1);
+  };
   const select = (exercise: Exercise) => {
     onChange(exercise);
     setText(exercise.label);
@@ -60,70 +66,63 @@ export default function ExerciseSearch({
           setFocused(false);
       }}
     >
-      <SearchBox
-        appearance="physical-activity"
-        value={text}
-        onChange={(next) => {
-          setText(next);
-          onChange(null);
-          setFocused(true);
-          setActiveIndex(-1);
-        }}
-        onFocus={() => setFocused(true)}
-        onKeyDown={(event) => {
-          if (event.key === "Escape") {
-            event.preventDefault();
-            event.stopPropagation();
-            setFocused(false);
+      <div className="flex flex-row-reverse gap-1">
+        <SearchBox
+          appearance="physical-activity"
+          value={text}
+          onChange={changeText}
+          onFocus={() => setFocused(true)}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") {
+              event.preventDefault();
+              event.stopPropagation();
+              setFocused(false);
+            }
+            if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+              event.preventDefault();
+              setFocused(true);
+              setActiveIndex((index) =>
+                items.length
+                  ? (index +
+                      (event.key === "ArrowDown" ? 1 : -1) +
+                      items.length) %
+                    items.length
+                  : -1,
+              );
+            }
+            if (event.key === "Enter" && expanded) {
+              event.preventDefault();
+              if (items[activeIndex]) select(items[activeIndex]);
+            }
+          }}
+          role="combobox"
+          aria-autocomplete="list"
+          aria-expanded={expanded}
+          aria-controls={expanded ? id : undefined}
+          aria-activedescendant={
+            expanded && items[activeIndex]
+              ? `${id}-${items[activeIndex].id}`
+              : undefined
           }
-          if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-            event.preventDefault();
-            setFocused(true);
-            setActiveIndex((index) =>
-              items.length
-                ? (index +
-                    (event.key === "ArrowDown" ? 1 : -1) +
-                    items.length) %
-                  items.length
-                : -1,
-            );
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? `${id}-error` : undefined}
+          aria-label="جستجوی فعالیت"
+          placeholder="جستجوی فعالیت (مثلاً دویدن، بدنسازی...)"
+          loading={expanded && loading}
+          icon={
+            <PiMagnifyingGlass
+              aria-hidden
+              className="size-6 shrink-0 text-blue-500 dark:text-blue-900 group-focus-within:text-orange-300 dark:group-focus-within:text-orange-300"
+            />
           }
-          if (event.key === "Enter" && expanded) {
-            event.preventDefault();
-            if (items[activeIndex]) select(items[activeIndex]);
-          }
-        }}
-        role="combobox"
-        aria-autocomplete="list"
-        aria-expanded={expanded}
-        aria-controls={expanded ? id : undefined}
-        aria-activedescendant={
-          expanded && items[activeIndex]
-            ? `${id}-${items[activeIndex].id}`
-            : undefined
-        }
-        aria-invalid={Boolean(error)}
-        aria-describedby={error ? `${id}-error` : undefined}
-        aria-label="جستجوی فعالیت"
-        placeholder="جستجوی فعالیت (مثلاً دویدن، بدنسازی...)"
-        loading={expanded && loading}
-        icon={
-          <PiMagnifyingGlass
-            aria-hidden
-            className="size-6 shrink-0 text-blue-500 dark:text-blue-900 group-focus-within:text-orange-300 dark:group-focus-within:text-orange-300"
-          />
-        }
-        action={
-          <button
-            type="button"
-            aria-label="جستجوی صوتی (به‌زودی)"
-            onClick={() => toast.info("جستجوی صوتی هنوز فعال نیست")}
-            className="flex size-12 shrink-0 items-center justify-center rounded-2xl border border-blue-500 bg-blue-300 text-blue-500 dark:border-darker-blue-100 dark:bg-darker-blue-400 dark:text-blue-900"
-          >
-            <PiMicrophone aria-hidden className="size-6" />
-          </button>
-        }
-      />
+        />
+        <VoiceBox
+          appearance="physical-activity"
+          value={text}
+          onChange={changeText}
+          disabled={!open || !!value}
+        />
+      </div>
       {expanded && (
         <div className="absolute left-0 top-14 z-30 max-h-52 w-[calc(100%-52px)] overflow-y-auto rounded-2xl border border-blue-500 bg-blue-300 shadow-[0_4px_12px_0_#00000040] dark:border-dark dark:bg-darker-blue-400 dark:shadow-[0_4px_12px_0_#00000080]">
           {showRecent && (
