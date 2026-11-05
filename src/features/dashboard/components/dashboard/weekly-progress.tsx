@@ -8,9 +8,12 @@ import { memo } from "react";
 import { PiCheckFatFill } from "react-icons/pi";
 import { useUserProfileStore } from "@/shared/stores/user-profile.store";
 
-type WeeklyProgressProps = { days: WeeklyProgressDay[] };
+type WeeklyProgressProps = {
+  days: WeeklyProgressDay[];
+  onSelectDate: (date: number) => void;
+};
 
-const WeeklyProgress = ({ days }: WeeklyProgressProps) => {
+const WeeklyProgress = ({ days, onSelectDate }: WeeklyProgressProps) => {
   const name = useUserProfileStore((state) => state.user?.name);
   return (
     <div
@@ -32,9 +35,12 @@ const WeeklyProgress = ({ days }: WeeklyProgressProps) => {
       </div>
       <div className="w-full grid grid-cols-7 items-center place-items-center">
         {days.map((dayStatus) => (
-          <div
+          <button
             key={dayStatus.date}
-            className="w-full flex flex-col items-center gap-1"
+            type="button"
+            onClick={() => onSelectDate(dayStatus.date)}
+            disabled={dayStatus.dietDayIndex === null}
+            className="w-full flex flex-col items-center gap-1 enabled:cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 rounded"
             aria-label={dayStatus.label}
             aria-current={
               dayStatus.status === "in-progress" ? "date" : undefined
@@ -111,10 +117,10 @@ const WeeklyProgress = ({ days }: WeeklyProgressProps) => {
                 />
               )}
             </div>
-            <label className="font-peyda font-medium leading-[140%] compact:text-base fold:text-lg laptop:text-xl">
+            <span className="font-peyda font-medium leading-[140%] compact:text-base fold:text-lg laptop:text-xl">
               {dayStatus.day}
-            </label>
-          </div>
+            </span>
+          </button>
         ))}
       </div>
     </div>

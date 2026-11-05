@@ -72,7 +72,10 @@ const DashboardPage = () => {
 
   return (
     <div className="w-full flex flex-col justify-start items-center gap-4">
-      <WeeklyProgress days={planDates.weeklyDays} />
+      <WeeklyProgress
+        days={planDates.weeklyDays}
+        onSelectDate={planDates.selectDate}
+      />
       <Calendar
         selectedDate={planDates.selectedDate}
         range={planDates.navigationRange}
