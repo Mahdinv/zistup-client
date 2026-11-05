@@ -50,6 +50,7 @@ test("general units convert to grams using fixed or backend weights", () => {
 test("general payload has numeric food id and no separated items", () => {
   assert.deepEqual(createSubmission(state, food), {
     foodId: 123,
+    type: "recipe",
     value: 700,
     meal: "lunch",
     separatedItems: [],
@@ -68,6 +69,7 @@ test("detailed payload snapshots each edited ingredient without mutating state",
   const payload = createSubmission(detailedState, food)!;
   assert.deepEqual(payload, {
     foodId: 123,
+    type: "recipe",
     value: 700,
     meal: "lunch",
     separatedItems: [

@@ -15,6 +15,7 @@ function mapIngredient(ingredient: FoodIngredient): FoodPart {
 export function mapFoodInfo({ data }: FoodInfoResponse): Food {
   return {
     id: String(data.food_id),
+    type: data.type,
     title: data.name,
     nutrition: {
       kcal: data.nutrition.calories_kcal,

@@ -1,4 +1,5 @@
 import type { MealType } from "./add-meal.types";
+import type { FoodInfoResponse } from "./food-info.types";
 import type { MealSearchItem } from "./meal-search.types";
 export type MealId = MealType;
 export type QuantityUnit = { id: string; label: string };
@@ -19,6 +20,7 @@ export type FoodPart = {
 };
 export type Food = {
   id: string;
+  type: FoodInfoResponse["data"]["type"];
   title: string;
   nutrition: Nutrition;
   generalUnits: QuantityUnit[];

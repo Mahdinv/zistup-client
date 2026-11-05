@@ -1,4 +1,5 @@
 import type { DietFood } from "./diet-day.types";
+import type { FoodInfoResponse } from "./food-info.types";
 
 // Enum-style values follow ServingUnit and support erasableSyntaxOnly.
 export const MealType = {
@@ -11,6 +12,7 @@ export type MealType = (typeof MealType)[keyof typeof MealType];
 export type SeparatedItem = { ingredient_id: number; value: number };
 export type AddMealPayload = {
   foodId: number;
+  type: FoodInfoResponse["data"]["type"];
   value: number;
   meal: MealType;
   separatedItems: SeparatedItem[];

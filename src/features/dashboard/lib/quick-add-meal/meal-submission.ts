@@ -73,6 +73,7 @@ export function createSubmission(
   }
   return {
     foodId: state.selectedFoodId,
+    type: food.type,
     value,
     meal: state.mealId,
     separatedItems,

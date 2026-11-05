@@ -24,5 +24,6 @@ export type FoodInfoResponse = {
     amount_g: number;
     nutrition: FoodNutrition;
     ingredients: FoodIngredient[];
+    type: "recipe" | "base_food";
   };
 };

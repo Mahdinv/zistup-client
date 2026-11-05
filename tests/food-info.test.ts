@@ -27,6 +27,7 @@ const response = {
   success: true,
   data: {
     food_id: 4,
+    type: "recipe" as const,
     name: "غذای واقعی",
     serving_unit: "bowl",
     serving_weight_g: 400,

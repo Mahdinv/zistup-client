@@ -2,6 +2,7 @@ import type { Food } from "../../src/features/dashboard/api/types/quick-add-meal
 export const TEST_FOODS: Food[] = [
   {
     id: "123",
+    type: "recipe",
     title: "غذای آزمایشی",
     defaultUnitId: "serving",
     servingWeightGrams: 350,
