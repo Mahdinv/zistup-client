@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { normalizeApiError } from "@/shared/api";
 import { addMeal } from "../api/add-meal.api";
-import type { AddMealPayload } from "../api/types/add-meal.types";
+import type { AddMealRequest } from "../api/types/add-meal.types";
 import { mealLogsQueryKeys } from "../constants/meal-logs-query.constants";
 import { dietAdherenceQueryKeys } from "../constants/diet-adherence-query.constants";
 import { caloriesQueryKeys } from "../constants/calories-query.constants";
@@ -30,7 +30,7 @@ export default function useAddMealMutation() {
     },
     onError: (error) => toast.error(normalizeApiError(error).message),
   });
-  const submitMeal = async (submission: AddMealPayload): Promise<boolean> => {
+  const submitMeal = async (submission: AddMealRequest): Promise<boolean> => {
     if (submissionInFlight.current) return false;
     submissionInFlight.current = true;
     try {

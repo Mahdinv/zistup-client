@@ -16,6 +16,7 @@ export type DietFood = {
   ingredients: string[];
   nutrition: DietNutrition;
   companions: DietFood[];
+  type: "recipe" | "base_food";
 };
 
 export type DietMeal = {

@@ -1,3 +1,5 @@
+import type { DietFood } from "../types/diet-day.types";
+
 export type DietNutritionDto = {
   calories_kcal: number;
   protein_g: number;
@@ -6,6 +8,7 @@ export type DietNutritionDto = {
 };
 
 export type DietFoodDto = {
+  type: DietFood["type"];
   id: string;
   foodId: number;
   title: string;

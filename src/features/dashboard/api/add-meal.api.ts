@@ -1,7 +1,7 @@
 import { httpClient } from "@/shared/api";
-import type { AddMealPayload } from "./types/add-meal.types";
+import type { AddMealRequest } from "./types/add-meal.types";
 
-export async function addMeal(payload: AddMealPayload): Promise<void> {
+export async function addMeal(payload: AddMealRequest): Promise<void> {
   await httpClient.post(
     "/dashboard/meal-logs",
     payload,

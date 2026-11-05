@@ -1,5 +1,5 @@
 import type { DietFood, DietMeal } from "../../../api/types/diet-day.types";
-import { MealType } from "../../../api/types/add-meal.types";
+import { MealType, type SuggestedMealPayload } from "../../../api/types/add-meal.types";
 import useAddMealMutation from "../../../hooks/use-add-meal-mutation.hook";
 import { toast } from "sonner";
 import { DirectionProvider } from "@base-ui/react/direction-provider";
@@ -77,11 +77,11 @@ const SuggestedMealsCard = ({
     }
     if (
       await submitMeal({
-        foodId,
+        type: food.type,
+        id: foodId,
         meal,
         value: food.quantity.grams,
-        separatedItems: [],
-      })
+      } satisfies SuggestedMealPayload)
     )
       setDrawerOpen(false);
   };

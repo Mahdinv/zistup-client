@@ -13,6 +13,7 @@ const mapNutrition = (dto: DietNutritionDto): DietNutrition => ({
 });
 
 const mapFood = (dto: DietFoodDto): DietFood => ({
+  type: dto.type,
   id: dto.id,
   foodId: dto.foodId,
   title: dto.title,

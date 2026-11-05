@@ -1,3 +1,5 @@
+import type { DietFood } from "./diet-day.types";
+
 // Enum-style values follow ServingUnit and support erasableSyntaxOnly.
 export const MealType = {
   Breakfast: "breakfast",
@@ -13,3 +15,12 @@ export type AddMealPayload = {
   meal: MealType;
   separatedItems: SeparatedItem[];
 };
+
+export type SuggestedMealPayload = {
+  type: DietFood["type"];
+  id: number;
+  value: number;
+  meal: MealType;
+};
+
+export type AddMealRequest = AddMealPayload | SuggestedMealPayload;
