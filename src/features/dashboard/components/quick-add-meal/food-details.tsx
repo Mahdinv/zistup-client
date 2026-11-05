@@ -174,7 +174,7 @@ export default function FoodDetails({
                     : undefined
                 }
                 appearance="dashboard"
-                formatValue={formatMealNumber}
+                formatValue={(value) => formatMealNumber(value, 2)}
                 label=""
                 unitWheel={{
                   options: units,

@@ -80,7 +80,7 @@ export default function DetailedQuantity({
             max: detailedAmounts[detailedAmounts.length - 1],
           }}
           appearance="dashboard"
-          formatValue={formatMealNumber}
+          formatValue={(value) => formatMealNumber(value, 2)}
           label={`تنظیم مقدار ${part.title}`}
           value={detail.amount}
           customUnit={{
