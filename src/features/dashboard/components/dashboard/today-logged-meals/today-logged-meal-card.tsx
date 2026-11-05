@@ -1,7 +1,6 @@
 import { PiXCircle } from "react-icons/pi";
 import { memo } from "react";
 import type { LoggedMeal } from "../../../api/types/meal-logs.types";
-import { loggedMealTags } from "../../../constants/meal-colors.constants";
 
 type Props = {
   item: LoggedMeal;
@@ -16,15 +15,8 @@ const TodayLoggedMealCard = ({
   deleteDisabled,
   isDeleting,
 }: Props) => {
-  const tag = loggedMealTags[item.meal];
   return (
     <li className="w-full flex flex-col justify-start items-center gap-1.5">
-      <label
-        style={{ backgroundColor: tag.color }}
-        className="w-full border border-transparent text-black rounded-lg font-peyda font-bold compact:text-sm fold:text-base laptop:text-lg text-center p-1"
-      >
-        {tag.title}
-      </label>
       <div
         className="w-full
                         bg-blue-300 dark:bg-[#21262D]

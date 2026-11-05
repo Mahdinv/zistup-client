@@ -7,6 +7,7 @@ import { LuArrowUpLeft } from "react-icons/lu";
 import { getApiErrorMessage } from "@/shared/api/error.helpers";
 import { useQuickAddMealDrawer } from "../../../hooks/use-quick-add-meal-drawer.hook";
 import TodayLoggedMealCard from "./today-logged-meal-card";
+import { loggedMealTags } from "../../../constants/meal-colors.constants";
 
 const mealOrder = {
   breakfast: 0,
@@ -39,6 +40,15 @@ const TodayLoggedMeals = ({
       mealLogsQuery.isSuccess,
     ],
   );
+  const mealGroups = useMemo(() => {
+    const groups = new Map<MealType, typeof sortedMeals>();
+    for (const item of sortedMeals) {
+      const group = groups.get(item.meal);
+      if (group) group.push(item);
+      else groups.set(item.meal, [item]);
+    }
+    return Array.from(groups);
+  }, [sortedMeals]);
 
   const { openQuickAddMeal } = useQuickAddMealDrawer();
 
@@ -137,25 +147,40 @@ const TodayLoggedMeals = ({
         </div>
       ) : (
         <ol className="w-full flex flex-col items-center justify-start gap-4">
-          {sortedMeals.map((item) => (
-            <TodayLoggedMealCard
-              key={item.id}
-              item={item}
-              deleteDisabled={isFuture || deletion.isPending}
-              isDeleting={
-                deletion.isPending &&
-                deletion.variables?.kind === "single" &&
-                deletion.variables.id === item.id
-              }
-              onDelete={() =>
-                !isFuture &&
-                deletion.remove({
-                  kind: "single",
-                  id: item.id,
-                  date,
-                })
-              }
-            />
+          {mealGroups.map(([meal, items]) => (
+            <li
+              key={meal}
+              className="w-full flex flex-col justify-start items-center gap-1.5"
+            >
+              <div
+                style={{ backgroundColor: loggedMealTags[meal].color }}
+                className="w-full border border-transparent text-black rounded-lg font-peyda font-bold compact:text-sm fold:text-base laptop:text-lg text-center p-1"
+              >
+                {loggedMealTags[meal].title}
+              </div>
+              <ol className="w-full flex flex-col gap-1.5">
+                {items.map((item) => (
+                  <TodayLoggedMealCard
+                    key={item.id}
+                    item={item}
+                    deleteDisabled={isFuture || deletion.isPending}
+                    isDeleting={
+                      deletion.isPending &&
+                      deletion.variables?.kind === "single" &&
+                      deletion.variables.id === item.id
+                    }
+                    onDelete={() =>
+                      !isFuture &&
+                      deletion.remove({
+                        kind: "single",
+                        id: item.id,
+                        date,
+                      })
+                    }
+                  />
+                ))}
+              </ol>
+            </li>
           ))}
         </ol>
       )}
