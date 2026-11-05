@@ -62,7 +62,7 @@ export function createSubmission(
         !selection ||
         selection.unitId !== "gram" ||
         !Number.isFinite(selection.amount) ||
-        selection.amount <= 0
+        selection.amount < 0
       )
         return null;
       separatedItems.push({

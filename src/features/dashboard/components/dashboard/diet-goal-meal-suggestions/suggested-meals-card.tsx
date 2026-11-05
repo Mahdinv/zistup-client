@@ -1,5 +1,8 @@
 import type { DietFood, DietMeal } from "../../../api/types/diet-day.types";
-import { MealType, type SuggestedMealPayload } from "../../../api/types/add-meal.types";
+import {
+  MealType,
+  type SuggestedMealPayload,
+} from "../../../api/types/add-meal.types";
 import useAddMealMutation from "../../../hooks/use-add-meal-mutation.hook";
 import { toast } from "sonner";
 import { DirectionProvider } from "@base-ui/react/direction-provider";
@@ -95,6 +98,13 @@ const SuggestedMealsCard = ({
                     rounded-2xl p-4 cursor-grab
                     flex flex-1 flex-col items-start gap-4
                 "
+        onClick={(event) => {
+          // Keen retains click suppression after dragging. Handle this
+          // explicit control before its native slider capture listener.
+          event.stopPropagation();
+          setActiveTab(initialTab);
+          setDrawerOpen(true);
+        }}
       >
         <div className="w-full flex flex-row justify-between items-start">
           <label

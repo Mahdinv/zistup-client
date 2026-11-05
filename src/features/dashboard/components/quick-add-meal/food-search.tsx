@@ -23,7 +23,7 @@ export default function FoodSearch({
         {[0, 1, 2, 3].map((row) => (
           <div
             key={row}
-            className="h-[55px] rounded-2xl bg-blue-200 dark:bg-darker-blue-300 animate-pulse motion-reduce:animate-none"
+            className="h-13.75 rounded-2xl bg-blue-200 dark:bg-darker-blue-300 animate-pulse motion-reduce:animate-none"
           />
         ))}
         <span className="sr-only">در حال دریافت غذاها...</span>
@@ -71,7 +71,7 @@ export default function FoodSearch({
                 type="button"
                 onClick={() => onSelect(food)}
                 aria-label={`افزودن ${food.name}`}
-                className="flex size-[35px] shrink-0 items-center justify-center rounded-xs bg-green-400 text-darker-green-200 hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
+                className="flex size-8.75 shrink-0 items-center justify-center rounded-xs bg-green-400 text-darker-green-200 hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
               >
                 <MealIcon name="plus" />
               </button>
@@ -83,13 +83,13 @@ export default function FoodSearch({
   return (
     <div
       role="status"
-      className="flex min-h-[155px] flex-col items-center justify-center gap-2 text-sm leading-[1.4] text-center"
+      className="flex min-h-38.75 flex-col items-center justify-center gap-2 text-sm leading-[1.4] text-center"
     >
       {state.status === "idle" ? (
         <>
           <MealIcon name="search-empty" />
           <p>منتظر جستجوی تو هستیم...</p>
-          <p className="max-w-[196px] text-blue-800">
+          <p className="max-w-49 text-blue-800">
             اسم غذا رو بالا تایپ کن یا با دکمه میکروفون اسمش رو بگو.
           </p>
         </>

@@ -75,6 +75,10 @@ export default function DetailedQuantity({
       {part && detail ? (
         <QuantityPicker
           key={part.id}
+          gramStepWheel={{
+            min: 0,
+            max: detailedAmounts[detailedAmounts.length - 1],
+          }}
           appearance="dashboard"
           formatValue={formatMealNumber}
           label={`تنظیم مقدار ${part.title}`}

@@ -90,3 +90,20 @@ test("invalid conversion and stale food cannot produce a payload", () => {
   );
   assert.equal(createSubmission({ ...state, detailed: {} }, food), null);
 });
+
+test("zero ingredient weights are preserved while negative weights are rejected", () => {
+  const detailed = {
+    "36": { amount: 0, unitId: "gram" },
+    "81": { amount: 0, unitId: "gram" },
+  };
+  assert.deepEqual(
+    createSubmission({ ...state, detailed }, food)?.separatedItems,
+    [
+      { ingredient_id: 36, value: 0 },
+      { ingredient_id: 81, value: 0 },
+    ],
+  );
+  detailed["36"].amount = -0.5;
+  assert.equal(createSubmission({ ...state, detailed }, food), null);
+  assert.equal(quantityToGrams({ unitId: "serving", amount: 0.5 }, food), 175);
+});

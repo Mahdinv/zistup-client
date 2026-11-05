@@ -15,6 +15,11 @@ import { getGeneralUnits } from "../../lib/quick-add-meal/quantity-units.ts";
 import type { FlowAction } from "../../lib/quick-add-meal/quick-add-meal.state";
 import type { FlowState, Food } from "../../api/types/quick-add-meal.types";
 
+const SERVING_AMOUNTS = Array.from(
+  { length: 200 },
+  (_, index) => (index + 1) / 2,
+);
+
 const focus =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400";
 
@@ -163,6 +168,11 @@ export default function FoodDetails({
                 }
               </div>
               <QuantityPicker
+                gramStepWheel={
+                  state.quantity.unitId === "gram"
+                    ? { min: 1, max: 2000 }
+                    : undefined
+                }
                 appearance="dashboard"
                 formatValue={formatMealNumber}
                 label=""
@@ -172,13 +182,25 @@ export default function FoodDetails({
                   onChange: (unitId) =>
                     dispatch({
                       type: "quantity",
-                      quantity: { ...state.quantity, unitId },
+                      quantity: {
+                        ...state.quantity,
+                        unitId,
+                        amount:
+                          unitId === "serving"
+                            ? 0.5
+                            : unitId === "gram"
+                              ? 1
+                              : state.quantity.amount,
+                      },
                     }),
                 }}
                 value={state.quantity.amount}
                 customUnit={{
                   label: generalUnit.label,
-                  values: GENERAL_AMOUNTS,
+                  values:
+                    state.quantity.unitId === "serving"
+                      ? SERVING_AMOUNTS
+                      : GENERAL_AMOUNTS,
                 }}
                 onChange={(amount) =>
                   dispatch({

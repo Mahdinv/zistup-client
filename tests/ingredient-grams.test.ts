@@ -76,10 +76,10 @@ test("four fixed units precede the unique localized server unit", () => {
 test("5g wheel rounds predictably and ingredient edits stay independent", () => {
   assert.equal(roundIngredientGrams(32), 30);
   assert.equal(roundIngredientGrams(33), 35);
-  assert.equal(roundIngredientGrams(0), 5);
+  assert.equal(roundIngredientGrams(0), 0);
   const values = getIngredientGramValues(1232);
   assert.ok(values.includes(1230));
-  assert.ok(values.every((value, index) => value === 5 * (index + 1)));
+  assert.ok(values.every((value, index) => value === 5 * index));
   const food = mapFoodInfo({ success: true, data });
   let state = flowReducer(
     { ...initialFlow, step: "details" },

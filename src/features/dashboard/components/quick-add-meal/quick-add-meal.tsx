@@ -52,6 +52,11 @@ export default function QuickAddMeal({
     ...state,
     quantity: {
       ...state.quantity,
+      amount:
+        !state.quantity.unitId &&
+        foodInfoQuery.data?.defaultUnitId === "serving"
+          ? 0.5
+          : state.quantity.amount,
       unitId:
         state.quantity.unitId || foodInfoQuery.data?.defaultUnitId || "bite",
     },

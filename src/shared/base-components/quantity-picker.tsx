@@ -1,4 +1,20 @@
-import { forwardRef, useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import {
+  AnimatePresence,
+  motion,
+  useIsPresent,
+  useMotionValue,
+  useReducedMotion,
+  useTransform,
+  type MotionValue,
+} from "framer-motion";
+import {
+  forwardRef,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 type Unit = "kilogram" | "gram" | "liter" | "number";
 
@@ -12,6 +28,7 @@ interface UnitWheel {
   onChange: (id: string) => void;
 }
 interface QuantityPickerProps {
+  gramStepWheel?: { min: number; max: number };
   formatValue?: (value: number) => string;
   customUnit?: CustomQuantityUnit;
   unitWheel?: UnitWheel;
@@ -32,6 +49,7 @@ interface PickerColumn {
   format?: (value: number) => string;
 }
 
+const GRAM_MULTIPLIERS = [0.5, 1, 2, 5, 10] as const;
 const ITEM_HEIGHT = 48;
 
 const SCROLL_END_DELAY = 100;
@@ -99,11 +117,37 @@ function normalizeStep(value: number, min: number, max: number, step: number) {
 interface WheelColumnProps {
   label?: string;
   textColumn?: boolean;
+  curved?: boolean;
   dimInactive?: boolean;
+  dashboard?: boolean;
   values: readonly number[];
   selected: number;
   onSelect: (value: number) => void;
   format?: (value: number) => string;
+}
+
+function CurvedWheelLabel({
+  index,
+  position,
+  children,
+}: {
+  index: number;
+  position: MotionValue<number>;
+  children: React.ReactNode;
+}) {
+  const x = useTransform(position, (value) => -Math.abs(index - value) * 7);
+  const rotate = useTransform(position, (value) => (index - value) * 15);
+  const opacity = useTransform(position, (value) =>
+    Math.max(0.2, 1 - Math.abs(index - value) * 0.35),
+  );
+  return (
+    <motion.span
+      className="block whitespace-nowrap"
+      style={{ x, rotate, opacity }}
+    >
+      {children}
+    </motion.span>
+  );
 }
 
 function WheelColumn({
@@ -113,135 +157,141 @@ function WheelColumn({
   format,
   label = "مقدار",
   textColumn = false,
+  curved = false,
   dimInactive = false,
+  dashboard = false,
 }: WheelColumnProps) {
+  const rowHeight = curved ? 32 : ITEM_HEIGHT;
+  const reduceMotion = useReducedMotion();
+  const isPresent = useIsPresent();
+  const scrollPosition = useMotionValue(Math.max(0, values.indexOf(selected)));
   const ref = useRef<HTMLDivElement>(null);
-
-  const frameRef = useRef<number | null>(null);
-
+  const targetIndexRef = useRef<number | null>(null);
+  const syncFrameRef = useRef<number | null>(null);
   const scrollEndTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   const onSelectRef = useRef(onSelect);
-
   const selectedRef = useRef(selected);
-
-  const lastUserSelectedRef = useRef<number | null>(null);
-
+  const lastUserSelectionRef = useRef<{
+    value: number;
+    values: readonly number[];
+  } | null>(null);
   const isProgrammaticScrollRef = useRef(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     onSelectRef.current = onSelect;
-  }, [onSelect]);
-
-  useEffect(() => {
     selectedRef.current = selected;
-  }, [selected]);
+  }, [onSelect, selected]);
 
   useLayoutEffect(() => {
     const element = ref.current;
-
-    if (!element) return;
-
-    if (lastUserSelectedRef.current === selected) {
-      lastUserSelectedRef.current = null;
-
+    if (!element || !isPresent) return;
+    // A changed value list needs a new scroll offset, even for the same selection.
+    const userSelection = lastUserSelectionRef.current;
+    lastUserSelectionRef.current = null;
+    if (userSelection?.value === selected && userSelection.values === values)
       return;
-    }
-
+    if (scrollEndTimerRef.current) clearTimeout(scrollEndTimerRef.current);
+    targetIndexRef.current = null;
     const index = values.indexOf(selected);
-
-    if (index === -1) return;
-
-    const targetScrollTop = index * ITEM_HEIGHT;
-
-    if (Math.abs(element.scrollTop - targetScrollTop) < 1) {
-      return;
-    }
-
+    if (index < 0) return;
+    if (curved) scrollPosition.set(index);
     isProgrammaticScrollRef.current = true;
-
-    element.scrollTo({
-      top: targetScrollTop,
-      behavior: "auto",
-    });
-
-    requestAnimationFrame(() => {
+    element.scrollTo({ top: index * rowHeight, behavior: "instant" });
+    syncFrameRef.current = requestAnimationFrame(() => {
       isProgrammaticScrollRef.current = false;
+      syncFrameRef.current = null;
     });
-  }, [selected, values]);
+    return () => {
+      if (syncFrameRef.current !== null)
+        cancelAnimationFrame(syncFrameRef.current);
+      isProgrammaticScrollRef.current = false;
+    };
+  }, [selected, values, rowHeight, curved, scrollPosition, isPresent]);
 
   useEffect(() => {
     const element = ref.current;
-
-    if (!element) return;
-
+    if (!element || !isPresent) return;
     const commitValue = () => {
-      const rawIndex = Math.round(element.scrollTop / ITEM_HEIGHT);
-
-      const index = clamp(rawIndex, 0, values.length - 1);
-
-      const nextValue = values[index];
-
-      if (nextValue === undefined) return;
-
-      if (nextValue === selectedRef.current) {
+      if (scrollEndTimerRef.current) clearTimeout(scrollEndTimerRef.current);
+      if (isProgrammaticScrollRef.current) return;
+      const target = targetIndexRef.current;
+      if (
+        target !== null &&
+        Math.abs(element.scrollTop - target * rowHeight) > 1
+      )
         return;
-      }
-
-      lastUserSelectedRef.current = nextValue;
-
+      targetIndexRef.current = null;
+      const index = clamp(
+        Math.round(element.scrollTop / rowHeight),
+        0,
+        values.length - 1,
+      );
+      const nextValue = values[index];
+      if (nextValue === undefined || nextValue === selectedRef.current) return;
+      lastUserSelectionRef.current = { value: nextValue, values };
       selectedRef.current = nextValue;
-
       onSelectRef.current(nextValue);
     };
-
     const handleScroll = () => {
+      // Motion batches visual updates without re-rendering the picker.
+      if (curved) scrollPosition.set(element.scrollTop / rowHeight);
       if (isProgrammaticScrollRef.current) return;
-
-      if (frameRef.current !== null) {
-        cancelAnimationFrame(frameRef.current);
-      }
-
-      frameRef.current = requestAnimationFrame(() => {
-        if (scrollEndTimerRef.current) {
-          clearTimeout(scrollEndTimerRef.current);
-        }
-
-        scrollEndTimerRef.current = setTimeout(() => {
-          commitValue();
-        }, SCROLL_END_DELAY);
-      });
+      if (scrollEndTimerRef.current) clearTimeout(scrollEndTimerRef.current);
+      scrollEndTimerRef.current = setTimeout(commitValue, SCROLL_END_DELAY);
     };
-
-    element.addEventListener("scroll", handleScroll, {
-      passive: true,
-    });
-
+    const interruptTarget = () => {
+      targetIndexRef.current = null;
+    };
+    element.addEventListener("scroll", handleScroll, { passive: true });
+    element.addEventListener("scrollend", commitValue);
+    element.addEventListener("pointerdown", interruptTarget, { passive: true });
+    element.addEventListener("wheel", interruptTarget, { passive: true });
     return () => {
       element.removeEventListener("scroll", handleScroll);
-
-      if (frameRef.current !== null) {
-        cancelAnimationFrame(frameRef.current);
-      }
-
-      if (scrollEndTimerRef.current) {
-        clearTimeout(scrollEndTimerRef.current);
-      }
+      element.removeEventListener("scrollend", commitValue);
+      element.removeEventListener("pointerdown", interruptTarget);
+      element.removeEventListener("wheel", interruptTarget);
+      if (scrollEndTimerRef.current) clearTimeout(scrollEndTimerRef.current);
     };
-  }, [values]);
+  }, [values, rowHeight, curved, scrollPosition, isPresent]);
+
+  const selectIndex = (index: number) => {
+    if (!isPresent || !values.length) return;
+    const next = clamp(index, 0, values.length - 1);
+    const element = ref.current;
+    if (
+      !curved ||
+      !element ||
+      Math.abs(element.scrollTop - next * rowHeight) < 1
+    ) {
+      onSelect(values[next]);
+      return;
+    }
+    if (scrollEndTimerRef.current) clearTimeout(scrollEndTimerRef.current);
+    targetIndexRef.current = next;
+    element.scrollTo({
+      top: next * rowHeight,
+      behavior: reduceMotion ? "instant" : "smooth",
+    });
+  };
 
   return (
     <div
       ref={ref}
       role="spinbutton"
-      tabIndex={0}
+      tabIndex={isPresent ? 0 : -1}
+      inert={!isPresent}
+      aria-hidden={!isPresent || undefined}
       aria-label={label}
       aria-valuemin={values[0]}
       aria-valuemax={values[values.length - 1]}
       aria-valuenow={selected}
       aria-valuetext={format ? format(selected) : String(selected)}
       onKeyDown={(event) => {
-        const index = values.indexOf(selected);
+        const index = curved
+          ? (targetIndexRef.current ??
+            Math.round((ref.current?.scrollTop ?? 0) / rowHeight))
+          : values.indexOf(selected);
         const next =
           event.key === "ArrowUp"
             ? index + 1
@@ -254,23 +304,29 @@ function WheelColumn({
                   : null;
         if (next === null || !values.length) return;
         event.preventDefault();
-        onSelect(values[clamp(next, 0, values.length - 1)]);
+        selectIndex(next);
       }}
-      className={`cursor-grab active:cursor-grabbing h-36 overflow-y-scroll overscroll-contain snap-y snap-mandatory touch-pan-y [scrollbar-width:none] [&::-webkit-scrollbar]:hidden select-none focus-visible:outline-2 focus-visible:outline-blue-400 ${textColumn ? "min-w-0 flex-1 font-peyda" : "w-16 shrink-0 font-rokh"}`}
+      style={{ height: 144, overflowAnchor: "none" }}
+      className={`cursor-grab active:cursor-grabbing overflow-y-scroll overflow-x-hidden overscroll-contain snap-y snap-mandatory touch-pan-y [scrollbar-width:none] [&::-webkit-scrollbar]:hidden select-none focus-visible:outline-2 focus-visible:outline-blue-400 ${textColumn ? "min-w-0 flex-1 font-peyda" : curved ? "w-12 shrink-0 font-rokh" : dashboard ? "w-24 shrink-0 font-rokh" : "w-16 shrink-0 font-rokh"}`}
     >
-      <div className="h-12 shrink-0" />
-
-      {values.map((item) => (
+      <div style={{ height: (144 - rowHeight) / 2 }} aria-hidden="true" />
+      {values.map((item, index) => (
         <div
           key={item}
-          onClick={() => onSelect(item)}
-          className={`flex h-12 shrink-0 snap-center items-center justify-center cursor-inherit px-1 leading-none ${textColumn ? "text-base font-bold" : "pt-2 text-5xl font-medium"} ${(!dimInactive && !textColumn) || item === selected ? (textColumn ? "text-blue-400" : "text-white") : textColumn ? "text-blue-800" : "text-white/40"}`}
+          style={{ height: rowHeight }}
+          onClick={() => selectIndex(index)}
+          className={`flex snap-center items-center justify-center cursor-inherit px-1 leading-none ${curved ? "text-base font-medium text-white" : textColumn ? "text-base font-bold" : dashboard ? "pt-2 text-[32px] font-medium" : "pt-2 text-5xl font-medium"} ${curved ? "" : (!dimInactive && !textColumn) || item === selected ? (textColumn ? "text-blue-400" : "text-white") : textColumn ? "text-blue-800" : "text-white/40"}`}
         >
-          {format ? format(item) : item}
+          {curved ? (
+            <CurvedWheelLabel index={index} position={scrollPosition}>
+              {format ? format(item) : item}
+            </CurvedWheelLabel>
+          ) : (
+            <span>{format ? format(item) : item}</span>
+          )}
         </div>
       ))}
-
-      <div className="h-12 shrink-0" />
+      <div style={{ height: (144 - rowHeight) / 2 }} aria-hidden="true" />
     </div>
   );
 }
@@ -282,7 +338,8 @@ const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
       onChange,
       onBlur,
       unit = "kilogram",
-      customUnit,
+      customUnit: suppliedCustomUnit,
+      gramStepWheel,
       formatValue,
       unitWheel,
       label = "می‌خوای چه مقداری از این مورد توی سبدت باشه؟",
@@ -290,6 +347,37 @@ const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
     },
     ref,
   ) => {
+    const reduceMotion = useReducedMotion();
+    const hasGramWheel = Boolean(gramStepWheel);
+    const [gramSelection, setGramSelection] = useState({
+      enabled: hasGramWheel,
+      step: 1,
+      anchor: 0,
+    });
+    // Reset the multiplier on unit changes without remounting the scroll columns.
+    if (gramSelection.enabled !== hasGramWheel) {
+      setGramSelection({ enabled: hasGramWheel, step: 1, anchor: 0 });
+    }
+    const { step: gramStep, anchor: gramAnchor } = gramSelection;
+    const minGrams = gramStepWheel?.min;
+    const maxGrams = gramStepWheel?.max;
+    const steppedValues = useMemo(() => {
+      if (minGrams === undefined || maxGrams === undefined) return [];
+      const min = Math.round(minGrams * 2);
+      const max = Math.round(maxGrams * 2);
+      const step = gramStep * 2;
+      const offset = (((gramAnchor * 2 - min) % step) + step) % step;
+      const values = Array.from(
+        { length: Math.floor((max - min - offset) / step) + 1 },
+        (_, index) => (min + offset + index * step) / 2,
+      );
+      if (values[0] !== min / 2) values.unshift(min / 2);
+      return values;
+    }, [minGrams, maxGrams, gramStep, gramAnchor]);
+    const customUnit =
+      suppliedCustomUnit && gramStepWheel
+        ? { ...suppliedCustomUnit, values: steppedValues }
+        : suppliedCustomUnit;
     const unitIndexes = useMemo(
       () =>
         Array.from(
@@ -380,9 +468,7 @@ const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
       <div
         className={
           "w-full flex flex-col justify-start items-start " +
-          (appearance === "dashboard"
-            ? "gap-1 [&_.font-rokh]:w-24 [&_.font-rokh>div]:text-[32px]"
-            : "gap-3")
+          (appearance === "dashboard" ? "gap-1" : "gap-3")
         }
       >
         {label && (
@@ -434,11 +520,52 @@ const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
             ${columns.length > 1 ? "justify-around" : "justify-center"}
           `}
           >
+            <AnimatePresence>
+              {gramStepWheel && (
+                <motion.div
+                  key="gram-step-wheel"
+                  initial={reduceMotion ? false : { opacity: 0, x: -12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: reduceMotion ? 0 : -12 }}
+                  transition={{
+                    duration: reduceMotion ? 0 : 0.24,
+                    ease: "easeOut",
+                  }}
+                  dir="ltr"
+                  className="absolute left-3 top-0 h-36 w-12"
+                >
+                  <WheelColumn
+                    curved
+                    label="گام تغییر مقدار"
+                    dimInactive
+                    values={GRAM_MULTIPLIERS}
+                    selected={gramStep}
+                    format={(step) => step + "x"}
+                    onSelect={(step) => {
+                      setGramSelection({
+                        enabled: true,
+                        step,
+                        anchor: currentValue,
+                      });
+                    }}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
             {unitWheel && customUnit ? (
-              <div
-                className={`flex w-full items-center gap-2 ${unitWheel.options.some((option) => option.description) ? "max-w-64" : "max-w-44"}`}
+              <motion.div
+                key="quantity-columns"
+                layout={reduceMotion ? false : "position"}
+                transition={{
+                  layout: {
+                    duration: reduceMotion ? 0 : 0.24,
+                    ease: "easeOut",
+                  },
+                }}
+                className={`flex w-full items-center gap-2 ${gramStepWheel ? "ml-12" : ""} ${unitWheel.options.some((option) => option.description) ? "max-w-64" : "max-w-44"}`}
               >
                 <WheelColumn
+                  dashboard={appearance === "dashboard"}
                   dimInactive
                   format={formatValue}
                   values={customUnit.values}
@@ -446,6 +573,7 @@ const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
                   onSelect={(next) => onChange?.(next)}
                 />
                 <WheelColumn
+                  dashboard={appearance === "dashboard"}
                   textColumn
                   label="واحد مقدار"
                   values={unitIndexes}
@@ -465,7 +593,7 @@ const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
                     if (option) unitWheel.onChange(option.id);
                   }}
                 />
-              </div>
+              </motion.div>
             ) : (
               columns.map((column) => (
                 <div
@@ -477,6 +605,7 @@ const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
               "
                 >
                   <WheelColumn
+                    dashboard={appearance === "dashboard"}
                     dimInactive={appearance === "dashboard"}
                     values={column.values}
                     selected={column.selected}
