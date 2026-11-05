@@ -1,4 +1,5 @@
 import MealIcon from "./meal-icon";
+import { HiOutlineChevronLeft } from "react-icons/hi";
 import { formatServingUnit } from "../../api/types/serving-unit";
 import { formatMealNumber } from "../../lib/quick-add-meal/format-meal-number";
 import Button from "@/shared/base-components/button";
@@ -53,28 +54,31 @@ export default function FoodSearch({
           {state.foods.map((food) => (
             <li
               key={food.id}
-              className="flex h-(--result-row) items-center gap-2 rounded-2xl bg-darker-blue-200 py-2 px-3 text-white dark:bg-darker-blue-500"
+              dir="rtl"
+              className="flex h-(--result-row) w-full items-center justify-between gap-2 rounded-2xl bg-darker-blue-500 px-3 py-2 font-peyda text-white cursor-pointer select-none"
+              onClick={() => onSelect(food)}
             >
               <div className="min-w-0 flex-1">
-                <h3 className="truncate font-bold text-lg">{food.name}</h3>
-                <p className="truncate text-xs text-blue-700">
+                <h3 className="truncate text-[16px] leading-[1.4] font-bold">
+                  {food.name}
+                </h3>
+                <p className="truncate text-[12px] leading-[1.4] font-medium text-blue-900">
                   واحد: {formatServingUnit(food.serving_unit)}
                 </p>
               </div>
-              <span className="flex flex-row-reverse items-baseline gap-1 text-orange-200">
-                <span className="font-rokh text-2xl">
-                  {formatMealNumber(food.nutrition.calories_kcal)}
+              <div dir="ltr" className="flex shrink-0 items-center gap-2">
+                <div className="flex size-6 shrink-0 cursor-pointer items-center justify-center text-green-400 hover:text-green-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400">
+                  <HiOutlineChevronLeft size={24} aria-hidden="true" />
+                </div>
+                <span className="flex items-baseline gap-1">
+                  <span className="pt-2 font-rokh text-[24px] leading-normal font-extrabold text-orange-200">
+                    {formatMealNumber(food.nutrition.calories_kcal)}
+                  </span>
+                  <small className="text-[8.79px] leading-[1.2] font-bold text-white">
+                    kcal
+                  </small>
                 </span>
-                <small className="text-white text-xxs">kcal</small>
-              </span>
-              <button
-                type="button"
-                onClick={() => onSelect(food)}
-                aria-label={`افزودن ${food.name}`}
-                className="flex size-8.75 shrink-0 items-center justify-center rounded-xs bg-green-400 text-darker-green-200 hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
-              >
-                <MealIcon name="plus" />
-              </button>
+              </div>
             </li>
           ))}
         </ul>
