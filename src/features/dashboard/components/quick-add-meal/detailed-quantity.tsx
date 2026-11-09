@@ -2,6 +2,8 @@ import Slider from "@/shared/base-components/slider";
 import {
   getIngredientGramValues,
   roundIngredientGrams,
+  INGREDIENT_UNITS,
+  ingredientQuantityToGrams,
 } from "../../lib/quick-add-meal/ingredient-grams";
 import QuantityPicker from "@/shared/base-components/quantity-picker";
 import { formatMealNumber } from "../../lib/quick-add-meal/format-meal-number";
@@ -9,6 +11,9 @@ import type { FlowAction } from "../../lib/quick-add-meal/quick-add-meal.state";
 import type { FlowState, Food } from "../../api/types/quick-add-meal.types";
 const focus =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400";
+const ITEM_AMOUNTS = Array.from({ length: 201 }, (_, index) => index / 2);
+const WHOLE_ITEM_AMOUNTS = Array.from({ length: 101 }, (_, index) => index);
+const WHOLE_ITEM_UNITS = new Set(["spoon", "teaspoon", "handful", "bite", "cube"]);
 export default function DetailedQuantity({
   state,
   food,
@@ -62,7 +67,7 @@ export default function DetailedQuantity({
               <span className="mt-1 flex min-h-0 flex-1 items-center justify-center gap-1 border-t border-blue-500/30 pt-1 text-blue-800 dark:border-dark dark:text-blue-700">
                 <span className="font-rokh text-base leading-none">
                   {formatMealNumber(
-                    state.detailed?.[item.id]?.amount ??
+                    (state.detailed?.[item.id] ? ingredientQuantityToGrams(state.detailed[item.id]) : null) ??
                       roundIngredientGrams(item.initialAmount ?? 5),
                   )}
                 </span>
@@ -75,17 +80,27 @@ export default function DetailedQuantity({
       {part && detail ? (
         <QuantityPicker
           key={part.id}
-          gramStepWheel={{
+          gramStepWheel={detail.unitId === "gram" ? {
             min: 0,
             max: detailedAmounts[detailedAmounts.length - 1],
+            initialStep: 0.5,
+          } : undefined}
+          unitWheel={{
+            options: food.type === "recipe" ? INGREDIENT_UNITS : INGREDIENT_UNITS.slice(0, 1),
+            value: detail.unitId,
+            onChange: (unitId) => dispatch({
+              type: "detail",
+              partId: part.id,
+              quantity: { unitId, amount: detail.amount === 0 ? 0 : 1 },
+            }),
           }}
           appearance="dashboard"
           formatValue={(value) => formatMealNumber(value, 2)}
           label={`تنظیم مقدار ${part.title}`}
           value={detail.amount}
           customUnit={{
-            label: "گرم",
-            values: detailedAmounts,
+            label: INGREDIENT_UNITS.find((unit) => unit.id === detail.unitId)?.label ?? "گرم",
+            values: detail.unitId === "gram" ? detailedAmounts : WHOLE_ITEM_UNITS.has(detail.unitId) ? WHOLE_ITEM_AMOUNTS : ITEM_AMOUNTS,
           }}
           onChange={(amount) =>
             dispatch({

@@ -3,6 +3,7 @@ import type {
   SeparatedItem,
 } from "../../api/types/add-meal.types";
 import { ServingUnit } from "../../api/types/serving-unit.ts";
+import { ingredientQuantityToGrams } from "./ingredient-grams.ts";
 import type {
   FlowState,
   Food,
@@ -57,17 +58,18 @@ export function createSubmission(
     for (const part of food.parts) {
       const selection = state.detailed[part.id];
       const ingredientId = Number(part.id);
+      const grams = selection ? ingredientQuantityToGrams(selection) : null;
       if (
         !Number.isSafeInteger(ingredientId) ||
         !selection ||
-        selection.unitId !== "gram" ||
+        grams == null ||
         !Number.isFinite(selection.amount) ||
         selection.amount < 0
       )
         return null;
       separatedItems.push({
         ingredient_id: ingredientId,
-        value: selection.amount,
+        value: grams,
       });
     }
   }

@@ -46,7 +46,7 @@ export default function FoodDetails({
       className="space-y-4 text-base"
     >
       <AnimatePresence initial={false}>
-        {!state.detailed && (
+        {food.type === "recipe" && !state.detailed && (
           <motion.aside
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
@@ -148,7 +148,7 @@ export default function FoodDetails({
             >
               <div className="mb-2 flex items-center justify-between gap-2">
                 <h3 className="font-bold">چه مقدار خوردی؟</h3>
-                {
+                {food.type === "recipe" && (
                   <button
                     type="button"
                     onClick={() =>
@@ -165,7 +165,7 @@ export default function FoodDetails({
                     </span>
                     <MealIcon name="detail" className="size-4" />
                   </button>
-                }
+                )}
               </div>
               <QuantityPicker
                 gramStepWheel={

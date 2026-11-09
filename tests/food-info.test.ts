@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { mapFoodInfo } from "../src/features/dashboard/api/mappers/food-info.mapper.ts";
+import { getGeneralUnits } from "../src/features/dashboard/lib/quick-add-meal/quantity-units.ts";
 import { formatMealNumber } from "../src/features/dashboard/lib/quick-add-meal/format-meal-number.ts";
 import { calculateMealNutrition } from "../src/features/dashboard/lib/quick-add-meal/meal-nutrition.ts";
 import {
@@ -41,6 +42,37 @@ const response = {
     ingredients,
   },
 };
+test("server unit aliases select the static unit without duplicates", () => {
+  for (const serving_unit of ["g", "gram", "گرم", "spoon", "قاشق"]) {
+    const food = mapFoodInfo({
+      ...response,
+      data: { ...response.data, serving_unit },
+    });
+    const units = getGeneralUnits(food);
+    assert.deepEqual(
+      units.map((unit) => unit.id),
+      ["palm", "bite", "spoon", "gram"],
+    );
+    assert.equal(
+      food.defaultUnitId,
+      ["spoon", "قاشق"].includes(serving_unit) ? "spoon" : "gram",
+    );
+  }
+});
+
+test("unknown server units are hidden with a valid default selection", () => {
+  for (const serving_unit of ["unknown", "", "واحد نامشخص"]) {
+    const food = mapFoodInfo({
+      ...response,
+      data: { ...response.data, serving_unit },
+    });
+    const units = getGeneralUnits(food);
+    assert.equal(units.length, 4);
+    assert.ok(units.every((unit) => unit.label !== "واحد نامشخص"));
+    assert.ok(units.some((unit) => unit.id === food.defaultUnitId));
+  }
+});
+
 test("calories use API amount and current quantity across unit switches", () => {
   const food = mapFoodInfo({
     ...response,
@@ -61,7 +93,12 @@ test("calories use API amount and current quantity across unit switches", () => 
   ] as const) {
     for (const amount of [1, 2, 3]) {
       const calories = calculateMealNutrition({ unitId, amount }, food).kcal;
-      assert.ok(Math.abs(calories! - (response.data.nutrition.calories_kcal * (grams * amount)) / 100) < 1e-9);
+      assert.ok(
+        Math.abs(
+          calories! -
+            (response.data.nutrition.calories_kcal * (grams * amount)) / 100,
+        ) < 1e-9,
+      );
       assert.equal(
         formatMealNumber(calories),
         new Intl.NumberFormat("fa-IR").format(Math.round(calories!)),
@@ -104,28 +141,46 @@ test("all metrics scale together while preserving missing values and display pre
   });
   const original = structuredClone(food);
   for (const [unitId, grams] of [
-    ["serving", 250], ["gram", 1], ["palm", 30], ["bite", 35], ["spoon", 15],
+    ["serving", 250],
+    ["gram", 1],
+    ["palm", 30],
+    ["bite", 35],
+    ["spoon", 15],
   ] as const) {
     for (const amount of [1, 3]) {
       const nutrition = calculateMealNutrition({ unitId, amount }, food);
       for (const key of Object.keys(nutrition) as (keyof typeof nutrition)[]) {
-        assert.ok(Math.abs(nutrition[key]! - food.nutrition[key]! * grams * amount / 100) < 1e-9);
+        assert.ok(
+          Math.abs(
+            nutrition[key]! - (food.nutrition[key]! * grams * amount) / 100,
+          ) < 1e-9,
+        );
       }
     }
   }
-  const nutrition = calculateMealNutrition({ unitId: "serving", amount: 1 }, food);
+  const nutrition = calculateMealNutrition(
+    { unitId: "serving", amount: 1 },
+    food,
+  );
   assert.equal(formatMealNumber(nutrition.protein), "۲۵");
   assert.equal(formatMealNumber(nutrition.fiber), "۰");
   assert.equal(formatMealNumber(nutrition.greenhouseGas, 3), "۰٫۳۰۹");
   assert.equal(formatMealNumber(nutrition.environmentalImpact, 2), "۱٫۴۲");
   assert.equal(formatMealNumber(nutrition.water), "۳۲");
-  const missing = calculateMealNutrition({ unitId: "gram", amount: 100 }, {
-    ...food, nutrition: { ...food.nutrition, water: null, fiber: null },
-  });
+  const missing = calculateMealNutrition(
+    { unitId: "gram", amount: 100 },
+    {
+      ...food,
+      nutrition: { ...food.nutrition, water: null, fiber: null },
+    },
+  );
   assert.equal(missing.water, null);
   assert.equal(missing.fiber, null);
   assert.equal(missing.protein, 10);
-  const invalid = calculateMealNutrition({ unitId: "gram", amount: 1 }, { ...food, amountGrams: 0 });
+  const invalid = calculateMealNutrition(
+    { unitId: "gram", amount: 1 },
+    { ...food, amountGrams: 0 },
+  );
   assert.ok(Object.values(invalid).every((value) => value === null));
   assert.deepEqual(food, original);
 });

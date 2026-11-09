@@ -4,6 +4,7 @@ import type {
 } from "../types/food-info.types";
 import { formatServingUnit } from "../types/serving-unit.ts";
 import type { Food, FoodPart } from "../types/quick-add-meal.types";
+import { DEFAULT_UNITS } from "../../constants/quick-add-meal.constants.ts";
 function mapIngredient(ingredient: FoodIngredient): FoodPart {
   return {
     id: String(ingredient.ingredient_id),
@@ -13,6 +14,15 @@ function mapIngredient(ingredient: FoodIngredient): FoodPart {
   };
 }
 export function mapFoodInfo({ data }: FoodInfoResponse): Food {
+  const serverUnit = data.serving_unit.trim();
+  const label = formatServingUnit(serverUnit);
+  const staticUnit = DEFAULT_UNITS.find(
+    (unit) =>
+      unit.id === serverUnit || unit.label === serverUnit || unit.label === label,
+  );
+  const servingUnit =
+    staticUnit ??
+    (label !== "واحد نامشخص" ? { id: serverUnit, label } : undefined);
   return {
     id: String(data.food_id),
     type: data.type,
@@ -26,12 +36,10 @@ export function mapFoodInfo({ data }: FoodInfoResponse): Food {
       environmentalImpact: data.nutrition.ef_single_score_mpt ?? null,
       water: data.nutrition.water_l ?? null,
     },
-    defaultUnitId: data.serving_unit,
+    defaultUnitId: servingUnit?.id ?? "bite",
     servingWeightGrams: data.serving_weight_g,
     amountGrams: data.amount_g,
-    generalUnits: [
-      { id: data.serving_unit, label: formatServingUnit(data.serving_unit) },
-    ],
+    generalUnits: servingUnit ? [servingUnit] : [],
     parts: data.ingredients.map(mapIngredient),
   };
 }

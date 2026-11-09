@@ -3,6 +3,8 @@ import { test } from "node:test";
 import {
   roundIngredientGrams,
   getIngredientGramValues,
+  ingredientQuantityToGrams,
+  INGREDIENT_UNITS,
 } from "../src/features/dashboard/lib/quick-add-meal/ingredient-grams.ts";
 import { getGeneralUnits } from "../src/features/dashboard/lib/quick-add-meal/quantity-units.ts";
 import {
@@ -97,4 +99,14 @@ test("5g wheel rounds predictably and ingredient edits stay independent", () => 
   assert.equal(state.detailed?.["2"].amount, 25);
   assert.equal(food.parts[1].initialAmount, 15);
   assert.equal(data.ingredients[1].grams, 15);
+});
+
+test("ingredient units convert item counts and preserve zero", () => {
+  const weights = [1, 15, 4, 240, 30, 45, 150, 40, 120, 200, 35, 5];
+  INGREDIENT_UNITS.forEach((unit, index) => {
+    assert.equal(ingredientQuantityToGrams({ unitId: unit.id, amount: 2 }), weights[index] * 2);
+    assert.equal(ingredientQuantityToGrams({ unitId: unit.id, amount: 0 }), 0);
+  });
+  assert.equal(ingredientQuantityToGrams({ unitId: "unknown", amount: 2 }), null);
+  assert.equal(ingredientQuantityToGrams({ unitId: "gram", amount: -1 }), null);
 });

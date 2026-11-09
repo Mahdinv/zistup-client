@@ -28,7 +28,7 @@ interface UnitWheel {
   onChange: (id: string) => void;
 }
 interface QuantityPickerProps {
-  gramStepWheel?: { min: number; max: number };
+  gramStepWheel?: { min: number; max: number; initialStep?: number };
   formatValue?: (value: number) => string;
   customUnit?: CustomQuantityUnit;
   unitWheel?: UnitWheel;
@@ -322,7 +322,7 @@ function WheelColumn({
               {format ? format(item) : item}
             </CurvedWheelLabel>
           ) : (
-            <span>{format ? format(item) : item}</span>
+            <span className={textColumn ? "whitespace-nowrap" : undefined}>{format ? format(item) : item}</span>
           )}
         </div>
       ))}
@@ -351,12 +351,12 @@ const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
     const hasGramWheel = Boolean(gramStepWheel);
     const [gramSelection, setGramSelection] = useState({
       enabled: hasGramWheel,
-      step: 1,
+      step: gramStepWheel?.initialStep ?? 1,
       anchor: 0,
     });
     // Reset the multiplier on unit changes without remounting the scroll columns.
     if (gramSelection.enabled !== hasGramWheel) {
-      setGramSelection({ enabled: hasGramWheel, step: 1, anchor: 0 });
+      setGramSelection({ enabled: hasGramWheel, step: gramStepWheel?.initialStep ?? 1, anchor: 0 });
     }
     const { step: gramStep, anchor: gramAnchor } = gramSelection;
     const minGrams = gramStepWheel?.min;
@@ -562,7 +562,7 @@ const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
                     ease: "easeOut",
                   },
                 }}
-                className={`flex w-full items-center gap-2 ${gramStepWheel ? "ml-12" : ""} ${unitWheel.options.some((option) => option.description) ? "max-w-64" : "max-w-44"}`}
+                className={`flex w-full items-center gap-2 ${gramStepWheel ? "ml-12" : ""} ${unitWheel.options.some((option) => option.description || option.label.length > 10) ? "max-w-64" : "max-w-44"}`}
               >
                 <WheelColumn
                   dashboard={appearance === "dashboard"}
