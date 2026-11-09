@@ -1,7 +1,7 @@
 import type { DietFood, DietMeal } from "../../../api/types/diet-day.types";
 import {
   MealType,
-  type SuggestedMealPayload,
+  type AddMealRequest,
 } from "../../../api/types/add-meal.types";
 import useAddMealMutation from "../../../hooks/use-add-meal-mutation.hook";
 import { toast } from "sonner";
@@ -31,11 +31,13 @@ const mealPlanTabs = [
 type MealPlanTab = (typeof mealPlanTabs)[number]["value"];
 
 type SuggestedMealsCardProps = {
+  date: string;
   item: DietFood & { meal: DietMeal; mealTitle: string; mealColor?: string };
   initialTab: MealPlanTab;
   registrationDisabled: boolean;
 };
 const SuggestedMealsCard = ({
+  date,
   item,
   initialTab,
   registrationDisabled,
@@ -80,11 +82,12 @@ const SuggestedMealsCard = ({
     }
     if (
       await submitMeal({
+        date,
         type: food.type,
         id: foodId,
         meal,
         value: food.quantity.grams,
-      } satisfies SuggestedMealPayload)
+      } satisfies AddMealRequest)
     )
       setDrawerOpen(false);
   };

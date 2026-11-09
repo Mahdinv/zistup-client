@@ -44,6 +44,7 @@ export type FlowState = {
   mealId: MealId | null;
   query: string;
   selectedFoodId: number | null;
+  selectedFoodType: MealSearchItem["type"] | null;
   quantity: QuantitySelection;
   detailed: DetailedSelection | null;
   activePartId: string | null;

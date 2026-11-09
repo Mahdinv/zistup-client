@@ -25,4 +25,6 @@ export type SuggestedMealPayload = {
   meal: MealType;
 };
 
-export type AddMealRequest = AddMealPayload | SuggestedMealPayload;
+export type AddMealRequest = (AddMealPayload | SuggestedMealPayload) & {
+  date: string;
+};

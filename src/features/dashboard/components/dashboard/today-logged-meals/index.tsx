@@ -129,9 +129,9 @@ const TodayLoggedMeals = ({
           <button
             type="button"
             onClick={() => {
-              if (isToday) openQuickAddMeal();
+              if (!isFuture) openQuickAddMeal();
             }}
-            disabled={!isToday}
+            disabled={isFuture}
             aria-haspopup="dialog"
             className="text-green-400 hover:text-green-500 active:text-green-500 flex flex-row items-center gap-1 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
           >

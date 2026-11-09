@@ -23,7 +23,7 @@ const DashboardFlowContent = () => {
   const today = formatPlanDateForApi(getTehranCalendarDate());
   const registrationDate =
     pathname === "/app/dashboard" ? dashboardDate : today;
-  const registrationDisabled = registrationDate !== today;
+  const registrationDisabled = registrationDate === null;
   const openQuickAddMeal = useCallback(() => {
     if (!registrationDisabled) setDrawerOpen(true);
   }, [registrationDisabled]);
@@ -46,6 +46,7 @@ const DashboardFlowContent = () => {
       </div>
 
       <DashboardFlowBottomNav
+        registrationDate={registrationDate}
         registrationDisabled={registrationDisabled}
         drawerOpen={drawerOpen}
         onOpen={openQuickAddMeal}

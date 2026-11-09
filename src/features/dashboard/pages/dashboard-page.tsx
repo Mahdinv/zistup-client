@@ -35,9 +35,9 @@ const DashboardPage = () => {
       ? formatPlanDateForApi(planDates.selectedDate)
       : null;
   const { setDashboardDate } = useQuickAddMealDrawer();
-  // Registration endpoints write to today only, including after Tehran midnight.
+  // Meal registration uses the selected Dashboard date.
   const registrationDate =
-    planDates.selectedDate === planDates.today ? selectedDate : null;
+    !planDates.isFuture ? selectedDate : null;
   useLayoutEffect(() => {
     setDashboardDate(registrationDate);
     return () => setDashboardDate(null);
@@ -126,7 +126,11 @@ const DashboardDayContent = ({
         error={adherenceQuery.data?.success ? null : adherenceQuery.error}
         onRetry={() => void adherenceQuery.refetch()}
       />
-      <DietGoalMealSuggestions meals={meals} registrationDisabled={!isToday} />
+      <DietGoalMealSuggestions
+        meals={meals}
+        date={date}
+        registrationDisabled={isFuture}
+      />
       <div className="w-full flex flex-row items-stretch gap-3">
         <DailyCalories
           data={

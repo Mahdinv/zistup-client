@@ -1,4 +1,8 @@
 import type { ServingUnit } from "./serving-unit";
+export type FoodInfoRequest = {
+  id: number;
+  type: FoodInfoResponse["data"]["type"];
+};
 export type FoodNutrition = {
   calories_kcal: number | null;
   protein_g: number | null;

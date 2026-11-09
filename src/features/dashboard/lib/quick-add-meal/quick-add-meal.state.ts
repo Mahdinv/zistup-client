@@ -13,6 +13,7 @@ export const initialFlow: FlowState = {
   mealId: null,
   query: "",
   selectedFoodId: null,
+  selectedFoodType: null,
   quantity: { amount: 1, unitId: "" },
   detailed: null,
   activePartId: null,
@@ -20,7 +21,7 @@ export const initialFlow: FlowState = {
 export type FlowAction =
   | { type: "meal"; mealId: MealId }
   | { type: "query"; query: string }
-  | { type: "food"; foodId: number }
+  | { type: "food"; foodId: number; foodType: Food["type"] }
   | { type: "quantity"; quantity: QuantitySelection }
   | { type: "detail"; partId: string; quantity: QuantitySelection }
   | { type: "part"; partId: string }
@@ -46,11 +47,13 @@ export function flowReducer(state: FlowState, action: FlowAction): FlowState {
       return { ...state, query: action.query };
     case "food":
       return navigate(
-        state.selectedFoodId === action.foodId
+        state.selectedFoodId === action.foodId &&
+          state.selectedFoodType === action.foodType
           ? state
           : {
               ...state,
               selectedFoodId: action.foodId,
+              selectedFoodType: action.foodType,
               quantity: initialFlow.quantity,
               detailed: null,
               activePartId: null,

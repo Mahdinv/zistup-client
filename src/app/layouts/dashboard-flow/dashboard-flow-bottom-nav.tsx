@@ -15,6 +15,7 @@ import {
 import { NavLink } from "react-router-dom";
 
 type Props = {
+  registrationDate: string | null;
   registrationDisabled: boolean;
   drawerOpen: boolean;
   onOpen: () => void;
@@ -26,6 +27,7 @@ const DashboardFlowBottomNav = ({
   onOpen,
   onClose,
   registrationDisabled,
+  registrationDate,
 }: Props) => {
   const { submitMeal, isPending, isSuccess, submissionInFlight } =
     useAddMealMutation();
@@ -191,7 +193,9 @@ const DashboardFlowBottomNav = ({
           onClose();
         }}
         onSubmit={(payload) =>
-          registrationDisabled ? Promise.resolve(false) : submitMeal(payload)
+          registrationDisabled || registrationDate === null
+            ? Promise.resolve(false)
+            : submitMeal({ ...payload, date: registrationDate })
         }
         isSubmitting={isPending}
       />

@@ -13,11 +13,13 @@ const tabs = [
 ] satisfies { value: PlanType; title: string }[];
 
 type DietGoalMealSuggestionsProps = {
+  date: string;
   meals: DietMeal[] | undefined;
   registrationDisabled: boolean;
 };
 
 const DietGoalMealSuggestions = ({
+  date,
   meals,
   registrationDisabled,
 }: DietGoalMealSuggestionsProps) => {
@@ -90,6 +92,7 @@ const DietGoalMealSuggestions = ({
             items={displayDiets}
             renderItem={(item) => (
               <SuggestedMealsCard
+                date={date}
                 item={item}
                 initialTab={activePlan}
                 registrationDisabled={registrationDisabled}

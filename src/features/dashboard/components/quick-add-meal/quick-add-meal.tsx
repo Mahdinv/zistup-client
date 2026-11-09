@@ -46,6 +46,7 @@ export default function QuickAddMeal({
   );
   const foodInfoQuery = useFoodInfoQuery(
     state.selectedFoodId,
+    state.selectedFoodType,
     open && (state.step === "details" || state.nextStep === "details"),
   );
   const resolvedState = {
@@ -187,7 +188,9 @@ export default function QuickAddMeal({
         <FoodSearch
           state={getFoodSearchState(searchTerm, mealSearchQuery, isDebouncing)}
           onRetry={() => void mealSearchQuery.refetch()}
-          onSelect={(food) => dispatch({ type: "food", foodId: food.id })}
+          onSelect={(food) =>
+            dispatch({ type: "food", foodId: food.id, foodType: food.type })
+          }
         />
       )}
       {state.step === "details" && (
