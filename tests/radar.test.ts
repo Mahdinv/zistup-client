@@ -1,211 +1,63 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import type {
-  RadarAxis,
-  RadarData,
-} from "../src/features/dashboard/api/types/radar.types.ts";
-import {
-  getRadarDisplayAxes,
-  getRadarRadius,
-} from "../src/features/dashboard/lib/radar.utils.ts";
-
-test("non-linear scale places each threshold on an equally spaced ring", () => {
-  assert.deepEqual([0, 25, 50, 100, 200].map(getRadarRadius), [0, 1, 2, 3, 4]);
-});
-
-test("radar radius interpolates within each interval, including above the target", () => {
-  for (const [value, radius] of [
-    [12.5, 0.5],
-    [37.5, 1.5],
-    [75, 2.5],
-    [118, 3.18],
-    [150, 3.5],
-  ]) {
-    assert.ok(Math.abs(getRadarRadius(value) - radius) < 1e-10);
-  }
-});
-
-test("radar radius remains within the chart bounds", () => {
-  assert.equal(getRadarRadius(-10), 0);
-  assert.equal(getRadarRadius(247.8), 4);
-  assert.equal(getRadarRadius(NaN), 0);
-  assert.equal(getRadarRadius(null), 0);
-  assert.equal(getRadarRadius(undefined), 0);
-});
-
-const available: RadarAxis = {
-  actual: 0.759294874016737,
-  target: 0.641369,
-  value: 118.38658775474602,
-  plot_value: 118.38658775474602,
-  overflow: false,
-  status: "ok",
-};
+import type { RadarData } from "../src/features/dashboard/api/types/radar.types.ts";
+import { getRadarDisplayAxes } from "../src/features/dashboard/lib/radar.utils.ts";
 
 const sample: RadarData = {
   axis_order: ["health", "environment", "cost", "accessibility"],
-  axes: {
-    health: {
-      actual: 0,
-      target: 100,
-      value: 0,
-      plot_value: 0,
-      overflow: false,
-      status: "unavailable",
-    },
-    environment: {
-      actual: 0,
-      target: 0.7339,
-      value: 0,
-      plot_value: 0,
-      overflow: false,
-      status: "unavailable",
-    },
-    cost: {
-      actual: 470.2726895758175,
-      target: 742.573,
-      value: 63.33016276861905,
-      plot_value: 63.33016276861905,
-      overflow: false,
-      status: "ok",
-    },
-    accessibility: available,
-  },
+  score_values: [6.708028, 82.146289, 82.321202, 91.811228],
 };
 
-test("empty data preserves four radar axes with an empty current pattern", () => {
-  for (const data of [undefined, { axis_order: [], axes: {} } as RadarData]) {
+test("v2 scores map to axis_order by index without changing precision", () => {
+  assert.deepEqual(getRadarDisplayAxes(sample), [
+    { key: "health", score: 6.708028 },
+    { key: "environment", score: 82.146289 },
+    { key: "cost", score: 82.321202 },
+    { key: "accessibility", score: 91.811228 },
+  ]);
+  const reordered: RadarData = {
+    axis_order: ["cost", "health", "accessibility", "environment"],
+    score_values: [25, 50, 75, 100],
+  };
+  assert.deepEqual(getRadarDisplayAxes(reordered), [
+    { key: "cost", score: 25 },
+    { key: "health", score: 50 },
+    { key: "accessibility", score: 75 },
+    { key: "environment", score: 100 },
+  ]);
+});
+
+test("null scores remain gaps while zero remains a valid center point", () => {
+  const data = { ...sample, score_values: [null, 0, 75, null] };
+  const before = structuredClone(data);
+  assert.deepEqual(
+    getRadarDisplayAxes(data).map(({ score }) => score),
+    [null, 0, 75, null],
+  );
+  assert.deepEqual(data, before);
+});
+
+test("missing data preserves the four axes with gaps", () => {
+  for (const data of [undefined, { axis_order: [], score_values: [] }]) {
     const axes = getRadarDisplayAxes(data);
-    assert.equal(axes.length, 4);
-    assert.deepEqual(axes.map((axis) => axis.key), sample.axis_order);
-    assert.equal(new Set(axes.map((axis) => axis.key)).size, 4);
     assert.deepEqual(
-      axes.map((axis) => axis.plotValue),
-      [0, 0, 0, 0],
+      axes.map(({ key }) => key),
+      sample.axis_order,
     );
-    assert.ok(axes.every((axis) => !axis.overflow));
+    assert.deepEqual(
+      axes.map(({ score }) => score),
+      [null, null, null, null],
+    );
   }
 });
 
-test("unavailable values plot at the center; available values retain their units and precision", () => {
-  const axes = getRadarDisplayAxes(sample);
-  assert.deepEqual(
-    axes.map((axis) => axis.plotValue),
-    [0, 0, 63.33016276861905, 118.38658775474602],
-  );
-  assert.equal(axes[0].actual, 0);
-  assert.equal(axes[0].value, 0);
-  assert.equal(axes[0].target, 100);
-  assert.equal(axes[3].actual, available.actual);
-  assert.equal(axes[3].target, available.target);
-});
-
-test("axis ordering follows the response rather than object insertion order", () => {
-  const axis_order: RadarData["axis_order"] = [
-    "cost",
-    "accessibility",
-    "health",
-    "environment",
-  ];
-  assert.deepEqual(
-    getRadarDisplayAxes({ ...sample, axis_order }).map((axis) => axis.key),
-    axis_order,
-  );
-});
-
-test("valid health scores, including zero, pass through without inversion", () => {
-  for (const value of [0, 25, 50, 100]) {
-    const health = {
-      ...available,
-      actual: value,
-      target: 100,
-      value,
-      plot_value: value,
-    };
-    const axes = getRadarDisplayAxes({
-      ...sample,
-      axes: { ...sample.axes, health },
-    });
-    assert.equal(axes[0].plotValue, value);
-    assert.equal(axes[0].value, value);
-  }
-});
-
-test("overflow preserves the raw percentage and uses the supplied capped plot value", () => {
-  const accessibility = {
-    ...available,
-    value: 247.8,
-    plot_value: 200,
-    overflow: true,
-  };
-  const axis = getRadarDisplayAxes({
-    ...sample,
-    axes: { ...sample.axes, accessibility },
-  })[3];
-  assert.equal(axis.plotValue, 200);
-  assert.equal(axis.value, 247.8);
-  assert.equal(axis.overflow, true);
-});
-
-test("null, missing and nonfinite plotting values fall back to the center", () => {
-  for (const missing of [null, undefined, NaN, Infinity]) {
-    const accessibility = { ...available, plot_value: missing };
-    const axis = getRadarDisplayAxes({
-      ...sample,
-      axes: { ...sample.axes, accessibility },
-    })[3];
-    assert.equal(axis.plotValue, 0);
-    assert.equal(axis.value, 0);
-  }
-});
-
-test("zero is preserved on every axis so the polygon can connect through the center", () => {
-  const data = structuredClone(sample);
-  for (const key of data.axis_order) {
-    data.axes[key] = { ...available, actual: 0, value: 0, plot_value: 0 };
-    const axes = getRadarDisplayAxes(data);
-    assert.equal(axes.find((axis) => axis.key === key)?.plotValue, 0);
-  }
-  assert.deepEqual(
-    getRadarDisplayAxes(data).map((axis) => axis.plotValue),
-    [0, 0, 0, 0],
-  );
-});
-
-test("missing original-unit metrics do not hide an available backend plotting value", () => {
-  const accessibility = {
-    ...available,
-    actual: null,
-    target: null,
-    value: null,
-    plot_value: 0,
-  };
+test("missing and nonfinite scores never become plotted zeros", () => {
   const axes = getRadarDisplayAxes({
     ...sample,
-    axes: { ...sample.axes, accessibility },
+    score_values: [NaN, Infinity, 0],
   });
-  assert.equal(axes[3].plotValue, 0);
-  assert.equal(axes[3].value, 0);
-});
-
-test("all-null numeric fields normalize to zero without mutating the response", () => {
-  const data = structuredClone(sample);
-  for (const key of data.axis_order) {
-    data.axes[key] = {
-      ...available,
-      actual: null,
-      target: null,
-      value: null,
-      plot_value: null,
-    };
-  }
-  const axes = getRadarDisplayAxes(data);
-  assert.equal(axes.length, 4);
-  for (const axis of axes) {
-    assert.deepEqual(
-      [axis.actual, axis.target, axis.value, axis.plotValue],
-      [0, 0, 0, 0],
-    );
-    assert.equal(data.axes[axis.key].plot_value, null);
-  }
+  assert.deepEqual(
+    axes.map(({ score }) => score),
+    [null, null, 0, null],
+  );
 });

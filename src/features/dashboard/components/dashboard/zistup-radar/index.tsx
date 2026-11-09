@@ -41,12 +41,6 @@ const ZistupRadar = ({ data, isLoading, error, onRetry }: ZistupRadarProps) => {
             </label>
             <div className="bg-blue-400 compact:size-2 fold:size-3 laptop:size-4 rounded-full" />
           </div>
-          <div className="flex flex-row justify-between items-center gap-1">
-            <label className="font-peyda font-bold compact:text-xs fold:text-base laptop:text-lg">
-              توازن بهینه
-            </label>
-            <div className="bg-transparent border border-dashed border-black dark:border-white compact:size-2 fold:size-3 laptop:size-4 rounded-full" />
-          </div>
         </div>
       </div>
       {error ? (

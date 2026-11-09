@@ -1,6 +1,8 @@
+import { useEffect, useRef } from "react";
 import {
   Filler,
   RadialLinearScale,
+  type Chart,
   type ChartData,
   type ChartOptions,
 } from "chart.js";
@@ -10,7 +12,7 @@ import { PiAlarm, PiCoins, PiHeartbeat, PiPlant } from "react-icons/pi";
 import ChartJS from "@/shared/lib/chartjs-setup";
 import { useDashboardTheme } from "@/features/dashboard/hooks/use-dashboard-theme.hook";
 import type { RadarData } from "../../../api/types/radar.types";
-import { getRadarDisplayAxes, getRadarRadius } from "../../../lib/radar.utils";
+import { getRadarDisplayAxes } from "../../../lib/radar.utils";
 import { LoadingShape } from "../dashboard-skeleton";
 
 ChartJS.register(RadialLinearScale, Filler);
@@ -57,33 +59,76 @@ const positions = [
   "col-start-1 row-start-2",
 ];
 const percentFormatter = new Intl.NumberFormat("fa-IR", {
-  maximumFractionDigits: 1,
+  maximumFractionDigits: 0,
 });
-const formatPercent = (value: number) => `${percentFormatter.format(value)}٪`;
+const formatPercent = (value: number | null) =>
+  value === null ? "ناموجود" : `${percentFormatter.format(Math.round(value))}٪`;
 
 const RadarChart = ({ radar, isLoading = false }: RadarChartProps) => {
   const { theme } = useDashboardTheme();
+  const chartRef = useRef<Chart<"radar">>(null);
   const isDark = theme === "dark";
   const gridColor = isDark ? "#416574" : "#70bdd8";
   const axes = getRadarDisplayAxes(radar);
-  const currentValues = axes.map(({ plotValue }) => getRadarRadius(plotValue));
+  const currentValues = axes.map(({ score }) => score);
+
+  useEffect(() => {
+    const chart = chartRef.current;
+    if (!chart) return;
+    const close = () => {
+      chart.setActiveElements([]);
+      chart.tooltip?.setActiveElements([], { x: 0, y: 0 });
+      chart.draw();
+    };
+    const onOutsidePointerDown = (event: PointerEvent) => {
+      if (event.target !== chart.canvas) close();
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") close();
+    };
+    close();
+    document.addEventListener("pointerdown", onOutsidePointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onOutsidePointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [radar, isLoading]);
 
   const options: ChartOptions<"radar"> = {
     responsive: true,
     maintainAspectRatio: false,
     animation: false,
-    events: [],
+    events: ["click"],
+    interaction: { mode: "nearest", intersect: true },
     layout: { padding: 2 },
     plugins: {
       legend: { display: false },
-      tooltip: { enabled: false },
+      tooltip: {
+        enabled: true,
+        backgroundColor: "#0d0e12",
+        borderColor: "#292f37",
+        borderWidth: 0.5,
+        cornerRadius: 12,
+        padding: 10,
+        bodyColor: BLUE,
+        bodyFont: { family: "Peyda", size: 18, weight: "bold" },
+        titleFont: { family: "Peyda", size: 12 },
+        rtl: true,
+        textDirection: "rtl",
+        usePointStyle: true,
+        callbacks: {
+          label: ({ raw }) =>
+            formatPercent(typeof raw === "number" ? raw : null),
+        },
+      },
     },
     scales: {
       r: {
         min: 0,
-        max: 4,
+        max: 100,
         startAngle: 0,
-        ticks: { display: false, stepSize: 1 },
+        ticks: { display: false, stepSize: 25 },
         pointLabels: { display: false },
 
         grid: { circular: true, color: gridColor, lineWidth: 1 },
@@ -103,28 +148,17 @@ const RadarChart = ({ radar, isLoading = false }: RadarChartProps) => {
           ? "rgba(126, 187, 208, 0.22)"
           : "rgba(117, 213, 246, 0.14)",
         borderWidth: 1.5,
-        fill: "shape",
+        fill: currentValues.every((value) => value !== null) ? "shape" : false,
         showLine: true,
         spanGaps: false,
         tension: 0,
         pointBackgroundColor: BLUE,
         pointBorderColor: isDark ? "#1b1a20" : "#eef8fb",
         pointBorderWidth: 1.5,
+        pointHitRadius: 14,
         pointRadius: ({ chart }) =>
           Math.max(2.5, Math.min(6, chart.width / 47)),
         order: 0,
-      },
-      {
-        label: "توازن بهینه",
-        data: axes.map(() => getRadarRadius(100)),
-        borderColor: isDark ? "#fcfcfc" : "#000000",
-        borderWidth: 1.5,
-        borderDash: [4, 5],
-        backgroundColor: "transparent",
-        fill: false,
-        tension: 0,
-        pointRadius: 0,
-        order: 1,
       },
     ],
   };
@@ -143,20 +177,21 @@ const RadarChart = ({ radar, isLoading = false }: RadarChartProps) => {
           </div>
         ) : (
           <Radar
+            ref={chartRef}
             className="absolute inset-0"
             data={data}
             options={options}
             role="img"
             aria-label={axes
               .map(
-                ({ key, value, overflow }) =>
-                  `${categories[key].label}: الگوی کنونی ${formatPercent(value)}، توازن بهینه ۱۰۰٪${overflow ? "، فراتر از مقیاس ۲۰۰٪" : ""}`,
+                ({ key, score }) =>
+                  `${categories[key].label}: ${formatPercent(score)}`,
               )
               .join("؛ ")}
           />
         )}
       </div>
-      {axes.map(({ key, overflow }, index) => {
+      {axes.map(({ key }, index) => {
         const { label, Icon, background, labelWidth } = categories[key];
         return (
           <div
@@ -177,11 +212,6 @@ const RadarChart = ({ radar, isLoading = false }: RadarChartProps) => {
             >
               {label}
             </span>
-            {overflow && (
-              <span className="rounded bg-blue-200 px-1 text-xs dark:bg-darker-blue-300 dark:text-white">
-                بیش از ۲۰۰٪
-              </span>
-            )}
           </div>
         );
       })}
