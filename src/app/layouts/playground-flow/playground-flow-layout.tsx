@@ -33,7 +33,11 @@ const PlaygroundFlowLayout = () => {
   useEffect(() => {
     if (getPlaygroundFlowOrigin(location.state)) return;
     navigate(
-      { pathname: location.pathname, search: location.search, hash: location.hash },
+      {
+        pathname: location.pathname,
+        search: location.search,
+        hash: location.hash,
+      },
       {
         replace: true,
         preventScrollReset: true,
@@ -90,10 +94,9 @@ const PlaygroundFlowLayout = () => {
     if (routeHeader.backTo) {
       const returningToOrigin =
         location.pathname.replace(/\/+$/, "") === "/game-workflow";
-      navigate(
-        returningToOrigin ? origin : routeHeader.backTo,
-        { state: returningToOrigin ? returnState : { origin, returnState } },
-      );
+      navigate(returningToOrigin ? origin : routeHeader.backTo, {
+        state: returningToOrigin ? returnState : { origin, returnState },
+      });
     }
   };
 
@@ -101,9 +104,8 @@ const PlaygroundFlowLayout = () => {
     <div
       className="
         compact:w-full
-        tablet:w-3/5
-        laptop:w-2/5
-        desktop:w-1/3
+        tablet:w-3/5 
+        desktop:w-2/5
         mx-auto
         flex
         h-dvh

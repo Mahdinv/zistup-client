@@ -306,7 +306,15 @@ const routes: RouteObject[] = [
 const createAppRouter = () => createBrowserRouter(withErrorBoundaries([
   {
     loader: initializeSession,
-    hydrateFallbackElement: <AppLoader fullScreen theme={readDashboardTheme()} />,
+    hydrateFallbackElement: (
+      <div className={`mx-auto compact:w-full tablet:w-3/5 ${
+        /^\/(auth|onboarding)(\/|$)/.test(window.location.pathname)
+          ? "laptop:w-2/5 desktop:w-1/3"
+          : "desktop:w-2/5"
+      }`}>
+        <AppLoader fullScreen theme={readDashboardTheme()} />
+      </div>
+    ),
     children: routes,
   },
 ]));

@@ -33,11 +33,11 @@
         z-index: 999999;
         display: grid;
         place-items: center;
-        width: 100dvw;
+        width: 100%;
         height: 100dvh;
         max-width: none;
         max-height: none;
-        margin: 0;
+        margin: 0 auto;
         padding: 0;
         background: #ffffff;
         opacity: 1;
@@ -45,6 +45,25 @@
         transition:
           opacity 300ms ease,
           visibility 300ms ease;
+      }
+
+      @media (min-width: 768px) {
+        #startup-screen {
+          width: 60%;
+        }
+      }
+      @media (min-width: 1024px) {
+        #startup-screen[data-layout="account"] {
+          width: 40%;
+        }
+      }
+      @media (min-width: 1280px) {
+        #startup-screen {
+          width: 40%;
+        }
+        #startup-screen[data-layout="account"] {
+          width: calc(100% / 3);
+        }
       }
 
       #startup-screen__logo {
@@ -94,6 +113,13 @@
     <div id="startup-screen" aria-hidden="true">
       <img id="startup-screen__logo" src="/startup-logo.svg" alt="" />
     </div>
+    <script>
+      // Match the layout before the application bundle or styles have loaded.
+      document.getElementById("startup-screen").dataset.layout =
+        /^\/(auth|onboarding)(\/|$)/.test(window.location.pathname)
+          ? "account"
+          : "default";
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
