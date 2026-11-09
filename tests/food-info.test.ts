@@ -282,3 +282,16 @@ test("only requested metrics use decimal display precision", () => {
   assert.equal(formatMealNumber(30.8769), "۳۱");
   assert.equal(formatMealNumber(null, 2), "—");
 });
+
+test("base foods expose static units and retain unique dynamic units", () => {
+  for (const [serving_unit, expectedId, count] of [["g", "gram", 12], ["گرم", "gram", 12], ["palm", "palm", 12], ["بسته", "بسته", 13]]) {
+    const food = mapFoodInfo({ ...response, data: { ...response.data, type: "base_food", serving_unit } });
+    const units = getGeneralUnits(food);
+    assert.equal(food.defaultUnitId, expectedId);
+    assert.equal(units.length, count);
+    assert.equal(new Set(units.map((unit) => unit.id)).size, count);
+    const nutrition = calculateMealNutrition({ unitId: expectedId, amount: 2 }, food);
+    const grams = expectedId === "gram" ? 2 : expectedId === "palm" ? 240 : 800;
+    assert.ok(Math.abs(nutrition.kcal - food.nutrition.kcal * grams / food.amountGrams) < 1e-9);
+  }
+});

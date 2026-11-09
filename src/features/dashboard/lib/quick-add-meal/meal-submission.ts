@@ -3,7 +3,7 @@ import type {
   SeparatedItem,
 } from "../../api/types/add-meal.types";
 import { ServingUnit } from "../../api/types/serving-unit.ts";
-import { ingredientQuantityToGrams } from "./ingredient-grams.ts";
+import { ingredientQuantityToGrams, INGREDIENT_UNITS } from "./ingredient-grams.ts";
 import type {
   FlowState,
   Food,
@@ -19,10 +19,11 @@ const fixedGrams: Readonly<Partial<Record<string, number>>> = {
 
 export function quantityToGrams(
   quantity: QuantitySelection,
-  food: Pick<Food, "defaultUnitId" | "servingWeightGrams">,
+  food: Pick<Food, "defaultUnitId" | "servingWeightGrams"> & Partial<Pick<Food, "type">>,
 ): number | null {
   // Local units retain their fixed conversion even if also returned by the server.
-  const gramsPerUnit = Object.hasOwn(fixedGrams, quantity.unitId)
+  const baseUnit = food.type === "base_food" ? INGREDIENT_UNITS.find((unit) => unit.id === quantity.unitId) : undefined;
+  const gramsPerUnit = baseUnit ? baseUnit.grams : Object.hasOwn(fixedGrams, quantity.unitId)
     ? fixedGrams[quantity.unitId]
     : quantity.unitId === food.defaultUnitId
       ? food.servingWeightGrams

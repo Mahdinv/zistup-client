@@ -19,6 +19,7 @@ const SERVING_AMOUNTS = Array.from(
   { length: 200 },
   (_, index) => (index + 1) / 2,
 );
+const WHOLE_UNIT_IDS = new Set(["spoon", "teaspoon", "handful", "bite", "cube"]);
 
 const focus =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400";
@@ -170,7 +171,7 @@ export default function FoodDetails({
               <QuantityPicker
                 gramStepWheel={
                   state.quantity.unitId === "gram"
-                    ? { min: 1, max: 2000 }
+                    ? { min: food.type === "base_food" ? 0.5 : 1, max: 2000, initialStep: food.type === "base_food" ? 0.5 : 1 }
                     : undefined
                 }
                 appearance="dashboard"
@@ -186,7 +187,9 @@ export default function FoodDetails({
                         ...state.quantity,
                         unitId,
                         amount:
-                          unitId === "serving"
+                          food.type === "base_food"
+                            ? WHOLE_UNIT_IDS.has(unitId) ? 1 : 0.5
+                            : unitId === "serving"
                             ? 0.5
                             : unitId === "gram"
                               ? 1
@@ -198,7 +201,7 @@ export default function FoodDetails({
                 customUnit={{
                   label: generalUnit.label,
                   values:
-                    state.quantity.unitId === "serving"
+                    (food.type === "base_food" && !WHOLE_UNIT_IDS.has(state.quantity.unitId)) || state.quantity.unitId === "serving"
                       ? SERVING_AMOUNTS
                       : GENERAL_AMOUNTS,
                 }}
