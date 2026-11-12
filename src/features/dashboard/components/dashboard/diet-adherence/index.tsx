@@ -16,7 +16,6 @@ import {
 } from "../dashboard-skeleton";
 
 type DietAdherenceProps = {
-  isToday: boolean;
   data?: DietAdherenceData;
   isLoading: boolean;
   error: unknown;
@@ -33,7 +32,6 @@ const darkMessageColors: Record<AdherenceTone, string> = {
 };
 
 const DietAdherenceScore = ({
-  isToday,
   data,
   isLoading,
   error,
@@ -53,7 +51,7 @@ const DietAdherenceScore = ({
       >
         <div className="w-full min-h-5.5 flex flex-row items-center justify-between gap-2">
           <h2 className="font-yekan font-extrabold leading-[135%] compact:text-lg fold:text-xl laptop:text-2xl">
-            {isToday ? "امتیاز تعادل امروز" : "امتیاز تعادل روز انتخاب‌شده"}
+            امتیاز پایبندی به رژیم
           </h2>
           <button
             type="button"

@@ -83,7 +83,7 @@ const DetailedMonitoring = ({
       >
         <div className="flex-1 min-w-0 flex flex-col items-start compact:gap-1 fold:gap-2 laptop:gap-3">
           <h2 className="max-w-full truncate font-yekan font-extrabold leading-[135%] compact:text-lg fold:text-xl desktop:text-2xl">
-            پایش جزئی
+            پایش ارزش غذایی
           </h2>
           <div className="flex max-w-full flex-row items-center gap-2 overflow-hidden whitespace-nowrap desktop:gap-4">
             <div className="flex flex-row items-center gap-1 desktop:gap-2">

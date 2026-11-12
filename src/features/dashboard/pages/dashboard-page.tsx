@@ -36,8 +36,7 @@ const DashboardPage = () => {
       : null;
   const { setDashboardDate } = useQuickAddMealDrawer();
   // Meal registration uses the selected Dashboard date.
-  const registrationDate =
-    !planDates.isFuture ? selectedDate : null;
+  const registrationDate = !planDates.isFuture ? selectedDate : null;
   useLayoutEffect(() => {
     setDashboardDate(registrationDate);
     return () => setDashboardDate(null);
@@ -116,7 +115,6 @@ const DashboardDayContent = ({
   return (
     <>
       <DietAdherence
-        isToday={isToday}
         data={
           adherenceQuery.data?.success
             ? (adherenceQuery.data.data ?? undefined)

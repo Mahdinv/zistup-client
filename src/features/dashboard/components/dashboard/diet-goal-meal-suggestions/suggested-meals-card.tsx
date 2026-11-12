@@ -111,13 +111,12 @@ const SuggestedMealsCard = ({
       >
         <div className="w-full flex flex-row justify-between items-start">
           <label
-            className="bg-transparent text-yellow-500 rounded-lg py-0.5 px-3 font-peyda font-bold compact:text-sm fold:text-base laptop:text-lg"
+            className="text-black rounded-lg py-0.5 px-3 font-peyda font-bold compact:text-sm fold:text-base laptop:text-lg"
             style={{
-              border: `1px solid ${item.mealColor}`,
-              color: item.mealColor,
+              backgroundColor: item.mealColor,
             }}
           >
-            {item.mealTitle}
+            <span className="relative top-px">{item.mealTitle}</span>
           </label>
           <button
             type="button"
@@ -187,8 +186,11 @@ const SuggestedMealsCard = ({
                 <h2 className="font-yekan font-extrabold text-[20px] leading-[1.2]">
                   وعده پیشنهادی
                 </h2>
-                <span className="flex h-6 items-center rounded-full border border-yellow-500 px-3 text-yellow-600 dark:text-yellow-500 font-peyda text-[12px] font-bold leading-[1.4]">
-                  {item.mealTitle}
+                <span
+                  className="flex h-6 items-center rounded-full px-3 text-black font-peyda text-[12px] font-bold leading-[1.4]"
+                  style={{ backgroundColor: item.mealColor }}
+                >
+                  <span className="relative top-px">{item.mealTitle}</span>
                 </span>
               </div>
             }
