@@ -271,7 +271,8 @@ function WheelColumn({
           0,
           values.length - 1,
         );
-        const anchor = Math.floor(index / WHEEL_WINDOW_SIZE) * WHEEL_WINDOW_SIZE;
+        const anchor =
+          Math.floor(index / WHEEL_WINDOW_SIZE) * WHEEL_WINDOW_SIZE;
         setWindowState((previous) =>
           previous.anchor === anchor ? previous : { ...previous, anchor },
         );
@@ -358,7 +359,7 @@ function WheelColumn({
         selectIndex(next);
       }}
       style={{ height: 144, overflowAnchor: "none" }}
-      className={`cursor-grab active:cursor-grabbing overflow-y-scroll overflow-x-hidden overscroll-contain ${virtualized ? "" : "snap-y snap-mandatory"} touch-pan-y [scrollbar-width:none] [&::-webkit-scrollbar]:hidden select-none focus-visible:outline-2 focus-visible:outline-blue-400 ${textColumn ? "min-w-0 flex-1 font-peyda" : curved ? "w-12 shrink-0 font-rokh" : dashboard || values === LITER_VALUES ? "w-24 shrink-0 font-rokh" : "w-16 shrink-0 font-rokh"}`}
+      className={`cursor-grab active:cursor-grabbing overflow-y-scroll overflow-x-hidden overscroll-contain ${virtualized ? "" : "snap-y snap-mandatory"} touch-pan-y scrollbar-none [&::-webkit-scrollbar]:hidden select-none focus-visible:outline-2 focus-visible:outline-blue-400 ${textColumn ? "min-w-0 flex-1 font-peyda" : curved ? "w-12 shrink-0 font-rokh" : dashboard || values === LITER_VALUES ? "w-24 shrink-0 font-rokh" : "w-16 shrink-0 font-rokh"}`}
     >
       <div style={{ height: (144 - rowHeight) / 2 }} aria-hidden="true" />
       {virtualized && (
@@ -376,7 +377,9 @@ function WheelColumn({
               {format ? format(item) : item}
             </CurvedWheelLabel>
           ) : (
-            <span className={textColumn ? "whitespace-nowrap" : undefined}>{format ? format(item) : item}</span>
+            <span className={textColumn ? "whitespace-nowrap" : undefined}>
+              {format ? format(item) : item}
+            </span>
           )}
         </div>
       ))}
@@ -416,7 +419,11 @@ const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
     });
     // Reset the multiplier on unit changes without remounting the scroll columns.
     if (gramSelection.enabled !== hasGramWheel) {
-      setGramSelection({ enabled: hasGramWheel, step: gramStepWheel?.initialStep ?? 1, anchor: 0 });
+      setGramSelection({
+        enabled: hasGramWheel,
+        step: gramStepWheel?.initialStep ?? 1,
+        anchor: 0,
+      });
     }
     const { step: gramStep, anchor: gramAnchor } = gramSelection;
     const minGrams = gramStepWheel?.min;
@@ -547,7 +554,7 @@ const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
           onBlur={onBlur}
           className={`
           relative
-          ${appearance === "dashboard" ? "h-[132px]" : "h-36"}
+          ${appearance === "dashboard" ? "h-33" : "h-36"}
           w-full
           overflow-hidden
           rounded-2xl
@@ -563,14 +570,14 @@ const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
             h-12
             -translate-y-1/2
             rounded-xs
-            ${appearance === "dashboard" ? "h-[34px] bg-darker-blue-100 dark:bg-[#202228]" : "bg-[#202228]"}
+            ${appearance === "dashboard" ? "h-8.5 bg-darker-blue-100 dark:bg-[#202228]" : "bg-[#202228]"}
           `}
           />
 
           {/* Columns */}
           <div
             className={`
-            ${appearance === "dashboard" ? "absolute top-1/2 -translate-y-1/2 !h-36" : "relative"}
+            ${appearance === "dashboard" ? "absolute top-1/2 -translate-y-1/2 h-36!" : "relative"}
             z-10
             flex
             h-full
@@ -701,7 +708,7 @@ const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
             z-20
             h-12
             bg-linear-to-b
-            ${appearance === "dashboard" ? "!h-[18px] from-darker-blue-200 dark:from-darker-blue-500" : "from-[#090A0F]"}
+            ${appearance === "dashboard" ? "h-4.5! from-darker-blue-200 dark:from-darker-blue-500" : "from-[#090A0F]"}
             to-transparent
           `}
           />
