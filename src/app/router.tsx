@@ -1,4 +1,8 @@
-import { createBrowserRouter, redirect, type RouteObject } from "react-router-dom";
+import {
+  createBrowserRouter,
+  redirect,
+  type RouteObject,
+} from "react-router-dom";
 import { lazy } from "react";
 import AccountFlowLayout from "./layouts/account-flow/account-flow-layout";
 import type { AccountFlowRouteHandle } from "./layouts/account-flow/account-flow.types";
@@ -226,7 +230,7 @@ const routes: RouteObject[] = [
               header: {
                 title: "فروشگاه انتخاب آزاد",
                 subTitle:
-                  "فرض کن هیچ محدودیتی نداری؛ خوراکی‌های محبوبت رو برای یه هفته بدون نگرانی انتخاب کن",
+                  "فرض کن  محدودیتی نداری؛ هر غذایی که دوست داری برای سبدت انتخاب کن",
                 backTo: "/game-workflow",
               },
             } satisfies PlaygroundFlowRouteHandle,
@@ -303,20 +307,25 @@ const routes: RouteObject[] = [
   },
 ];
 
-const createAppRouter = () => createBrowserRouter(withErrorBoundaries([
-  {
-    loader: initializeSession,
-    hydrateFallbackElement: (
-      <div className={`mx-auto compact:w-full tablet:w-3/5 ${
-        /^\/(auth|onboarding)(\/|$)/.test(window.location.pathname)
-          ? "laptop:w-2/5 desktop:w-1/3"
-          : "desktop:w-2/5"
-      }`}>
-        <AppLoader fullScreen theme={readDashboardTheme()} />
-      </div>
-    ),
-    children: routes,
-  },
-]));
+const createAppRouter = () =>
+  createBrowserRouter(
+    withErrorBoundaries([
+      {
+        loader: initializeSession,
+        hydrateFallbackElement: (
+          <div
+            className={`mx-auto compact:w-full tablet:w-3/5 ${
+              /^\/(auth|onboarding)(\/|$)/.test(window.location.pathname)
+                ? "laptop:w-2/5 desktop:w-1/3"
+                : "desktop:w-2/5"
+            }`}
+          >
+            <AppLoader fullScreen theme={readDashboardTheme()} />
+          </div>
+        ),
+        children: routes,
+      },
+    ]),
+  );
 
 export default createAppRouter;
