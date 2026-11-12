@@ -38,5 +38,12 @@ export default function FoodDetailsResource({
         <div className="h-48 animate-pulse rounded-3xl bg-blue-200 dark:bg-darker-blue-400" />
       </div>
     );
-  return <FoodDetails state={state} food={resource.data} dispatch={dispatch} />;
+  return (
+    <FoodDetails
+      key={`${resource.data.type}:${resource.data.id}`}
+      state={state}
+      food={resource.data}
+      dispatch={dispatch}
+    />
+  );
 }

@@ -18,7 +18,21 @@ export const TEST_FOODS: Food[] = [
     },
     generalUnits: [{ id: "serving", label: "پرس" }],
     parts: [
-      { id: "bread", title: "ترکیب آزمایشی", kcal: 23, initialAmount: 80 },
+      {
+        id: "bread",
+        title: "ترکیب آزمایشی",
+        kcal: 23,
+        initialAmount: 80,
+        nutrition: {
+          kcal: 23,
+          protein: 1,
+          fiber: 1,
+          carbohydrates: 4,
+          greenhouseGas: null,
+          environmentalImpact: null,
+          water: null,
+        },
+      },
     ],
   },
 ];

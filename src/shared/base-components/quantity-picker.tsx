@@ -53,6 +53,7 @@ const GRAM_MULTIPLIERS = [0.5, 1, 2, 5, 10] as const;
 const ITEM_HEIGHT = 48;
 
 const SCROLL_END_DELAY = 100;
+const WHEEL_WINDOW_SIZE = 16;
 
 const createRange = (min: number, max: number, step = 1) =>
   Array.from(
@@ -176,6 +177,29 @@ function WheelColumn({
     values: readonly number[];
   } | null>(null);
   const isProgrammaticScrollRef = useRef(false);
+  // Gram wheels can contain 4,000 rows. Keep a buffered window in the DOM
+  // while spacers retain the full scroll range. Snap after scrolling ends:
+  // native CSS snapping would clamp flings to the currently mounted rows.
+  const virtualized = dashboard && !textColumn && !curved;
+  const selectedAnchor =
+    Math.floor(Math.max(0, values.indexOf(selected)) / WHEEL_WINDOW_SIZE) *
+    WHEEL_WINDOW_SIZE;
+  const [windowState, setWindowState] = useState({
+    anchor: selectedAnchor,
+    selected,
+    values,
+  });
+  if (
+    virtualized &&
+    (windowState.selected !== selected || windowState.values !== values)
+  ) {
+    setWindowState({ anchor: selectedAnchor, selected, values });
+  }
+  const windowAnchor = windowState.anchor;
+  const start = virtualized ? Math.max(0, windowAnchor - WHEEL_WINDOW_SIZE) : 0;
+  const end = virtualized
+    ? Math.min(values.length, windowAnchor + WHEEL_WINDOW_SIZE * 2)
+    : values.length;
 
   useLayoutEffect(() => {
     onSelectRef.current = onSelect;
@@ -226,6 +250,14 @@ function WheelColumn({
         0,
         values.length - 1,
       );
+      if (virtualized && Math.abs(element.scrollTop - index * rowHeight) > 1) {
+        targetIndexRef.current = index;
+        element.scrollTo({
+          top: index * rowHeight,
+          behavior: reduceMotion ? "instant" : "smooth",
+        });
+        return;
+      }
       const nextValue = values[index];
       if (nextValue === undefined || nextValue === selectedRef.current) return;
       lastUserSelectionRef.current = { value: nextValue, values };
@@ -233,6 +265,17 @@ function WheelColumn({
       onSelectRef.current(nextValue);
     };
     const handleScroll = () => {
+      if (virtualized) {
+        const index = clamp(
+          Math.floor(element.scrollTop / rowHeight),
+          0,
+          values.length - 1,
+        );
+        const anchor = Math.floor(index / WHEEL_WINDOW_SIZE) * WHEEL_WINDOW_SIZE;
+        setWindowState((previous) =>
+          previous.anchor === anchor ? previous : { ...previous, anchor },
+        );
+      }
       // Motion batches visual updates without re-rendering the picker.
       if (curved) scrollPosition.set(element.scrollTop / rowHeight);
       if (isProgrammaticScrollRef.current) return;
@@ -253,7 +296,15 @@ function WheelColumn({
       element.removeEventListener("wheel", interruptTarget);
       if (scrollEndTimerRef.current) clearTimeout(scrollEndTimerRef.current);
     };
-  }, [values, rowHeight, curved, scrollPosition, isPresent]);
+  }, [
+    values,
+    rowHeight,
+    curved,
+    scrollPosition,
+    isPresent,
+    virtualized,
+    reduceMotion,
+  ]);
 
   const selectIndex = (index: number) => {
     if (!isPresent || !values.length) return;
@@ -307,18 +358,21 @@ function WheelColumn({
         selectIndex(next);
       }}
       style={{ height: 144, overflowAnchor: "none" }}
-      className={`cursor-grab active:cursor-grabbing overflow-y-scroll overflow-x-hidden overscroll-contain snap-y snap-mandatory touch-pan-y [scrollbar-width:none] [&::-webkit-scrollbar]:hidden select-none focus-visible:outline-2 focus-visible:outline-blue-400 ${textColumn ? "min-w-0 flex-1 font-peyda" : curved ? "w-12 shrink-0 font-rokh" : dashboard ? "w-24 shrink-0 font-rokh" : "w-16 shrink-0 font-rokh"}`}
+      className={`cursor-grab active:cursor-grabbing overflow-y-scroll overflow-x-hidden overscroll-contain ${virtualized ? "" : "snap-y snap-mandatory"} touch-pan-y [scrollbar-width:none] [&::-webkit-scrollbar]:hidden select-none focus-visible:outline-2 focus-visible:outline-blue-400 ${textColumn ? "min-w-0 flex-1 font-peyda" : curved ? "w-12 shrink-0 font-rokh" : dashboard ? "w-24 shrink-0 font-rokh" : "w-16 shrink-0 font-rokh"}`}
     >
       <div style={{ height: (144 - rowHeight) / 2 }} aria-hidden="true" />
-      {values.map((item, index) => (
+      {virtualized && (
+        <div style={{ height: start * rowHeight }} aria-hidden="true" />
+      )}
+      {values.slice(start, end).map((item, index) => (
         <div
           key={item}
           style={{ height: rowHeight }}
-          onClick={() => selectIndex(index)}
+          onClick={() => selectIndex(start + index)}
           className={`flex snap-center items-center justify-center cursor-inherit px-1 leading-none ${curved ? "text-base font-medium text-white" : textColumn ? "text-base font-bold" : dashboard ? "pt-2 text-[32px] font-medium" : "pt-2 text-5xl font-medium"} ${curved ? "" : (!dimInactive && !textColumn) || item === selected ? (textColumn ? "text-blue-400" : "text-white") : textColumn ? "text-blue-800" : "text-white/40"}`}
         >
           {curved ? (
-            <CurvedWheelLabel index={index} position={scrollPosition}>
+            <CurvedWheelLabel index={start + index} position={scrollPosition}>
               {format ? format(item) : item}
             </CurvedWheelLabel>
           ) : (
@@ -326,6 +380,12 @@ function WheelColumn({
           )}
         </div>
       ))}
+      {virtualized && (
+        <div
+          style={{ height: (values.length - end) * rowHeight }}
+          aria-hidden="true"
+        />
+      )}
       <div style={{ height: (144 - rowHeight) / 2 }} aria-hidden="true" />
     </div>
   );

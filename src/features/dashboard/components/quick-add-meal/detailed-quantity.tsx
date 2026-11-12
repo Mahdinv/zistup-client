@@ -9,6 +9,8 @@ import QuantityPicker from "@/shared/base-components/quantity-picker";
 import { formatMealNumber } from "../../lib/quick-add-meal/format-meal-number";
 import type { FlowAction } from "../../lib/quick-add-meal/quick-add-meal.state";
 import type { FlowState, Food } from "../../api/types/quick-add-meal.types";
+import { useMemo } from "react";
+import { calculateIngredientNutrition } from "../../lib/quick-add-meal/meal-nutrition";
 const focus =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400";
 const ITEM_AMOUNTS = Array.from({ length: 201 }, (_, index) => index / 2);
@@ -31,7 +33,21 @@ export default function DetailedQuantity({
         amount: roundIngredientGrams(part.initialAmount ?? 5),
       })
     : undefined;
-  const detailedAmounts = getIngredientGramValues(part?.initialAmount ?? 5);
+  const initialAmount = part?.initialAmount ?? 5;
+  const detailedAmounts = useMemo(
+    () => getIngredientGramValues(initialAmount),
+    [initialAmount],
+  );
+  const calories = useMemo(
+    () =>
+      new Map(
+        food.parts.map((item) => [
+          item.id,
+          calculateIngredientNutrition(state.detailed?.[item.id], item).kcal,
+        ]),
+      ),
+    [food.parts, state.detailed],
+  );
   return (
     <>
       <div role="group" aria-label="اجزای غذا" className="mb-2 min-w-0">
@@ -57,7 +73,7 @@ export default function DetailedQuantity({
                 </span>
                 <span dir="ltr" className="flex shrink-0 items-baseline gap-1">
                   <span className="font-rokh text-2xl leading-none text-orange-200">
-                    {formatMealNumber(item.kcal)}
+                    {formatMealNumber(calories.get(item.id))}
                   </span>
                   <small className="font-peyda text-[8px] font-bold">
                     kcal

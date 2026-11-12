@@ -1,16 +1,29 @@
 import type {
   FoodInfoResponse,
   FoodIngredient,
+  FoodNutrition,
 } from "../types/food-info.types";
 import { formatServingUnit } from "../types/serving-unit.ts";
-import type { Food, FoodPart } from "../types/quick-add-meal.types";
+import type { Food, FoodPart, Nutrition } from "../types/quick-add-meal.types";
 import { DEFAULT_UNITS } from "../../constants/quick-add-meal.constants.ts";
 import { INGREDIENT_UNITS } from "../../lib/quick-add-meal/ingredient-grams.ts";
+function mapNutrition(nutrition: FoodNutrition): Nutrition {
+  return {
+    kcal: nutrition.calories_kcal ?? null,
+    protein: nutrition.protein_g ?? null,
+    carbohydrates: nutrition.carbohydrate_g ?? null,
+    fiber: nutrition.fiber_g ?? null,
+    greenhouseGas: nutrition.ghg_kg_co2eq ?? null,
+    environmentalImpact: nutrition.ef_single_score_mpt ?? null,
+    water: nutrition.water_l ?? null,
+  };
+}
 function mapIngredient(ingredient: FoodIngredient): FoodPart {
   return {
     id: String(ingredient.ingredient_id),
     title: ingredient.name,
     kcal: ingredient.nutrition.calories_kcal,
+    nutrition: mapNutrition(ingredient.nutrition),
     initialAmount: ingredient.grams,
   };
 }
@@ -31,15 +44,7 @@ export function mapFoodInfo({ data }: FoodInfoResponse): Food {
     id: String(data.food_id),
     type: data.type,
     title: data.name,
-    nutrition: {
-      kcal: data.nutrition.calories_kcal,
-      protein: data.nutrition.protein_g,
-      carbohydrates: data.nutrition.carbohydrate_g,
-      fiber: data.nutrition.fiber_g,
-      greenhouseGas: data.nutrition.ghg_kg_co2eq ?? null,
-      environmentalImpact: data.nutrition.ef_single_score_mpt ?? null,
-      water: data.nutrition.water_l ?? null,
-    },
+    nutrition: mapNutrition(data.nutrition),
     defaultUnitId: servingUnit?.id ?? "bite",
     servingWeightGrams: data.serving_weight_g,
     amountGrams: data.amount_g,

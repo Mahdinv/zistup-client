@@ -7,7 +7,7 @@ import type { AddMealPayload } from "../../api/types/add-meal.types";
 import useFoodInfoQuery from "../../hooks/use-food-info-query.hook";
 import FoodDetailsResource from "./food-details-resource";
 import useDebouncedValue from "@/shared/hooks/use-debounced-value.hook";
-import { useReducer, useRef } from "react";
+import { useMemo, useReducer, useRef } from "react";
 import BaseDrawer from "@/shared/base-components/base-drawer";
 import { useDashboardTheme } from "../../hooks/use-dashboard-theme.hook";
 import useMealSearchQuery from "../../hooks/use-meal-search-query.hook";
@@ -49,9 +49,8 @@ export default function QuickAddMeal({
     state.selectedFoodType,
     open && (state.step === "details" || state.nextStep === "details"),
   );
-  const resolvedState = {
-    ...state,
-    quantity: {
+  const quantity = useMemo(
+    () => ({
       ...state.quantity,
       amount:
         !state.quantity.unitId &&
@@ -60,8 +59,10 @@ export default function QuickAddMeal({
           : state.quantity.amount,
       unitId:
         state.quantity.unitId || foodInfoQuery.data?.defaultUnitId || "bite",
-    },
-  };
+    }),
+    [state.quantity, foodInfoQuery.data?.defaultUnitId],
+  );
+  const resolvedState = { ...state, quantity };
   const { theme } = useDashboardTheme();
   const meal = MEALS.find((item) => item.id === state.mealId);
   const title =

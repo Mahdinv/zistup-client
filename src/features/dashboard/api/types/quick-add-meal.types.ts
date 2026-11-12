@@ -16,6 +16,7 @@ export type FoodPart = {
   id: string;
   title: string;
   kcal: number | null;
+  nutrition: Nutrition;
   initialAmount?: number | null;
 };
 export type Food = {
