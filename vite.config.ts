@@ -114,6 +114,22 @@ export default defineConfig({
     __APP_VERSION__: JSON.stringify(APP_VERSION),
   },
 
+  optimizeDeps: {
+    // Pre-bundle icon packs before lazy routes request them to avoid stale dep URLs.
+    include: [
+      "react-icons/cg",
+      "react-icons/fa6",
+      "react-icons/fc",
+      "react-icons/hi",
+      "react-icons/hi2",
+      "react-icons/io5",
+      "react-icons/lia",
+      "react-icons/lu",
+      "react-icons/pi",
+      "react-icons/rx",
+    ],
+  },
+
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),

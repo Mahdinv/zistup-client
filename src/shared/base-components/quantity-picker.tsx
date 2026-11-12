@@ -67,7 +67,7 @@ const KG_GRAM_VALUES = createRange(0, 950, 50);
 
 const GRAM_VALUES = createRange(50, 2000, 50);
 
-const LITER_VALUES = createRange(1, 100);
+const LITER_VALUES = createRange(0.5, 100, 0.5);
 
 const NUMBER_VALUES = createRange(1, 100);
 
@@ -86,10 +86,10 @@ const UNIT_CONFIG = {
   },
 
   liter: {
-    defaultValue: 1,
-    min: 1,
+    defaultValue: 0.5,
+    min: 0.5,
     max: 100,
-    step: 1,
+    step: 0.5,
     values: LITER_VALUES,
     label: "لیتر",
   },
@@ -358,7 +358,7 @@ function WheelColumn({
         selectIndex(next);
       }}
       style={{ height: 144, overflowAnchor: "none" }}
-      className={`cursor-grab active:cursor-grabbing overflow-y-scroll overflow-x-hidden overscroll-contain ${virtualized ? "" : "snap-y snap-mandatory"} touch-pan-y [scrollbar-width:none] [&::-webkit-scrollbar]:hidden select-none focus-visible:outline-2 focus-visible:outline-blue-400 ${textColumn ? "min-w-0 flex-1 font-peyda" : curved ? "w-12 shrink-0 font-rokh" : dashboard ? "w-24 shrink-0 font-rokh" : "w-16 shrink-0 font-rokh"}`}
+      className={`cursor-grab active:cursor-grabbing overflow-y-scroll overflow-x-hidden overscroll-contain ${virtualized ? "" : "snap-y snap-mandatory"} touch-pan-y [scrollbar-width:none] [&::-webkit-scrollbar]:hidden select-none focus-visible:outline-2 focus-visible:outline-blue-400 ${textColumn ? "min-w-0 flex-1 font-peyda" : curved ? "w-12 shrink-0 font-rokh" : dashboard || values === LITER_VALUES ? "w-24 shrink-0 font-rokh" : "w-16 shrink-0 font-rokh"}`}
     >
       <div style={{ height: (144 - rowHeight) / 2 }} aria-hidden="true" />
       {virtualized && (

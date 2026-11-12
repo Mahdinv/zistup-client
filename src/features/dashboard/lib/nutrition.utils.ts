@@ -1,7 +1,7 @@
 import type { Nutrient } from "../api/types/nutrition.types";
 
 const numberFormat = new Intl.NumberFormat("fa-IR", {
-  maximumFractionDigits: 6,
+  maximumFractionDigits: 2,
 });
 
 export function getNutrientComparison(nutrient: Nutrient) {

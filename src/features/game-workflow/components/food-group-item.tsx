@@ -141,10 +141,11 @@ const FoodGroupItem = ({
                     foodGroup.title,
                     foodGroup.properties.unit === "گرم"
                       ? 50
-                      : foodGroup.properties.unit === "عدد" ||
-                          foodGroup.properties.unit === "لیتر"
-                        ? 1
-                        : 0,
+                      : foodGroup.properties.unit === "لیتر"
+                        ? 0.5
+                        : foodGroup.properties.unit === "عدد"
+                          ? 1
+                          : 0,
                     foodGroup.properties.unit,
                     foodGroup.properties.cost,
                   )
