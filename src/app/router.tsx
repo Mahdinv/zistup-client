@@ -102,7 +102,7 @@ const routes: RouteObject[] = [
         handle: {
           accountFlowHeader: {
             firstLineTitle: "ورود",
-            secondLineTitle: "زیـــــست‌آپ",
+            secondLineTitle: "زیـــــستاپ",
           },
         } satisfies AccountFlowRouteHandle,
       },
