@@ -35,10 +35,10 @@ import type { ParametersType } from "../api/food-group.types";
 import FoodGroupsCategoryAccordion from "../components/food-groups-category-accordion";
 
 const Dmax = {
-  price: 8.582970188,
-  health: 14.33988166,
-  environment: 22.87965138,
-  available: 20.64724176,
+  price: 22.0704947692937,
+  health: 101.736179535029,
+  environment: 58.8333892614793,
+  available: 53.092907388,
 };
 
 const clampPercent = (value: number) => Math.min(Math.max(value, 0), 100);
