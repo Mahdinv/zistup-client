@@ -64,7 +64,7 @@ export function ProfileName() {
         transition={{ duration: reducedMotion ? 0 : 0.2 }}
         className="block"
       >
-        {user ? user.name?.trim() || "کاربر زیست‌آپ" : "\u00a0"}
+        {user ? user.name?.trim() || "کاربر زیستاپ" : "\u00a0"}
       </motion.span>
     </span>
   );

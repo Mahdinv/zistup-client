@@ -11,7 +11,7 @@ const PwaInstallPrompt = () => {
 
   return (
     <aside
-      aria-label="نصب اپلیکیشن زیست‌آپ"
+      aria-label="نصب اپلیکیشن زیستاپ"
       className="
         fixed
         bottom-[calc(1rem+env(safe-area-inset-bottom))]
@@ -36,13 +36,13 @@ const PwaInstallPrompt = () => {
         <img src="/pwa/app-icon.svg" alt="" className="h-14 w-14 shrink-0" />
         <div className="min-w-0">
           <h2 className="font-yekan text-xl font-extrabold text-darker-blue-200">
-            نصب زیست‌آپ
+            نصب زیستاپ
           </h2>
 
           <p className="mt-1 font-peyda text-sm leading-6 text-gray-700">
             {isIosOnly
-              ? "برای نصب زیست‌آپ، گزینه Share مرورگر را بزن و Add to Home Screen را انتخاب کن."
-              : "زیست‌آپ را نصب کن و مثل یک اپلیکیشن مستقل روی دستگاهت بازش کن."}
+              ? "برای نصب زیستاپ، گزینه Share مرورگر را بزن و Add to Home Screen را انتخاب کن."
+              : "زیستاپ را نصب کن و مثل یک اپلیکیشن مستقل روی دستگاهت بازش کن."}
           </p>
         </div>
       </div>
@@ -51,7 +51,7 @@ const PwaInstallPrompt = () => {
         {!isIosOnly && (
           <Button
             type="button"
-            title="نصب زیست‌آپ"
+            title="نصب زیستاپ"
             onClick={install}
             classes="btn btn-primary-green py-3! compact:text-sm! mobile-lg:text-base! laptop:text-lg!"
           />

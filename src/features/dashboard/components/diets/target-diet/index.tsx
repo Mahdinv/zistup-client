@@ -30,7 +30,7 @@ const TargetDiet = ({
       <article className="flex w-full flex-col items-center justify-between gap-6 rounded-2xl bg-darker-green-100 p-4">
         <div className="flex w-full flex-row justify-between items-center">
           <h3 className="font-peyda compact:text-xl mobile:text-2xl laptop:text-3xl font-bold text-nowrap text-white">
-            رژیم هوشمند زیست‌آپ
+            رژیم هوشمند زیستاپ
           </h3>
           <div className="flex flex-row justify-start items-center gap-1 bg-green-950 text-white rounded-full px-3 py-1.5">
             <PiAlarmFill className="compact:text-base laptop:text-xl" />

@@ -71,7 +71,7 @@ const AppLoader = ({
       </div>
 
       <div className="text-center">
-        <p className="font-yekan text-base font-extrabold">زیست‌آپ</p>
+        <p className="font-yekan text-base font-extrabold">زیستاپ</p>
 
         <p className="mt-1 font-peyda text-xs opacity-60">{label}</p>
       </div>

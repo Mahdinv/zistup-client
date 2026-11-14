@@ -1,11 +1,11 @@
 <div align="center">
   <img src="./public/pwa/app-icon-192.png" alt="Zistup app icon" width="104" height="104" />
 
-  # Zistup | زیست‌آپ
+  # Zistup | زیستاپ
 
   **A smarter, more personal approach to nutrition and everyday well-being.**
 
-  **زیست‌آپ؛ همراه شما برای تغذیه سالم‌تر و انتخاب‌های غذایی بهتر**
+  **زیستاپ؛ همراه شما برای تغذیه سالم‌تر و انتخاب‌های غذایی بهتر**
 
   [**Launch the live application**](https://app.zistup.com/) · [**View the source code**](https://github.com/Mahdinv/zistup-client)
 

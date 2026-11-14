@@ -4,7 +4,7 @@ import type {
 } from "./account-flow.types";
 
 export const DEFAULT_ACCOUNT_FLOW_HEADER: AccountFlowHeaderConfig = {
-  firstLineTitle: "زیست‌آپ",
+  firstLineTitle: "زیستاپ",
 };
 
 export function hasAccountFlowHeaderSetting(

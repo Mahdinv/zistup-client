@@ -397,7 +397,7 @@ const PwaUpdatePrompt = () => {
 
   return (
     <aside
-      aria-label="بروزرسانی زیست‌آپ"
+      aria-label="بروزرسانی زیستاپ"
       className="fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] left-1/2 z-9999 w-[calc(100%-2rem)] max-w-105 -translate-x-1/2 rounded-2xl bg-white p-4 shadow-2xl"
     >
       <div className="flex items-center gap-3">
@@ -405,11 +405,11 @@ const PwaUpdatePrompt = () => {
 
         <div className="min-w-0">
           <h2 className="font-yekan text-xl font-extrabold text-darker-blue-200">
-            نسخه جدید زیست‌آپ
+            نسخه جدید زیستاپ
           </h2>
 
           <p className="mt-1 font-peyda text-sm leading-6 text-gray-700">
-            نسخه جدید آماده است. برای دریافت آخرین تغییرات، زیست‌آپ را بروزرسانی
+            نسخه جدید آماده است. برای دریافت آخرین تغییرات، زیستاپ را بروزرسانی
             کن.
           </p>
         </div>

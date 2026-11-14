@@ -50,7 +50,7 @@ export default defineConfig({
         name: "Zistup",
         short_name: "Zistup",
         description:
-          "زیست‌آپ؛ همراه شما برای تغذیه سالم‌تر و انتخاب‌های غذایی بهتر",
+          "زیستاپ؛ همراه شما برای تغذیه سالم‌تر و انتخاب‌های غذایی بهتر",
         lang: "fa",
         dir: "rtl",
         start_url: "/",
