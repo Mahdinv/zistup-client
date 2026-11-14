@@ -33,9 +33,11 @@ const PreferredFoodPage = () => {
   const [plateState, setPlateState] = useState<{
     plateNum: number;
     actionType: "next" | "back";
+    selectedIdsOnEntry: (number | undefined)[] | null;
   }>({
     plateNum: 1,
     actionType: "next",
+    selectedIdsOnEntry: null,
   });
 
   const actionType = state?.actionType ?? undefined;
@@ -115,6 +117,27 @@ const PreferredFoodPage = () => {
     control,
     name: "items",
   });
+
+  const sortedFoodGroups = useMemo(() => {
+    // Use initial data until navigation captures a selection snapshot for the step.
+    const selectedIds =
+      plateState.selectedIdsOnEntry ??
+      formValues.items.map((item) => item.foodGroupId);
+    const selectedIndices = new Map(selectedIds.map((id, index) => [id, index]));
+    const getRank = (id: number) => {
+      const selectedIndex = selectedIndices.get(id);
+      if (selectedIndex === undefined) {
+        return plateState.actionType === "next" ? 0 : 1;
+      }
+      if (Math.floor(selectedIndex / 4) === plateState.plateNum - 1) {
+        return plateState.actionType === "back" ? 0 : 1;
+      }
+      return 2;
+    };
+
+    // Equal ranks retain API order; form slots and cached groups stay untouched.
+    return foodGroups.toSorted((a, b) => getRank(a.id) - getRank(b.id));
+  }, [foodGroups, formValues.items, plateState]);
 
   const { mutate, isPending } = useMutation({
     mutationFn: addPreferredFood,
@@ -200,8 +223,9 @@ const PreferredFoodPage = () => {
     setPlateState((prev) => ({
       plateNum: prev.plateNum - 1,
       actionType: "back",
+      selectedIdsOnEntry: items.map((item) => item.foodGroupId),
     }));
-  }, []);
+  }, [items]);
 
   const onDeleteItemHandler = useCallback(
     (id: number) => {
@@ -251,12 +275,12 @@ const PreferredFoodPage = () => {
         />
         <div className="flex-1 min-h-0">
           <ScrollFade>
-            <ul className="w-full grid compact:grid-cols-2 mobile:grid-cols-3 fold:grid-cols-4 tablet:grid-cols-3 items-center gap-2">
+            <ul className="w-full grid compact:grid-cols-2 mobile:grid-cols-3 fold:grid-cols-4 tablet:grid-cols-3 items-center gap-2 [overflow-anchor:none]">
               {isLoading
                 ? Array.from({ length: 12 }).map((_, index) => (
                     <FoodGroupCardSkeleton key={index} />
                   ))
-                : (foodGroups ?? []).map((foodGroup, index) => (
+                : sortedFoodGroups.map((foodGroup, index) => (
                     <FoodGroupCard
                       key={foodGroup.id}
                       foodGroup={foodGroup}
@@ -305,6 +329,7 @@ const PreferredFoodPage = () => {
                 setPlateState((prev) => ({
                   plateNum: prev.plateNum + 1,
                   actionType: "next",
+                  selectedIdsOnEntry: items.map((item) => item.foodGroupId),
                 }));
               }}
             />

@@ -19,6 +19,7 @@ const FoodGroupCard = ({
 }: FoodGroupCardProps) => {
   return (
     <motion.li
+      layout="position"
       initial={{
         opacity: 0,
         y: 20,
@@ -33,10 +34,12 @@ const FoodGroupCard = ({
         duration: 0.6,
         delay,
         ease: "easeOut",
+        layout: { duration: 0.25, delay: 0, ease: "easeOut" },
       }}
       className={`
                     bg-darker-blue-300 
-                    ${disable ? "opacity-50" : !disable && selected ? "border-2 border-green-400 ring-1 ring-inset ring-green-400" : "border border-dark"} 
+                    border-2
+                    ${disable ? "opacity-50 border-transparent" : selected ? "border-green-400 ring-1 ring-inset ring-green-400" : "border-dark"}
                     rounded-2xl 
                     p-3 
                     flex 
