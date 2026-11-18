@@ -80,6 +80,10 @@ const OptimizedDietaryPage = lazy(
   () => import("@/features/game-workflow/pages/optimized-dietary-page"),
 );
 
+const WeeklyDietPlanningPage = lazy(
+  () => import("@/features/game-workflow/pages/weekly-diet-planning-page"),
+);
+
 /* Dashboard */
 const DietsPage = lazy(() => import("@/features/dashboard/pages/diet-page"));
 
@@ -264,6 +268,18 @@ const routes: RouteObject[] = [
             element: <OptimizedDietaryPage />,
             handle: {
               header: false,
+            } satisfies PlaygroundFlowRouteHandle,
+          },
+          {
+            path: "optimized-dietary/weekly-diet-planning",
+            element: <WeeklyDietPlanningPage />,
+            handle: {
+              header: {
+                title: "برنامه غذایی هفته من",
+                subTitle:
+                  "برنامه غذایی هفتگی تو آماده شد. غذاهای پیشنهادی رو ببین و اگر به آن‌ها علاقه نداشتی، با گزینه‌های دیگر جایگزین کن",
+                backTo: "/game-workflow/optimized-dietary",
+              },
             } satisfies PlaygroundFlowRouteHandle,
           },
         ],
