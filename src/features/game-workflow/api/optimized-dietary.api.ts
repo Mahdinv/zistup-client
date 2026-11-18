@@ -1,11 +1,11 @@
 import { httpClient } from "@/shared/api";
 import type { DietResponseDto } from "@/features/dashboard/api/dto/diet-response.dto";
-import type { OptimizedDietaryResponse } from "./optimized-dietary.types";
+import type { DietPlanResponse } from "./diet-plan.types";
 import { mapDietResponse } from "@/features/dashboard/api/mappers/diet-response.mapper";
 
 export async function getOptimizedDietary(
   signal?: AbortSignal,
-): Promise<OptimizedDietaryResponse> {
+): Promise<DietPlanResponse> {
   const response = await httpClient.get<{
     success: boolean;
     data?: DietResponseDto | null;
