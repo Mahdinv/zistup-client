@@ -68,6 +68,132 @@ const response: FoodInfoResponse = {
   },
 };
 const quantity = { unitId: "gram", amount: 150 };
+
+test("food 1291 preserves decimal grams, API totals, and proportional edits", () => {
+  // id, grams, kcal, protein, carbohydrates, fiber, EF, water, GHG
+  const rows = [
+    [2, 18.18, 0, 0, 0, 0, 0.0008, 1.7925, 0.0096],
+    [77, 54.54, 153.8028, 9.0536, 0, 0, 0.348, 281.1845, 2.1663],
+    [117, 18.18, 23.634, 0.509, 1.518, 0.0005, 0.0015, 9.9494, 0.0096],
+    [150, 27.27, 25.0884, 0.5727, 5.754, 0.5727, 0.0029, 35.6495, 0.0145],
+    [172, 0.92, 0, 0, 0, 0, 0.001, 40.5683, 0.0005],
+    [326, 0.38, 1.5158, 0.0005, 0.3727, 0.0026, 0.0001, 0.2428, 0.0002],
+    [332, 18.18, 5.8176, 0.2982, 1.3253, 0.3454, 0.0016, 6.4445, 0.0096],
+    [496, 27.27, 105.5349, 6.1085, 15.7621, 2.9452, 0.0036, 89.0776, 0.0145],
+    [556, 0.18, 0.5616, 0.0174, 0.1208, 0.0409, 0.0002, 0.2982, 0.0001],
+    [567, 0.36, 0.9036, 0.0374, 0.2304, 0.0911, 0.0004, 2.7401, 0.0002],
+    [927, 14.54, 5.8176, 0.16, 1.3584, 0.2472, 0.001, 3.955, 0.0077],
+  ];
+  const food = mapFoodInfo({
+    success: true,
+    data: {
+      ...response.data,
+      food_id: 1291,
+      serving_unit: "serving",
+      serving_weight_g: 180,
+      amount_g: 180,
+      nutrition: {
+        calories_kcal: 322.6763,
+        protein_g: 16.7573,
+        carbohydrate_g: 26.4417,
+        fiber_g: 4.2456,
+        ef_single_score_mpt: 0.361,
+        water_l: 471.9023,
+        ghg_kg_co2eq: 2.2328,
+      },
+      ingredients: rows.map(
+        ([
+          ingredient_id,
+          grams,
+          calories_kcal,
+          protein_g,
+          carbohydrate_g,
+          fiber_g,
+          ef_single_score_mpt,
+          water_l,
+          ghg_kg_co2eq,
+        ]) => ({
+          ingredient_id,
+          name: String(ingredient_id),
+          grams,
+          nutrition: {
+            calories_kcal,
+            protein_g,
+            carbohydrate_g,
+            fiber_g,
+            ef_single_score_mpt,
+            water_l,
+            ghg_kg_co2eq,
+          },
+        }),
+      ),
+    },
+  });
+  let state = flowReducer(
+    {
+      ...initialFlow,
+      step: "details",
+      mealId: "breakfast",
+      selectedFoodId: 1291,
+      selectedFoodType: "recipe",
+      quantity: { unitId: "gram", amount: 180 },
+    },
+    { type: "detailed", food },
+  );
+  assert.deepEqual(
+    createSubmission(state, food)?.separatedItems,
+    rows.map(([ingredient_id, value]) => ({ ingredient_id, value })),
+  );
+  assert.deepEqual(
+    calculateMealNutrition(state.quantity, food, state.detailed),
+    {
+      kcal: 322.6763,
+      protein: 16.7573,
+      carbohydrates: 26.4417,
+      fiber: 4.2456,
+      environmentalImpact: 0.361,
+      water: 471.9023,
+      greenhouseGas: 2.2328,
+    },
+  );
+  state = flowReducer(state, {
+    type: "detail",
+    partId: "556",
+    quantity: { unitId: "gram", amount: 0.36 },
+  });
+  const totals = calculateMealNutrition(state.quantity, food, state.detailed);
+  const keys = [
+    "kcal",
+    "protein",
+    "carbohydrates",
+    "fiber",
+    "environmentalImpact",
+    "water",
+    "greenhouseGas",
+  ] as const;
+  keys.forEach((key, index) => {
+    const expected = rows.reduce(
+      (sum, row) => sum + row[index + 2] * (row[0] === 556 ? 2 : 1),
+      0,
+    );
+    assert.ok(Math.abs(totals[key]! - expected) < 1e-10, key);
+  });
+  assert.equal(
+    createSubmission(state, food)?.separatedItems.find(
+      (item) => item.ingredient_id === 556,
+    )?.value,
+    0.36,
+  );
+  state = flowReducer(state, {
+    type: "detail",
+    partId: "556",
+    quantity: { unitId: "gram", amount: 0.18 },
+  });
+  assert.deepEqual(
+    calculateMealNutrition(state.quantity, food, state.detailed),
+    food.nutrition,
+  );
+});
 const selection: DetailedSelection = {
   "1": { unitId: "spoon", amount: 1 },
   "2": { unitId: "gram", amount: 40 },
@@ -93,7 +219,7 @@ test("maps every raw ingredient metric and sums scaled contributions using origi
     environmentalImpact: 0.021,
     water: 1.575,
   });
-  assert.equal(calculateIngredientNutrition(undefined, food.parts[0]).kcal, 40);
+  assert.equal(calculateIngredientNutrition(undefined, food.parts[0]).kcal, 42);
   assertNutrition(calculateMealNutrition(quantity, food, selection), {
     kcal: 120,
     protein: 5.5,

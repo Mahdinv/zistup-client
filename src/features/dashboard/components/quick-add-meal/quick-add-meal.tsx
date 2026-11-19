@@ -22,20 +22,33 @@ import {
 } from "../../lib/quick-add-meal/quick-add-meal.state";
 import MealSelection from "./meal-selection";
 import FoodSearch from "./food-search";
+import type { FlowState } from "../../api/types/quick-add-meal.types";
 
 type Props = {
   open: boolean;
   onClose: () => void;
   onSubmit: (submission: AddMealPayload) => Promise<boolean>;
   isSubmitting: boolean;
+  initialDetails?: Pick<
+    FlowState,
+    "mealId" | "selectedFoodId" | "selectedFoodType" | "quantity"
+  >;
+  onClosed?: () => void;
 };
 export default function QuickAddMeal({
   open,
   onClose,
   onSubmit,
   isSubmitting,
+  initialDetails,
+  onClosed,
 }: Props) {
-  const [state, dispatch] = useReducer(flowReducer, initialFlow);
+  const [state, dispatch] = useReducer(
+    flowReducer,
+    initialDetails,
+    (details): FlowState =>
+      details ? { ...initialFlow, ...details, step: "details" } : initialFlow,
+  );
   const submitted = useRef(false);
   const searchTerm = normalizeFoodSearch(state.query);
   const debouncedSearch = useDebouncedValue(searchTerm);
@@ -49,6 +62,11 @@ export default function QuickAddMeal({
     state.selectedFoodType,
     open && (state.step === "details" || state.nextStep === "details"),
   );
+  // Initialize once from the same ingredient defaults as the normal detailed flow.
+  // A render-time adjustment prevents briefly showing the general quantity picker.
+  if (initialDetails && foodInfoQuery.data && !state.detailed && open) {
+    dispatch({ type: "detailed", food: foodInfoQuery.data });
+  }
   const quantity = useMemo(
     () => ({
       ...state.quantity,
@@ -99,8 +117,9 @@ export default function QuickAddMeal({
       onOpenChangeComplete={(isOpen) => {
         if (isOpen) return;
         if (!open) {
-          dispatch({ type: "reset" });
+          if (!initialDetails) dispatch({ type: "reset" });
           submitted.current = false;
+          onClosed?.();
         } else dispatch({ type: "transition-complete" });
       }}
       title={title}
@@ -157,7 +176,9 @@ export default function QuickAddMeal({
           <div className="flex gap-2">
             <button
               type="button"
-              onClick={() => dispatch({ type: "back" })}
+              onClick={() =>
+                initialDetails ? close() : dispatch({ type: "back" })
+              }
               disabled={!!state.nextStep || isSubmitting}
               className={`cursor-pointer flex h-10.5 items-center justify-center gap-0.5 rounded-2xl border border-blue-500 bg-blue-300 px-2 font-bold text-xl leading-[1.45] shadow-[0_4px_4px_0_#0000000a] dark:shadow-none text-blue-700 dark:border-transparent dark:bg-darker-blue-400 focus-visible:outline-2 focus-visible:outline-blue-400 ${state.step === "details" ? "w-1/3" : "w-full"}`}
             >

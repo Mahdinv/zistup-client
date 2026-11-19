@@ -1,3 +1,6 @@
+import DetailedLoggingButton from "../../quick-add-meal/detailed-logging-button";
+import QuickAddMeal from "../../quick-add-meal/quick-add-meal";
+import type { FlowState } from "../../../api/types/quick-add-meal.types";
 import type { DietFood, DietMeal } from "../../../api/types/diet-day.types";
 import {
   MealType,
@@ -9,7 +12,7 @@ import { DirectionProvider } from "@base-ui/react/direction-provider";
 import { Tabs } from "@base-ui/react/tabs";
 import BaseDrawer from "@/shared/base-components/base-drawer";
 import Button from "@/shared/base-components/button";
-import { memo, useState } from "react";
+import { memo, useRef, useState } from "react";
 import { LuArrowUpLeft } from "react-icons/lu";
 import { PiFireSimpleFill } from "react-icons/pi";
 
@@ -44,13 +47,22 @@ const SuggestedMealsCard = ({
 }: SuggestedMealsCardProps) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<MealPlanTab>(initialTab);
+  const [detailedSession, setDetailedSession] = useState<{
+    details: Pick<
+      FlowState,
+      "mealId" | "selectedFoodId" | "selectedFoodType" | "quantity"
+    >;
+    date: string;
+  } | null>(null);
+  const [detailedOpen, setDetailedOpen] = useState(false);
+  const detailedSubmitted = useRef(false);
   const { submitMeal, isPending, submissionInFlight } = useAddMealMutation();
   const foods = {
     primary: item.meal.main,
     "alternative-1": item.meal.alternatives[0],
     "alternative-2": item.meal.alternatives[1],
   };
-  const submit = async () => {
+  const getSelectedMeal = () => {
     if (registrationDisabled || submissionInFlight.current) return;
     const food = foods[activeTab];
     if (!food) {
@@ -80,11 +92,32 @@ const SuggestedMealsCard = ({
       toast.error("وزن غذا به گرم در برنامه غذایی موجود یا معتبر نیست (value)");
       return;
     }
+    return { food, meal };
+  };
+  const openDetailed = () => {
+    const selection = getSelectedMeal();
+    if (!selection) return;
+    detailedSubmitted.current = false;
+    setDetailedSession({
+      date,
+      details: {
+        mealId: selection.meal,
+        selectedFoodId: selection.food.foodId,
+        selectedFoodType: selection.food.type,
+        quantity: { amount: selection.food.quantity.grams, unitId: "gram" },
+      },
+    });
+    setDrawerOpen(false);
+  };
+  const submit = async () => {
+    const selection = getSelectedMeal();
+    if (!selection) return;
+    const { food, meal } = selection;
     if (
       await submitMeal({
         date,
         type: food.type,
-        id: foodId,
+        id: food.foodId,
         meal,
         value: food.quantity.grams,
       } satisfies AddMealRequest)
@@ -177,6 +210,9 @@ const SuggestedMealsCard = ({
           <BaseDrawer
             className="bg-[#c3e6f3] text-darker-green-200 dark:text-gray-200 [--scroll-fade-color:#c3e6f3] **:data-[slot=base-drawer-footer]:px-3 **:data-[slot=base-drawer-footer]:pt-4 **:data-[slot=base-drawer-footer]:pb-[max(18px,env(safe-area-inset-bottom))] **:data-[slot=drawer-swipe-handle]:h-4.5 **:data-[slot=drawer-swipe-handle]:after:w-14.25 **:data-[slot=drawer-swipe-handle]:after:h-1.25 [&>[data-slot=drawer-content]>header]:px-4 [&>[data-slot=drawer-content]>header]:pb-0 [&>[data-slot=drawer-content]>header>div:first-child]:h-8 **:data-[slot=drawer-close]:size-6 [&_[data-slot=drawer-close]>svg]:size-6 **:data-[slot=base-drawer-body]:p-4 [&>[data-slot=drawer-content]>header>div:last-child]:mt-4"
             open={drawerOpen}
+            onOpenChangeComplete={(open) => {
+              if (!open && detailedSession) setDetailedOpen(true);
+            }}
             onOpenChange={(open) => {
               if (!submissionInFlight.current) setDrawerOpen(open);
             }}
@@ -331,6 +367,7 @@ const SuggestedMealsCard = ({
                             </li>
                           ))}
                         </ul>
+                        <DetailedLoggingButton onClick={openDetailed} />
                       </section>
                       {food.companions.length > 0 && (
                         <section className="rounded-2xl min-h-17.25 border border-blue-500 dark:border-green-900 bg-blue-200 dark:bg-darker-blue-400 p-3 shadow-[0_4px_4px_#0000000a] dark:shadow-none">
@@ -366,6 +403,27 @@ const SuggestedMealsCard = ({
           </BaseDrawer>
         </Tabs.Root>
       </DirectionProvider>
+      {detailedSession && (
+        <QuickAddMeal
+          open={detailedOpen}
+          initialDetails={detailedSession.details}
+          isSubmitting={isPending}
+          onClose={() => setDetailedOpen(false)}
+          onClosed={() => {
+            setDetailedSession(null);
+            if (!detailedSubmitted.current) setDrawerOpen(true);
+          }}
+          onSubmit={async (submission) => {
+            if (registrationDisabled || submissionInFlight.current) return false;
+            const success = await submitMeal({
+              ...submission,
+              date: detailedSession.date,
+            });
+            detailedSubmitted.current = success;
+            return success;
+          }}
+        />
+      )}
     </>
   );
 };

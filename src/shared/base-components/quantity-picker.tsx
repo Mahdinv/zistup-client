@@ -441,9 +441,19 @@ const QuantityPicker = forwardRef<HTMLDivElement, QuantityPickerProps>(
       if (values[0] !== min / 2) values.unshift(min / 2);
       return values;
     }, [minGrams, maxGrams, gramStep, gramAnchor]);
+    // Keep exact controlled values selectable even between the wheel's steps.
+    // Mounting or changing the step must never normalize an API quantity.
+    const exactSteppedValues = useMemo(() => {
+      if (value == null || !Number.isFinite(value) || steppedValues.includes(value))
+        return steppedValues;
+      // Fractional anchors can introduce floating-point noise after step changes.
+      const tolerance = Number.EPSILON * Math.max(1, Math.abs(value)) * 8;
+      return [...steppedValues.filter((item) => Math.abs(item - value) > tolerance), value]
+        .sort((a, b) => a - b);
+    }, [steppedValues, value]);
     const customUnit =
       suppliedCustomUnit && gramStepWheel
-        ? { ...suppliedCustomUnit, values: steppedValues }
+        ? { ...suppliedCustomUnit, values: exactSteppedValues }
         : suppliedCustomUnit;
     const unitIndexes = useMemo(
       () =>

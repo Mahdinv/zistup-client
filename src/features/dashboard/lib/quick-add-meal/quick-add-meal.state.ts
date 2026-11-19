@@ -1,4 +1,3 @@
-import { roundIngredientGrams } from "./ingredient-grams.ts";
 import type {
   DetailedSelection,
   FlowState,
@@ -78,7 +77,7 @@ export function flowReducer(state: FlowState, action: FlowAction): FlowState {
         if (part.initialAmount != null)
           detailed[part.id] = {
             unitId: "gram",
-            amount: roundIngredientGrams(part.initialAmount),
+            amount: part.initialAmount,
           };
       });
       return {

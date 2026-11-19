@@ -6,10 +6,7 @@ import type {
   QuantitySelection,
 } from "../../api/types/quick-add-meal.types";
 import { quantityToGrams } from "./meal-submission.ts";
-import {
-  ingredientQuantityToGrams,
-  roundIngredientGrams,
-} from "./ingredient-grams.ts";
+import { ingredientQuantityToGrams } from "./ingredient-grams.ts";
 
 function scaleNutrition(
   nutrition: Nutrition,
@@ -46,7 +43,7 @@ export function calculateIngredientNutrition(
 ): Nutrition {
   const grams = selection
     ? ingredientQuantityToGrams(selection)
-    : roundIngredientGrams(part.initialAmount ?? 5);
+    : (part.initialAmount ?? null);
   // Always scale the original API contribution, never a previously scaled value.
   return scaleNutrition(part.nutrition, grams, part.initialAmount);
 }
@@ -63,6 +60,25 @@ export function calculateMealNutrition(
       food.amountGrams,
     );
   }
+  // The API total is authoritative before edits (ingredient contributions may
+  // carry different decimal precision). Keep the original grams untouched.
+  if (
+    food.parts.length > 0 &&
+    food.parts.every(
+      (part) =>
+        part.initialAmount != null &&
+        Number.isFinite(part.initialAmount) &&
+        part.initialAmount >= 0 &&
+        ingredientQuantityToGrams(
+          detailed[part.id] ?? {
+            unitId: "gram",
+            amount: part.initialAmount,
+          },
+        ) === part.initialAmount,
+    )
+  )
+    return { ...food.nutrition };
+
   const totals: Nutrition = {
     kcal: 0,
     protein: 0,

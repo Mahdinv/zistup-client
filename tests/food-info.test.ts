@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { mapFoodInfo } from "../src/features/dashboard/api/mappers/food-info.mapper.ts";
+import { createSubmission } from "../src/features/dashboard/lib/quick-add-meal/meal-submission.ts";
 import { getGeneralUnits } from "../src/features/dashboard/lib/quick-add-meal/quantity-units.ts";
 import { formatMealNumber } from "../src/features/dashboard/lib/quick-add-meal/format-meal-number.ts";
 import { calculateMealNutrition } from "../src/features/dashboard/lib/quick-add-meal/meal-nutrition.ts";
@@ -42,6 +43,45 @@ const response = {
     ingredients,
   },
 };
+
+test("suggested meal details retain total grams and submit edited API ingredients", () => {
+  for (const type of ["recipe", "base_food"] as const) {
+    const food = mapFoodInfo({ ...response, data: { ...response.data, type } });
+    let state = flowReducer(
+      {
+        ...initialFlow,
+        step: "details",
+        mealId: "snack",
+        selectedFoodId: 4,
+        selectedFoodType: type,
+        quantity: { amount: 625, unitId: "gram" },
+      },
+      { type: "detailed", food },
+    );
+    assert.equal(state.activePartId, "36");
+    assert.deepEqual(state.detailed?.["353"], { amount: 10.5, unitId: "gram" });
+    state = flowReducer(state, {
+      type: "detail",
+      partId: "36",
+      quantity: { amount: 0, unitId: "gram" },
+    });
+    const payload = createSubmission(state, food);
+    assert.deepEqual(payload, {
+      foodId: 4,
+      type,
+      meal: "snack",
+      value: 625,
+      separatedItems: [
+        { ingredient_id: 36, value: 0 },
+        { ingredient_id: 81, value: 70 },
+        { ingredient_id: 353, value: 10.5 },
+        { ingredient_id: 416, value: 7 },
+        { ingredient_id: 927, value: 17.5 },
+        { ingredient_id: 1181, value: 210 },
+      ],
+    });
+  }
+});
 test("server unit aliases select the static unit without duplicates", () => {
   for (const serving_unit of ["g", "gram", "گرم", "spoon", "قاشق"]) {
     const food = mapFoodInfo({
@@ -205,7 +245,7 @@ test("exact ingredient contract preserves IDs and raw nutrition/grams", () => {
   assert.equal(formatMealNumber(food.nutrition.fiber), "—");
   assert.equal(formatMealNumber(NaN), "—");
 });
-test("six ingredients initialize independently to nearest 5g and retain edits", () => {
+test("six ingredients initialize with exact API grams and retain edits", () => {
   const food = mapFoodInfo(response);
   const quantity = { amount: 6, unitId: "bowl" };
   let state = flowReducer(
@@ -214,7 +254,7 @@ test("six ingredients initialize independently to nearest 5g and retain edits", 
   );
   assert.deepEqual(
     food.parts.map((p) => state.detailed?.[p.id]?.amount),
-    [35, 70, 10, 5, 20, 210],
+    [35, 70, 10.5, 7, 17.5, 210],
   );
   state = flowReducer(state, {
     type: "detail",

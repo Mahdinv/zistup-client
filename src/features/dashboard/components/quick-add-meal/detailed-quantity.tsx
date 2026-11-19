@@ -1,7 +1,6 @@
 import Slider from "@/shared/base-components/slider";
 import {
   getIngredientGramValues,
-  roundIngredientGrams,
   INGREDIENT_UNITS,
   ingredientQuantityToGrams,
 } from "../../lib/quick-add-meal/ingredient-grams";
@@ -30,10 +29,10 @@ export default function DetailedQuantity({
   const detail = part
     ? (state.detailed?.[part.id] ?? {
         unitId: "gram",
-        amount: roundIngredientGrams(part.initialAmount ?? 5),
+        amount: part.initialAmount ?? 0,
       })
     : undefined;
-  const initialAmount = part?.initialAmount ?? 5;
+  const initialAmount = part?.initialAmount ?? 0;
   const detailedAmounts = useMemo(
     () => getIngredientGramValues(initialAmount),
     [initialAmount],
@@ -84,7 +83,8 @@ export default function DetailedQuantity({
                 <span className="font-rokh text-base leading-none">
                   {formatMealNumber(
                     (state.detailed?.[item.id] ? ingredientQuantityToGrams(state.detailed[item.id]) : null) ??
-                      roundIngredientGrams(item.initialAmount ?? 5),
+                      item.initialAmount,
+                    2,
                   )}
                 </span>
                 <span className="text-[9px] leading-none">گرم</span>
