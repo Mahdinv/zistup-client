@@ -17,6 +17,8 @@ import NotFoundPage from "./layouts/not-found-page";
 // Keep Dashboard and Profile ready before navigation, including after generation.
 import DashboardPage from "@/features/dashboard/pages/dashboard-page";
 import ProfilePage from "@/features/dashboard/pages/profile-page";
+// Render the weekly plan shell immediately; its query loads data inside the page.
+import WeeklyDietPlanningPage from "@/features/game-workflow/pages/weekly-diet-planning-page";
 import { withErrorBoundaries } from "./route-error-boundary";
 import { initializeSession } from "./initialize-session";
 import AppLoader from "@/shared/base-components/app-loader";
@@ -78,10 +80,6 @@ const SocialAlignmentPage = lazy(
 
 const OptimizedDietaryPage = lazy(
   () => import("@/features/game-workflow/pages/optimized-dietary-page"),
-);
-
-const WeeklyDietPlanningPage = lazy(
-  () => import("@/features/game-workflow/pages/weekly-diet-planning-page"),
 );
 
 /* Dashboard */
