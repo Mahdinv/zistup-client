@@ -11,10 +11,12 @@ export default function WeeklyMealCard({
   day,
   label,
   meal,
+  onReplace,
 }: {
   day: string;
   label: string;
   meal?: DietMealDto;
+  onReplace: () => void;
 }) {
   const food = meal?.main;
   const companions = (meal?.companions ?? []).filter(
@@ -154,6 +156,7 @@ export default function WeeklyMealCard({
         <Button
           classes="btn btn-primary-green min-w-0 flex-1 rounded-[0.714em]! compact:text-[13px]! mobile:text-[14px]! fold:text-[16px]! laptop:text-[18px]! [&>div]:gap-[0.857em]!"
           title="جایگزین کردن"
+          onClick={onReplace}
           icon={
             <PiArrowsClockwise aria-hidden="true" className="size-[1.714em]" />
           }

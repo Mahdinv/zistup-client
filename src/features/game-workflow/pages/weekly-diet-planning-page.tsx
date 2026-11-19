@@ -4,6 +4,8 @@ import PlaygroundFlowContainer from "@/app/layouts/playground-flow/playground-fl
 import ScrollFade from "@/shared/base-components/scroll-fade";
 import useWeeklyDietPlanQuery from "../hooks/use-weekly-diet-plan-query.hook";
 import WeeklyMealCard from "../components/weekly-meal-card";
+import MealReplacement from "../components/meal-replacement";
+import type { MealType } from "../api/meal-alternatives.api";
 
 const formatValue = (value?: number) =>
   typeof value === "number" && Number.isFinite(value)
@@ -11,7 +13,8 @@ const formatValue = (value?: number) =>
     : "—";
 
 const WeeklyDietPlanningPage = () => {
-  const [activeMeal, setActiveMeal] = useState("breakfast");
+  const [activeMeal, setActiveMeal] = useState<MealType>("breakfast");
+  const [replacementOpen, setReplacementOpen] = useState(false);
   const { data, isPending, isError, isFetching, refetch } =
     useWeeklyDietPlanQuery();
   const summary = data?.success ? data.data.summary : undefined;
@@ -110,11 +113,11 @@ const WeeklyDietPlanningPage = () => {
           aria-label="وعده غذایی"
           className="mt-[1em] flex w-full shrink-0 items-center gap-[1.714em] rounded-lg border border-[#292F37] bg-[#1C2026] px-1.5 py-1.25 font-peyda text-[13px] mobile:text-[14px] fold:text-[16px] laptop:text-[18px]"
         >
-          {[
+          {([
             { key: "breakfast", label: "صبحانه" },
             { key: "lunch", label: "ناهار" },
             { key: "dinner", label: "شام" },
-          ].map(({ key, label }) => (
+          ] as const).map(({ key, label }) => (
             <button
               key={key}
               type="button"
@@ -164,6 +167,7 @@ const WeeklyDietPlanningPage = () => {
               <WeeklyMealCard
                 key={day}
                 day={day}
+                onReplace={() => setReplacementOpen(true)}
                 label={
                   activeMeal === "breakfast"
                     ? "صبحانه"
@@ -183,6 +187,11 @@ const WeeklyDietPlanningPage = () => {
           </div>
         </ScrollFade>
       </div>
+      <MealReplacement
+        open={replacementOpen}
+        onOpenChange={setReplacementOpen}
+        meal={activeMeal}
+      />
     </PlaygroundFlowContainer>
   );
 };
