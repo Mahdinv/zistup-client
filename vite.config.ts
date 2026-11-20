@@ -28,6 +28,8 @@ const appVersionPlugin = (version: string): Plugin => ({
 });
 
 export default defineConfig({
+  // Keep app optimization separate from middleware/SSR test servers.
+  cacheDir: "node_modules/.vite-client",
   plugins: [
     react(),
     tailwindcss(),

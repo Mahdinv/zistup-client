@@ -2,7 +2,7 @@ import { FaCaretDown } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
 import { AnimatePresence, motion } from "framer-motion";
 import TextBox from "@/shared/base-components/text-box";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Button from "@/shared/base-components/button";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,7 +11,7 @@ import { useMutation } from "@tanstack/react-query";
 import { normalizeApiError } from "../../../shared/api";
 import { toast } from "sonner";
 import type { AuthIdentifierDTO } from "../api/auth.types";
-import { sendCode } from "../api/auth.api";
+import { getGoogleLoginUrl, sendCode } from "../api/auth.api";
 import { mapLoginFormToIdentifierDto } from "../api/auth.mapper";
 
 const LoginForm = ({
@@ -20,6 +20,29 @@ const LoginForm = ({
   onSuccess: (identifier: AuthIdentifierDTO, refCode?: string) => void;
 }) => {
   const [inviteCode, setInviteCode] = useState(false);
+  const loginInFlight = useRef(false);
+  const [googlePending, setGooglePending] = useState(false);
+  useEffect(() => {
+    const reset = () => {
+      loginInFlight.current = false;
+      setGooglePending(false);
+    };
+    window.addEventListener("pageshow", reset);
+    return () => window.removeEventListener("pageshow", reset);
+  }, []);
+
+  const googleLogin = async () => {
+    if (loginInFlight.current) return;
+    loginInFlight.current = true;
+    setGooglePending(true);
+    try {
+      window.location.assign(await getGoogleLoginUrl());
+    } catch {
+      loginInFlight.current = false;
+      setGooglePending(false);
+      toast.error("ورود با گوگل انجام نشد. لطفاً دوباره تلاش کنید.");
+    }
+  };
   const {
     register,
     handleSubmit,
@@ -42,12 +65,15 @@ const LoginForm = ({
       onSuccess(variables.identifier, variables.refCode);
     },
     onError: (error) => {
+      loginInFlight.current = false;
       const apiError = normalizeApiError(error);
       toast.error(apiError.message);
     },
   });
 
   const onLoginFormHandler: SubmitHandler<Login> = (data) => {
+    if (loginInFlight.current) return;
+    loginInFlight.current = true;
     const identifier = mapLoginFormToIdentifierDto(data.identifier);
     mutate({
       identifier,
@@ -58,7 +84,7 @@ const LoginForm = ({
   return (
     <form
       className="flex w-full min-h-0 flex-1 flex-col items-start gap-4"
-      onSubmit={handleSubmit(onLoginFormHandler)}
+      onSubmit={(event) => void handleSubmit(onLoginFormHandler)(event)}
     >
       <TextBox
         label="شماره موبایل یا ایمیل"
@@ -130,13 +156,15 @@ const LoginForm = ({
           type="submit"
           classes="w-full btn btn-primary-green"
           title="دریافت کد"
-          disable={isPending}
+          disable={isPending || googlePending}
         />
 
         <Button
           type="button"
           classes="w-full btn btn-outline-green"
-          title="ورود با حساب گوگل"
+          title={googlePending ? "در حال اتصال به گوگل..." : "ورود با حساب گوگل"}
+          disable={isPending || googlePending}
+          onClick={() => void googleLogin()}
           icon={<FcGoogle />}
           iconClasses="text-4xl"
           itemsGap={10}

@@ -21,6 +21,7 @@ import ProfilePage from "@/features/dashboard/pages/profile-page";
 import WeeklyDietPlanningPage from "@/features/game-workflow/pages/weekly-diet-planning-page";
 import { withErrorBoundaries } from "./route-error-boundary";
 import { initializeSession } from "./initialize-session";
+import { googleCallback } from "@/features/auth/loaders/google-callback";
 import AppLoader from "@/shared/base-components/app-loader";
 import { readDashboardTheme } from "@/features/dashboard/context/dashboard-theme-context";
 
@@ -324,6 +325,11 @@ const routes: RouteObject[] = [
 const createAppRouter = () =>
   createBrowserRouter(
     withErrorBoundaries([
+      {
+        path: "/google/back",
+        loader: googleCallback,
+        hydrateFallbackElement: <AppLoader fullScreen />,
+      },
       {
         loader: initializeSession,
         hydrateFallbackElement: (

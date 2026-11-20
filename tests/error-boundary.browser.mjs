@@ -7,6 +7,7 @@ const { chromium } = require(
   process.env.PLAYWRIGHT_MODULE_PATH || "playwright",
 );
 const server = await createServer({
+  cacheDir: "node_modules/.vite-error-boundary-test",
   server: { host: "127.0.0.1", port: 5199 },
   plugins: [
     {

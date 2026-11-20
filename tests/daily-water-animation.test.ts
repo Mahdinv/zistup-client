@@ -8,7 +8,9 @@ import { createServer } from "vite";
 test("wave keyframes start at their initial positions inside the dashboard presence boundary", async () => {
   const server = await createServer({
     configFile: false,
-    server: { middlewareMode: true },
+    cacheDir: "node_modules/.vite-daily-water-test",
+    optimizeDeps: { noDiscovery: true, include: [] },
+    server: { middlewareMode: true, hmr: false, ws: false },
     appType: "custom",
   });
 

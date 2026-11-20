@@ -8,6 +8,7 @@ const { chromium } = require(
   process.env.PLAYWRIGHT_MODULE_PATH || "playwright",
 );
 const server = await createServer({
+  cacheDir: "node_modules/.vite-connection-error-test",
   server: { port: 5198, host: "127.0.0.1" },
   plugins: [
     {
