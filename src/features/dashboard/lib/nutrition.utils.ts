@@ -4,6 +4,31 @@ const numberFormat = new Intl.NumberFormat("fa-IR", {
   maximumFractionDigits: 2,
 });
 
+const nutrientDisplayUnits: Readonly<Partial<Record<string, "mg" | "µg">>> = {
+  vitamin_c: "mg",
+  calcium: "mg",
+  iron: "mg",
+  zinc: "mg",
+  potassium: "mg",
+  copper: "mg",
+  sodium: "mg",
+  phosphorus: "mg",
+  thiamin: "mg",
+  riboflavin: "mg",
+  niacin: "mg",
+  vitamin_b6: "mg",
+  choline: "mg",
+  magnesium: "mg",
+  manganese: "mg",
+  vitamin_e: "mg",
+  vitamin_a: "µg",
+  folate: "µg",
+  vitamin_b12: "µg",
+  selenium: "µg",
+  vitamin_d: "µg",
+  vitamin_k: "µg",
+};
+
 export function getNutrientComparison(nutrient: Nutrient) {
   const consumed = nutrient.status === "no_data" ? null : nutrient.consumed;
   const current =
@@ -19,13 +44,10 @@ export function getNutrientComparison(nutrient: Nutrient) {
   const total =
     Math.abs((current ?? 0) / scale) + Math.abs((target ?? 0) / scale) || 1;
   const plot = (value: number | null) => ((value ?? 0) / scale / total) * 100;
+  // Convert only display amounts; raw values still drive chart normalization.
   const unit =
     nutrient.unit === "g"
-      ? magnitude <= 1e-5
-        ? "µg"
-        : magnitude >= 1e-4 && magnitude <= 1e-2
-          ? "mg"
-          : "g"
+      ? (nutrientDisplayUnits[nutrient.key] ?? nutrient.unit)
       : nutrient.unit;
 
   return {
