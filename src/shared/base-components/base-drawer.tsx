@@ -90,7 +90,7 @@ const BaseDrawer = ({
             {description}
           </DrawerDescription>
         )}
-        <header className="shrink-0 border-b border-blue-500/60 dark:border-darker-blue-100 px-4 fold:px-6 pb-3">
+        <header className="shrink-0 border-b border-blue-500/60 dark:border-darker-blue-100 px-4 fold:px-6 pt-2 pb-3">
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0 flex-1">
               {header !== undefined ? (
