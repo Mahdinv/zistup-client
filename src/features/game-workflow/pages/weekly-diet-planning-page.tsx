@@ -15,6 +15,7 @@ const formatValue = (value?: number) =>
 const WeeklyDietPlanningPage = () => {
   const [activeMeal, setActiveMeal] = useState<MealType>("breakfast");
   const [replacementOpen, setReplacementOpen] = useState(false);
+  const [replacementDay, setReplacementDay] = useState(0);
   const { data, isPending, isError, isFetching, refetch } =
     useWeeklyDietPlanQuery();
   const summary = data?.success ? data.data.summary : undefined;
@@ -113,11 +114,13 @@ const WeeklyDietPlanningPage = () => {
           aria-label="وعده غذایی"
           className="mt-[1em] flex w-full shrink-0 items-center gap-[1.714em] rounded-lg border border-[#292F37] bg-[#1C2026] px-1.5 py-1.25 font-peyda text-[13px] mobile:text-[14px] fold:text-[16px] laptop:text-[18px]"
         >
-          {([
-            { key: "breakfast", label: "صبحانه" },
-            { key: "lunch", label: "ناهار" },
-            { key: "dinner", label: "شام" },
-          ] as const).map(({ key, label }) => (
+          {(
+            [
+              { key: "breakfast", label: "صبحانه" },
+              { key: "lunch", label: "ناهار" },
+              { key: "dinner", label: "شام" },
+            ] as const
+          ).map(({ key, label }) => (
             <button
               key={key}
               type="button"
@@ -167,7 +170,10 @@ const WeeklyDietPlanningPage = () => {
               <WeeklyMealCard
                 key={day}
                 day={day}
-                onReplace={() => setReplacementOpen(true)}
+                onReplace={() => {
+                  setReplacementDay(index + 1);
+                  setReplacementOpen(true);
+                }}
                 label={
                   activeMeal === "breakfast"
                     ? "صبحانه"
@@ -191,6 +197,24 @@ const WeeklyDietPlanningPage = () => {
         open={replacementOpen}
         onOpenChange={setReplacementOpen}
         meal={activeMeal}
+        day={
+          [
+            "شنبه",
+            "یکشنبه",
+            "دوشنبه",
+            "سه‌شنبه",
+            "چهارشنبه",
+            "پنجشنبه",
+            "جمعه",
+          ][replacementDay - 1] ?? ""
+        }
+        currentFood={
+          data?.success
+            ? data.data.days
+                ?.find((day) => day.day === replacementDay)
+                ?.meals?.find((meal) => meal.key === activeMeal)?.main
+            : undefined
+        }
       />
     </PlaygroundFlowContainer>
   );

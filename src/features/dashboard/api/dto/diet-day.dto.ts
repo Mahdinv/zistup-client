@@ -16,7 +16,12 @@ export type DietFoodDto = {
   source: string;
   category: string;
   image_url: string | null;
-  quantity: { grams: number; servings: number; unit: string };
+  quantity: {
+    grams: number;
+    servings: number;
+    unit: string;
+    display_label_fa?: string | null;
+  };
   ingredients?: (DietIngredient | string)[] | null;
   nutrition: DietNutritionDto;
   companions?: DietFoodDto[];

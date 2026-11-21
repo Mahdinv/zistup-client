@@ -1,6 +1,7 @@
 import { PiArrowsClockwise, PiBowlSteam, PiFadersFill } from "react-icons/pi";
 import type { DietMealDto } from "@/features/dashboard/api/dto/diet-day.dto";
 import Button from "@/shared/base-components/button";
+import ImageWithSkeleton from "@/shared/base-components/image-with-skeleton";
 
 const number = (value?: number) =>
   typeof value === "number" && Number.isFinite(value)
@@ -49,10 +50,11 @@ export default function WeeklyMealCard({
       <div className="flex items-center gap-[0.857em]">
         <div className="flex size-[3.429em] shrink-0 items-center justify-center overflow-hidden rounded-[0.714em] bg-[#DDF1F9] text-black">
           {food?.image_url ? (
-            <img
+            <ImageWithSkeleton
+              key={food.image_url}
               src={food.image_url}
               alt={food.title ?? ""}
-              loading="lazy"
+              wrapperClassName="size-full"
               className="size-full object-cover"
             />
           ) : (
