@@ -9,7 +9,7 @@ export async function getOptimizedDietary(
   const response = await httpClient.get<{
     success: boolean;
     data?: DietResponseDto | null;
-  }>("diet-plans/latest", { signal, allowUnsuccessfulResponse: true });
+  }>("diet/v2/plan", { signal, allowUnsuccessfulResponse: true });
 
   const { success, data } = response.data;
   // A pending or incomplete payload must not reach the plan mapper or finish loading.

@@ -363,7 +363,7 @@ const SuggestedMealsCard = ({
                               key={index}
                               className="rounded-full border border-gray-100 text-blue-800 dark:border-darker-blue-100 px-1.5 py-0.5 text-[14px] font-medium leading-[1.4] dark:text-gray-50"
                             >
-                              {ingredient}
+                              {ingredient.name}
                             </li>
                           ))}
                         </ul>

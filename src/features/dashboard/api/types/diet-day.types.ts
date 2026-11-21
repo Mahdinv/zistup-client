@@ -5,6 +5,15 @@ export type DietNutrition = {
   fiberG: number;
 };
 
+export type DietIngredient = {
+  name: string;
+  id?: number;
+  ingredient_id?: number;
+  type?: "recipe" | "base_food";
+  source_id?: string;
+  grams?: number | null;
+};
+
 export type DietFood = {
   id: string;
   foodId: number;
@@ -13,7 +22,7 @@ export type DietFood = {
   category: string;
   imageUrl: string | null;
   quantity: { grams: number; servings: number; unit: string };
-  ingredients: string[];
+  ingredients: DietIngredient[];
   nutrition: DietNutrition;
   companions: DietFood[];
   type: "recipe" | "base_food";
@@ -28,7 +37,7 @@ export type DietMeal = {
   companions: DietFood[];
   nutrition: DietNutrition;
   totalGrams: number;
-  alternatives: DietFood[];
+  alternatives: (DietFood | null)[];
   replacement: {
     target: string;
     keepCompanions: boolean;

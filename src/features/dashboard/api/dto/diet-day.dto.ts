@@ -1,4 +1,4 @@
-import type { DietFood } from "../types/diet-day.types";
+import type { DietFood, DietIngredient } from "../types/diet-day.types";
 
 export type DietNutritionDto = {
   calories_kcal: number;
@@ -10,13 +10,14 @@ export type DietNutritionDto = {
 export type DietFoodDto = {
   type: DietFood["type"];
   id: string;
-  foodId: number;
+  foodId?: number;
+  food_id?: number;
   title: string;
   source: string;
   category: string;
   image_url: string | null;
   quantity: { grams: number; servings: number; unit: string };
-  ingredients: string[];
+  ingredients?: (DietIngredient | string)[] | null;
   nutrition: DietNutritionDto;
   companions?: DietFoodDto[];
 };
@@ -30,7 +31,7 @@ export type DietMealDto = {
   companions: DietFoodDto[];
   nutrition: DietNutritionDto;
   total_grams: number;
-  alternatives: DietFoodDto[];
+  alternatives: (DietFoodDto | null)[];
   replacement?: {
     target: string;
     keep_companions: boolean;
