@@ -25,6 +25,9 @@ import { googleCallback } from "@/features/auth/loaders/google-callback";
 import AppLoader from "@/shared/base-components/app-loader";
 import { readDashboardTheme } from "@/features/dashboard/context/dashboard-theme-context";
 
+import ClarityCapture from "./analytics/clarity-capture";
+import { clarityDataStrategy } from "./analytics/clarity";
+
 /* Auth */
 const LoginPage = lazy(() => import("@/features/auth/pages/login-page"));
 
@@ -128,7 +131,11 @@ const routes: RouteObject[] = [
             children: [
               {
                 index: true,
-                element: <ChoosePlanForm />,
+                element: (
+                  <ClarityCapture>
+                    <ChoosePlanForm />
+                  </ClarityCapture>
+                ),
                 handle: {
                   accountFlowHeader: {
                     firstLineTitle: "دو مسیر انتخابی",
@@ -346,6 +353,7 @@ const createAppRouter = () =>
         children: routes,
       },
     ]),
+    { dataStrategy: clarityDataStrategy },
   );
 
 export default createAppRouter;

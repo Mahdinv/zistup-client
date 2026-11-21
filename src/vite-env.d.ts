@@ -2,6 +2,7 @@
 /// <reference types="vite-plugin-pwa/react" />
 
 interface ImportMetaEnv {
+  readonly VITE_CLARITY_PROJECT_ID?: string;
   readonly VITE_API_BASE_URL: string;
 }
 

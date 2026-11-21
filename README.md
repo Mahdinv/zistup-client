@@ -293,3 +293,103 @@ This repository is publicly viewable on GitHub, but **no license file is current
   <strong>Explore Zistup: <a href="https://app.zistup.com/">app.zistup.com</a></strong>
   <p>Made for healthier decisions, one day at a time.</p>
 </div>
+
+## Microsoft Clarity: real recordings on audited routes
+
+The official `@microsoft/clarity` package now records the actual application DOM.
+There is no analytics iframe or extra HTML entry. A valid `VITE_CLARITY_PROJECT_ID`
+and a production build are required. The SDK is dynamically imported only after
+explicit consent and after the audited route commits. Module-level initialization
+is shared across StrictMode mounts; no custom pageviews or user identifiers are sent.
+
+### Route and component audit
+
+| Route | Capture | Reason |
+| --- | --- | --- |
+| `/onboarding/choose-plan` | Yes, clean URL and no router state only | Static generic plan-choice cards, shared Button/ScrollFade, static account header; no personalized data or editable health controls. |
+| `/auth/login`, `/google/back` | No | Phone, OTP, OAuth credentials and token-bearing URL. |
+| `/onboarding/basic-information` | No | Identity, body measurements, sex, birth date and goals; values also occur in control attributes and geometry. |
+| `/onboarding/choose-plan/conventional-global-diets` and `/:dietId` | No | Diet choices, selection interactions, diet IDs, API images and dynamic headers from router state. |
+| `/game-workflow` | No | Personalized roadmap/completion state. |
+| `/game-workflow/demographic-information`, `/tablemates` | No | Location, income, activity and household/personal data. (The second suffix is under `/game-workflow`.) |
+| `/game-workflow/past-week-intake`, `/preferred-food` | No | Food history/preferences, quantities and charts. |
+| `/game-workflow/free-shopping`, `/limited-shopping` | No | Selected foods, quantities, dietary effects and drawers. |
+| `/game-workflow/social-alignment` | No | Personalized dietary scores, sliders and comparisons. |
+| `/game-workflow/optimized-dietary` and `/optimized-dietary/weekly-diet-planning` | No | Generated plans, meals, replacement choices and nutrition. |
+| `/app/dashboard`, `/app/diets` | No | Health metrics, calories, water, activity, charts, food logs and personalized plans. |
+| `/app/profile` | No | Identity/avatar, mobile, measurements, goals and edit drawers. |
+| `/app/zistyar` | No | Although its page is a static placeholder, the shared dashboard layout retains animated page backgrounds and exposes the meal-entry drawer. |
+| `/`, `/app`, unknown routes, any query/fragment on the allowed route | No | Redirects, unreviewed content or potentially sensitive URLs. |
+
+Shared layouts, animations, portals, toasts, PWA prompts, error boundaries, form
+controls and chart components were included in the audit. Masking text does **not**
+remove health information encoded in ARIA attributes, CSS, SVG paths, element counts,
+checkboxes or click positions. Those screens are excluded entirely, not merely blurred.
+The allowed screen's attributes/styles are static and its outbound controls contain no
+personal URLs. Its dynamic account-header route state disqualifies capture.
+
+`data-clarity-mask="true"` covers the body (including portals) and the capture boundary.
+No unmask attributes are introduced. The document title is static and the referrer policy
+is `no-referrer`. Queries/fragments are never sanitized and then recorded in the same
+document: their entry documents are ineligible. External/unsafe referrers also block
+initialization. Never add personal values to URLs, titles, CSS, attributes or custom tags
+on an eligible screen. Any new screen/component requires another audit before allowlisting.
+
+### Safe lifecycle and consent
+
+Consent remains accessible through the shared Persian/RTL UI, with equally available
+accept/deny actions and keyboard focus management. The v2 storage key deliberately
+requires fresh consent because the old notice authorized only navigation analytics; previous denials remain respected.
+Unknown/denied consent loads no SDK; accepted consent sends `analytics_Storage: granted`
+and `ad_Storage: denied`. Storage failures use a denial-only session fallback.
+
+Microsoft's actual runtime shows that Consent V2 denial can call stop and schedule a
+restart in cookieless mode. SPA history handling also schedules restarts. Consequently,
+removing a script element, unmounting React, or calling stop/pause is not isolation.
+Withdrawal sends denial and best-effort stop, makes the outgoing document inert, and
+replaces it with a fresh untracked document. Cross-tab withdrawal does the same. Pending
+uploads containing already-collected safe content may finish during unload; no sensitive
+route is rendered in that outgoing document. If storage cannot save denial, an excluded
+`#analytics-off` entry prevents restart. Fragment-only exits use a temporary, non-sensitive `__zistup_privacy_boundary` query flag to force a full request; it is removed before the next router starts, and that document stays untracked. BFCache restoration forces a fresh document.
+
+Navigation into/out of the capture surface uses full-document navigation, even before
+consent, to prevent previous forms, portals, cached layouts or timers from surviving.
+A router blocker handles normal navigation; a data strategy redirects **before target
+loaders** and catches loader redirects; early POP/history guards protect URL changes.
+Normal SPA navigation among excluded screens is unchanged. Same-page revalidation does
+not reinitialize Clarity. This intentionally trades one page load at privacy boundaries
+for isolation. The plan-choice outbound origin defaults already match its callers;
+React `location.state` is not transported across document boundaries.
+
+Keep privacy guards in place before creating the router. Keep tracking out of feature
+APIs/stores. Do not add another Clarity/tag-manager script or expand the route allowlist
+without reviewing the entire reachable layout, including drawers and portals.
+
+### Production configuration and verification
+
+In the Clarity project, retain **Settings → Masking → Strict**, enable Consent Mode
+(Settings → Setup: turn off cookies by default), disable advertising integrations,
+and leave custom cookie collection disabled. These account settings cannot be set or
+verified through the npm initializer. Body masking provides an explicit client override;
+it does not replace the route exclusion policy. See Microsoft's
+[masking documentation](https://learn.microsoft.com/en-us/clarity/setup-and-installation/clarity-masking),
+[Consent V2 behavior](https://learn.microsoft.com/en-us/clarity/setup-and-installation/clarity-consent-api-v2),
+and [SPA implementation](https://github.com/microsoft/clarity/blob/master/packages/clarity-js/src/core/history.ts).
+
+Run `npm run build`, `npm run lint`, `node --test tests/clarity.test.ts`, and
+`node tests/clarity.browser.mjs`. The browser test uses the real official npm loader and
+Microsoft's `clarity-js@0.8.77` runtime, with a local upload sink and all external analytics
+requests intercepted. It checks actual Discover/Mutation recording events, Click/Scroll
+heatmap events, masked text, consent, initialization, route exclusions and document teardown.
+It does not substitute fake pageviews for capture verification.
+
+For the optional browser test, use an existing Playwright installation via
+`PLAYWRIGHT_MODULE_PATH`; `BROWSER_CHANNEL` defaults to `msedge`. Download the test-only
+runtime with `npm pack clarity-js@0.8.77 --pack-destination node_modules/.tmp --ignore-scripts`,
+extract it into `node_modules/.tmp/clarity-runtime`, or set `CLARITY_RUNTIME_PATH` to its
+`package/build/clarity.js`. This does not add a production dependency.
+
+The tests prove capture payloads locally, not dashboard ingestion. After deployment,
+verify the project's Strict/Consent settings and inspect a consented plan-choice session
+in Clarity Recordings and Heatmaps. The production service may sample sessions and batch
+processing; no live user sessions or test data are submitted by this test suite.

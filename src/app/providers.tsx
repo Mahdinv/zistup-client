@@ -9,6 +9,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { RxCrossCircled } from "react-icons/rx";
 import { PiCheckCircle } from "react-icons/pi";
 import ErrorBoundary from "@/shared/base-components/error-boundary";
+import AnalyticsConsent from "@/app/analytics/analytics-consent";
 
 type ProvidersProps = {
   children: ReactNode;
@@ -17,6 +18,9 @@ type ProvidersProps = {
 const Providers = ({ children }: ProvidersProps) => {
   return (
     <QueryClientProvider client={queryClient}>
+      <ErrorBoundary fallback={null}>
+        <AnalyticsConsent />
+      </ErrorBoundary>
       <Toaster
         position="top-center"
         icons={{

@@ -9,6 +9,7 @@ import Providers from "@/app/providers";
 import ConnectionErrorBoundary from "@/app/connection-error-boundary";
 import ErrorBoundary from "@/shared/base-components/error-boundary";
 import createAppRouter from "@/app/router";
+import { prepareClarityDocument, setupClarity } from "@/app/analytics/clarity";
 
 import { configureHttpClient, queryClient } from "@/shared/api";
 import { setupImageRetry } from "./shared/lib/image-retry";
@@ -28,7 +29,9 @@ configureHttpClient({
 
 setupImageRetry();
 // Loaders start immediately; configure API/session error handling first.
+prepareClarityDocument();
 const router = createAppRouter();
+setupClarity(router);
 
 /* ---------------------------------- */
 /* React Root                         */
@@ -45,7 +48,9 @@ createRoot(rootElement).render(
     <Providers>
       <RouterProvider router={router} />
       <ErrorBoundary fallback={null}>
-        <ConnectionErrorBoundary onHome={() => void router.navigate("/app/dashboard")} />
+        <ConnectionErrorBoundary
+          onHome={() => void router.navigate("/app/dashboard")}
+        />
       </ErrorBoundary>
     </Providers>
   </StrictMode>,
