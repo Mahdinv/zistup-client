@@ -365,24 +365,36 @@ function WheelColumn({
       {virtualized && (
         <div style={{ height: start * rowHeight }} aria-hidden="true" />
       )}
-      {values.slice(start, end).map((item, index) => (
-        <div
-          key={item}
-          style={{ height: rowHeight }}
-          onClick={() => selectIndex(start + index)}
-          className={`flex snap-center items-center justify-center cursor-inherit px-1 leading-none ${curved ? "text-base font-medium text-white" : textColumn ? "text-base font-bold" : dashboard ? "pt-2 text-[32px] font-medium" : "pt-2 text-5xl font-medium"} ${curved ? "" : (!dimInactive && !textColumn) || item === selected ? (textColumn ? "text-blue-400" : "text-white") : textColumn ? "text-blue-800" : "text-white/40"}`}
-        >
-          {curved ? (
-            <CurvedWheelLabel index={start + index} position={scrollPosition}>
-              {format ? format(item) : item}
-            </CurvedWheelLabel>
-          ) : (
-            <span className={textColumn ? "whitespace-nowrap" : undefined}>
-              {format ? format(item) : item}
-            </span>
-          )}
-        </div>
-      ))}
+      {values.slice(start, end).map((item, index) => {
+        const displayValue = format ? format(item) : String(item);
+        // Fit long decimal quantities in the dashboard wheel at full precision.
+        const compactLabel = virtualized && displayValue.length > 4;
+        return (
+          <div
+            key={item}
+            style={{ height: rowHeight }}
+            onClick={() => selectIndex(start + index)}
+            className={`flex snap-center items-center justify-center cursor-inherit px-1 leading-none ${curved ? "text-base font-medium text-white" : textColumn ? "text-base font-bold" : dashboard ? "pt-2 text-[32px] font-medium" : "pt-2 text-5xl font-medium"} ${curved ? "" : (!dimInactive && !textColumn) || item === selected ? (textColumn ? "text-blue-400" : "text-white") : textColumn ? "text-blue-800" : "text-white/40"}`}
+          >
+            {curved ? (
+              <CurvedWheelLabel index={start + index} position={scrollPosition}>
+                {displayValue}
+              </CurvedWheelLabel>
+            ) : (
+              <span
+                className={textColumn ? "whitespace-nowrap" : undefined}
+                style={
+                  compactLabel
+                    ? { fontSize: `${4 / displayValue.length}em` }
+                    : undefined
+                }
+              >
+                {displayValue}
+              </span>
+            )}
+          </div>
+        );
+      })}
       {virtualized && (
         <div
           style={{ height: (values.length - end) * rowHeight }}

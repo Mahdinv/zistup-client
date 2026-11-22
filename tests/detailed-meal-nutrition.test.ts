@@ -10,7 +10,7 @@ import {
   calculateIngredientNutrition,
   calculateMealNutrition,
 } from "../src/features/dashboard/lib/quick-add-meal/meal-nutrition.ts";
-import { getPlanIngredientQuantities, INGREDIENT_UNITS } from "../src/features/dashboard/lib/quick-add-meal/ingredient-grams.ts";
+import { INGREDIENT_UNITS } from "../src/features/dashboard/lib/quick-add-meal/ingredient-grams.ts";
 import {
   flowReducer,
   initialFlow,
@@ -70,24 +70,26 @@ const response: FoodInfoResponse = {
 const quantity = { unitId: "gram", amount: 150 };
 
 test("plan grams initialize by ingredient_id with exact decimals and retain editable nutrition baselines", () => {
-  const food = mapFoodInfo(response);
-  const initialQuantities = getPlanIngredientQuantities([
+  const planIngredients = [
     { name: "Second", id: 1, ingredient_id: 2, grams: 32.125 },
     { name: "First", id: 2, ingredient_id: 1, grams: 5.375 },
-  ]);
+  ];
+  const food = mapFoodInfo(response, planIngredients);
   let state = flowReducer(
     { ...initialFlow, step: "details", mealId: "breakfast", selectedFoodId: 4, quantity },
-    { type: "detailed", food, initialQuantities },
+    { type: "detailed", food },
   );
   assert.deepEqual(state.detailed, {
     "1": { unitId: "gram", amount: 5.375 },
     "2": { unitId: "gram", amount: 32.125 },
   });
+  assert.equal(state.activePartId, "2");
+  assert.deepEqual(food.planParts?.map((part) => part.id), ["2", "1"]);
   assert.equal(food.parts[0].initialAmount, 10.5);
   assert.equal(calculateIngredientNutrition(state.detailed?.["1"], food.parts[0]).kcal, 21.5);
   assert.deepEqual(createSubmission(state, food)?.separatedItems, [
-    { ingredient_id: 1, value: 5.375 },
     { ingredient_id: 2, value: 32.125 },
+    { ingredient_id: 1, value: 5.375 },
   ]);
   state = flowReducer(state, { type: "detail", partId: "1", quantity: { unitId: "gram", amount: 7.25 } });
   state = flowReducer(state, { type: "part", partId: "2" });
@@ -95,7 +97,7 @@ test("plan grams initialize by ingredient_id with exact decimals and retain edit
   assert.equal(state.detailed?.["1"].amount, 7.25);
   assert.equal(state.detailed?.["2"].amount, 32.125);
   assert.equal(calculateIngredientNutrition(state.detailed?.["1"], food.parts[0]).kcal, 29);
-  assert.equal(initialQuantities["1"].amount, 5.375);
+  assert.equal(planIngredients[1].grams, 5.375);
 });
 
 test("food 1291 preserves decimal grams, API totals, and proportional edits", () => {

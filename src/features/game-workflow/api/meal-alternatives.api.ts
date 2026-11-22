@@ -1,5 +1,6 @@
 import { httpClient } from "@/shared/api";
 import type { DietFoodDto } from "@/features/dashboard/api/dto/diet-day.dto";
+import type { SeparatedItem } from "@/features/dashboard/api/types/add-meal.types";
 
 export type MealType = "breakfast" | "lunch" | "dinner";
 
@@ -11,6 +12,7 @@ export type MealSelection = {
     id: number;
     type: string;
     value: number;
+    separatedItems?: SeparatedItem[];
   }>;
 };
 

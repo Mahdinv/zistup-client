@@ -3,6 +3,7 @@ import type {
   FoodIngredient,
   FoodNutrition,
 } from "../types/food-info.types";
+import type { DietFoodDto } from "../dto/diet-day.dto";
 import { formatServingUnit } from "../types/serving-unit.ts";
 import type { Food, FoodPart, Nutrition } from "../types/quick-add-meal.types";
 import { DEFAULT_UNITS } from "../../constants/quick-add-meal.constants.ts";
@@ -27,7 +28,57 @@ function mapIngredient(ingredient: FoodIngredient): FoodPart {
     initialAmount: ingredient.grams,
   };
 }
-export function mapFoodInfo({ data }: FoodInfoResponse): Food {
+const unknownNutrition: Nutrition = {
+  kcal: null,
+  protein: null,
+  carbohydrates: null,
+  fiber: null,
+  greenhouseGas: null,
+  environmentalImpact: null,
+  water: null,
+};
+
+function mapPlanParts(
+  parts: FoodPart[],
+  ingredients: DietFoodDto["ingredients"],
+): FoodPart[] | undefined {
+  if (!ingredients?.length) return undefined;
+  const foodInfoById = new Map(parts.map((part) => [part.id, part]));
+  const planById = new Map<string, FoodPart>();
+  for (const ingredient of ingredients) {
+    if (!ingredient || typeof ingredient === "string") continue;
+    const { ingredient_id, grams } = ingredient;
+    if (
+      ingredient_id == null ||
+      !Number.isSafeInteger(ingredient_id) ||
+      ingredient_id <= 0
+    )
+      continue;
+
+    const id = String(ingredient_id);
+    const baseline = foodInfoById.get(id);
+    const plannedGrams =
+      typeof grams === "number" && Number.isFinite(grams) && grams >= 0
+        ? grams
+        : undefined;
+    if (plannedGrams === undefined && !baseline) continue;
+    planById.set(id, {
+      id,
+      title: ingredient.name,
+      kcal: baseline?.kcal ?? null,
+      nutrition: baseline?.nutrition ?? unknownNutrition,
+      initialAmount: baseline?.initialAmount,
+      plannedGrams,
+    });
+  }
+  // Older plans can contain ingredient names without IDs or amounts.
+  return planById.size ? [...planById.values()] : undefined;
+}
+
+export function mapFoodInfo(
+  { data }: FoodInfoResponse,
+  planIngredients?: DietFoodDto["ingredients"],
+): Food {
   const serverUnit = data.serving_unit.trim();
   const label = formatServingUnit(serverUnit);
   const staticUnits = data.type === "base_food" ? INGREDIENT_UNITS : DEFAULT_UNITS;
@@ -40,6 +91,7 @@ export function mapFoodInfo({ data }: FoodInfoResponse): Food {
     (label !== "واحد نامشخص" ? { id: serverUnit, label } :
       data.type === "base_food" && serverUnit && !["unknown", "واحد نامشخص"].includes(serverUnit)
         ? { id: serverUnit, label: serverUnit } : undefined);
+  const parts = data.ingredients.map(mapIngredient);
   return {
     id: String(data.food_id),
     type: data.type,
@@ -49,6 +101,7 @@ export function mapFoodInfo({ data }: FoodInfoResponse): Food {
     servingWeightGrams: data.serving_weight_g,
     amountGrams: data.amount_g,
     generalUnits: servingUnit ? [servingUnit] : [],
-    parts: data.ingredients.map(mapIngredient),
+    parts,
+    planParts: mapPlanParts(parts, planIngredients),
   };
 }

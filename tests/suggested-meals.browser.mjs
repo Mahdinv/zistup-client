@@ -174,7 +174,7 @@ try {
       .click();
     await page.getByRole("dialog").waitFor({ state: "hidden" });
   }
-  // Detailed submission still comes from food-info ingredients, not plan ingredient metadata.
+  // Detailed submission follows plan ingredient order and joins food-info by ID.
   await page.evaluate(() => window.testShowCard(0));
   await page
     .getByRole("button", {
@@ -194,9 +194,21 @@ try {
   assert.equal(detailed.data.foodId, expected[0].food_id ?? expected[0].foodId);
   assert.equal(detailed.data.type, expected[0].type);
   assert.equal(detailed.data.value, expected[0].quantity.grams);
-  assert.deepEqual(detailed.data.separatedItems, [
-    { ingredient_id: 117, value: 100 },
-  ]);
+  const planned = new Map();
+  for (const part of expected[0].ingredients ?? []) {
+    if (!Number.isSafeInteger(part?.ingredient_id) || part.ingredient_id <= 0)
+      continue;
+    const value = Number.isFinite(part.grams) && part.grams >= 0
+      ? part.grams
+      : part.ingredient_id === 117 ? 100 : undefined;
+    if (value !== undefined) planned.set(part.ingredient_id, value);
+  }
+  assert.deepEqual(
+    detailed.data.separatedItems,
+    planned.size
+      ? [...planned].map(([ingredient_id, value]) => ({ ingredient_id, value }))
+      : [{ ingredient_id: 117, value: 100 }],
+  );
   assert.deepEqual(errors, []);
   console.log(
     `PASS: all ${expected.length} supplied cards open with ingredient names; numeric food IDs/types, registration and detailed logging verified`,

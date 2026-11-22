@@ -170,6 +170,8 @@ const WeeklyDietPlanningPage = () => {
               <WeeklyMealCard
                 key={day}
                 day={day}
+                dayNumber={index + 1}
+                mealType={activeMeal}
                 onReplace={() => {
                   setReplacementDay(index + 1);
                   setReplacementOpen(true);

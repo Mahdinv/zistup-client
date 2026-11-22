@@ -60,11 +60,13 @@ export function calculateMealNutrition(
       food.amountGrams,
     );
   }
+  const parts = food.planParts ?? food.parts;
   // The API total is authoritative before edits (ingredient contributions may
   // carry different decimal precision). Keep the original grams untouched.
   if (
-    food.parts.length > 0 &&
-    food.parts.every(
+    parts.length > 0 &&
+    parts.length === food.parts.length &&
+    parts.every(
       (part) =>
         part.initialAmount != null &&
         Number.isFinite(part.initialAmount) &&
@@ -89,7 +91,7 @@ export function calculateMealNutrition(
     water: 0,
   };
   const keys = Object.keys(totals) as (keyof Nutrition)[];
-  for (const part of food.parts) {
+  for (const part of parts) {
     const contribution = calculateIngredientNutrition(detailed[part.id], part);
     for (const key of keys) {
       const total = totals[key];

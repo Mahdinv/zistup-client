@@ -22,7 +22,8 @@ import {
 } from "../../lib/quick-add-meal/quick-add-meal.state";
 import MealSelection from "./meal-selection";
 import FoodSearch from "./food-search";
-import type { DetailedSelection, FlowState } from "../../api/types/quick-add-meal.types";
+import type { FlowState } from "../../api/types/quick-add-meal.types";
+import type { DietFoodDto } from "../../api/dto/diet-day.dto";
 
 type Props = {
   confirmationLabel?: string;
@@ -36,7 +37,7 @@ type Props = {
     "mealId" | "selectedFoodId" | "selectedFoodType" | "quantity"
   >;
   onClosed?: () => void;
-  initialIngredientQuantities?: DetailedSelection;
+  planIngredients?: DietFoodDto["ingredients"];
 };
 export default function QuickAddMeal({
   confirmationLabel = "ثبت غذا",
@@ -47,7 +48,7 @@ export default function QuickAddMeal({
   isSubmitting,
   initialDetails,
   onClosed,
-  initialIngredientQuantities,
+  planIngredients,
 }: Props) {
   const [state, dispatch] = useReducer(
     flowReducer,
@@ -67,11 +68,12 @@ export default function QuickAddMeal({
     state.selectedFoodId,
     state.selectedFoodType,
     open && (state.step === "details" || state.nextStep === "details"),
+    planIngredients,
   );
   // Apply session quantities once, keeping API amounts as nutrition baselines.
   // A render-time adjustment prevents briefly showing the general quantity picker.
   if (initialDetails && foodInfoQuery.data && !state.detailed && open) {
-    dispatch({ type: "detailed", food: foodInfoQuery.data, initialQuantities: initialIngredientQuantities });
+    dispatch({ type: "detailed", food: foodInfoQuery.data });
   }
   const quantity = useMemo(
     () => ({

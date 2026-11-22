@@ -5,7 +5,6 @@ import {
   getIngredientGramValues,
   ingredientQuantityToGrams,
   INGREDIENT_UNITS,
-  getPlanIngredientQuantities,
 } from "../src/features/dashboard/lib/quick-add-meal/ingredient-grams.ts";
 import { getGeneralUnits } from "../src/features/dashboard/lib/quick-add-meal/quantity-units.ts";
 import {
@@ -62,17 +61,30 @@ const data = {
   ],
 };
 test("plan quantities preserve zero and skip legacy or unknown weights", () => {
-  assert.deepEqual(getPlanIngredientQuantities(null), {});
-  assert.deepEqual(getPlanIngredientQuantities([
+  const response = { success: true, data };
+  assert.equal(mapFoodInfo(response, null).planParts, undefined);
+  assert.equal(mapFoodInfo(response, ["Legacy ingredient"]).planParts, undefined);
+  const food = mapFoodInfo(response, [
     "Legacy ingredient",
     { name: "No ingredient ID", id: 9, grams: 20 },
-    { name: "Unknown", ingredient_id: 1, grams: null },
-    { name: "Missing", ingredient_id: 2 },
-    { name: "Invalid", ingredient_id: 3, grams: NaN },
+    { name: "Unknown", ingredient_id: 7, grams: null },
+    { name: "Missing", ingredient_id: 8 },
+    { name: "Invalid", ingredient_id: 9, grams: NaN },
     { name: "Negative", ingredient_id: 4, grams: -1 },
     { name: "Infinite", ingredient_id: 5, grams: Infinity },
     { name: "Zero", ingredient_id: 6, grams: 0 },
-  ]), { "6": { unitId: "gram", amount: 0 } });
+    { name: "Oil", ingredient_id: 2, grams: null },
+  ]);
+  assert.deepEqual(
+    food.planParts?.map(({ id, plannedGrams, initialAmount }) => ({
+      id, plannedGrams, initialAmount,
+    })),
+    [
+      { id: "6", plannedGrams: 0, initialAmount: undefined },
+      { id: "2", plannedGrams: undefined, initialAmount: 15 },
+    ],
+  );
+  assert.equal(food.planParts?.[0].nutrition.kcal, null);
 });
 test("four fixed units precede the unique localized server unit", () => {
   for (const [unit, label] of [

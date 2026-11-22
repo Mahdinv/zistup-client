@@ -15,6 +15,12 @@ const focus =
 const ITEM_AMOUNTS = Array.from({ length: 201 }, (_, index) => index / 2);
 const WHOLE_ITEM_AMOUNTS = Array.from({ length: 101 }, (_, index) => index);
 const WHOLE_ITEM_UNITS = new Set(["spoon", "teaspoon", "handful", "bite", "cube"]);
+const gramFormatter = new Intl.NumberFormat("fa-IR", {
+  maximumSignificantDigits: 21,
+});
+const formatGrams = (value: number | null) =>
+  value === null ? "—" : gramFormatter.format(value);
+const ZERO_GRAMS = { unitId: "gram", amount: 0 };
 export default function DetailedQuantity({
   state,
   food,
@@ -24,15 +30,10 @@ export default function DetailedQuantity({
   food: Food;
   dispatch: (action: FlowAction) => void;
 }) {
-  const part =
-    food.parts.find((item) => item.id === state.activePartId) ?? food.parts[0];
-  const detail = part
-    ? (state.detailed?.[part.id] ?? {
-        unitId: "gram",
-        amount: part.initialAmount ?? 0,
-      })
-    : undefined;
-  const initialAmount = part?.initialAmount ?? 0;
+  const parts = food.planParts ?? food.parts;
+  const part = parts.find((item) => item.id === state.activePartId) ?? parts[0];
+  const detail = part ? (state.detailed?.[part.id] ?? ZERO_GRAMS) : undefined;
+  const initialAmount = part?.plannedGrams ?? part?.initialAmount ?? 0;
   const detailedAmounts = useMemo(
     () => getIngredientGramValues(initialAmount),
     [initialAmount],
@@ -40,19 +41,19 @@ export default function DetailedQuantity({
   const calories = useMemo(
     () =>
       new Map(
-        food.parts.map((item) => [
+        parts.map((item) => [
           item.id,
           calculateIngredientNutrition(state.detailed?.[item.id], item).kcal,
         ]),
       ),
-    [food.parts, state.detailed],
+    [parts, state.detailed],
   );
   return (
     <>
       <div role="group" aria-label="اجزای غذا" className="mb-2 min-w-0">
         <Slider
-          items={food.parts}
-          selectedIndex={food.parts.findIndex((item) => item.id === part?.id)}
+          items={parts}
+          selectedIndex={parts.findIndex((item) => item.id === part?.id)}
           getKey={(item) => item.id}
           slides={{ perView: "auto", spacing: 8 }}
           equalSlideWidths
@@ -82,10 +83,10 @@ export default function DetailedQuantity({
               </span>
               <span className="mt-1 flex min-h-0 flex-1 items-center justify-center gap-1 border-t border-blue-500/30 pt-1 text-blue-800 dark:border-dark dark:text-blue-700">
                 <span className="font-rokh text-base leading-none">
-                  {formatMealNumber(
-                    (state.detailed?.[item.id] ? ingredientQuantityToGrams(state.detailed[item.id]) : null) ??
-                      item.initialAmount,
-                    2,
+                  {formatGrams(
+                    state.detailed?.[item.id]
+                      ? ingredientQuantityToGrams(state.detailed[item.id])
+                      : null,
                   )}
                 </span>
                 <span className="text-[9px] leading-none">گرم</span>
@@ -112,7 +113,11 @@ export default function DetailedQuantity({
             }),
           }}
           appearance="dashboard"
-          formatValue={(value) => formatMealNumber(value, 2)}
+          formatValue={
+            detail.unitId === "gram"
+              ? formatGrams
+              : (value) => formatMealNumber(value, 2)
+          }
           label={`تنظیم مقدار ${part.title}`}
           value={detail.amount}
           customUnit={{

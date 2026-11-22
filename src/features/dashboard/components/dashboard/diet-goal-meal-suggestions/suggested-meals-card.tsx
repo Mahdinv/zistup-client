@@ -1,7 +1,6 @@
 import DetailedLoggingButton from "../../quick-add-meal/detailed-logging-button";
 import QuickAddMeal from "../../quick-add-meal/quick-add-meal";
-import type { DetailedSelection, FlowState } from "../../../api/types/quick-add-meal.types";
-import { getPlanIngredientQuantities } from "../../../lib/quick-add-meal/ingredient-grams";
+import type { FlowState } from "../../../api/types/quick-add-meal.types";
 import type { DietFood, DietMeal } from "../../../api/types/diet-day.types";
 import {
   MealType,
@@ -54,7 +53,7 @@ const SuggestedMealsCard = ({
       "mealId" | "selectedFoodId" | "selectedFoodType" | "quantity"
     >;
     date: string;
-    ingredients: DetailedSelection;
+    ingredients: DietFood["ingredients"];
   } | null>(null);
   const [detailedOpen, setDetailedOpen] = useState(false);
   const detailedSubmitted = useRef(false);
@@ -102,7 +101,7 @@ const SuggestedMealsCard = ({
     detailedSubmitted.current = false;
     setDetailedSession({
       date,
-      ingredients: getPlanIngredientQuantities(selection.food.ingredients),
+      ingredients: selection.food.ingredients,
       details: {
         mealId: selection.meal,
         selectedFoodId: selection.food.foodId,
@@ -412,7 +411,7 @@ const SuggestedMealsCard = ({
         <QuickAddMeal
           open={detailedOpen}
           initialDetails={detailedSession.details}
-          initialIngredientQuantities={detailedSession.ingredients}
+          planIngredients={detailedSession.ingredients}
           isSubmitting={isPending}
           onClose={() => setDetailedOpen(false)}
           onClosed={() => {

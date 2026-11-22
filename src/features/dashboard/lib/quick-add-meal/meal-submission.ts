@@ -56,7 +56,7 @@ export function createSubmission(
   if (value == null) return null;
   const separatedItems: SeparatedItem[] = [];
   if (state.detailed) {
-    for (const part of food.parts) {
+    for (const part of food.planParts ?? food.parts) {
       const selection = state.detailed[part.id];
       const ingredientId = Number(part.id);
       const grams = selection ? ingredientQuantityToGrams(selection) : null;

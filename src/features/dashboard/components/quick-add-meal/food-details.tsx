@@ -84,11 +84,11 @@ export default function FoodDetails({
         className="relative"
       >
         {/* Activity retains wheel state and suspends hidden scroll/slider effects. */}
-        <Activity mode={isDetailed ? "visible" : "hidden"}>
+        {isDetailed && (
           <div className="rounded-2xl bg-blue-300 p-4 shadow-[0_4px_4px_0_#0000000a] dark:shadow-none dark:bg-darker-blue-400">
             <DetailedQuantity state={state} food={food} dispatch={dispatch} />
           </div>
-        </Activity>
+        )}
         <Activity mode={isDetailed ? "hidden" : "visible"}>
           <div>
             <div className="mb-2">

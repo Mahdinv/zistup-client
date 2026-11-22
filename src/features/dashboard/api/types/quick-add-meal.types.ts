@@ -18,6 +18,7 @@ export type FoodPart = {
   kcal: number | null;
   nutrition: Nutrition;
   initialAmount?: number | null;
+  plannedGrams?: number;
 };
 export type Food = {
   id: string;
@@ -29,6 +30,7 @@ export type Food = {
   servingWeightGrams: number;
   amountGrams: number;
   parts: FoodPart[];
+  planParts?: FoodPart[];
 };
 export type SearchState =
   | { status: "idle" }

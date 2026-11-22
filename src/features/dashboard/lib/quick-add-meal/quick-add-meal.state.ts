@@ -24,7 +24,11 @@ export type FlowAction =
   | { type: "quantity"; quantity: QuantitySelection }
   | { type: "detail"; partId: string; quantity: QuantitySelection }
   | { type: "part"; partId: string }
-  | { type: "detailed"; food: Food; quantity?: QuantitySelection; initialQuantities?: DetailedSelection }
+  | {
+      type: "detailed";
+      food: Food;
+      quantity?: QuantitySelection;
+    }
   | { type: "back" }
   | { type: "transition-complete" }
   | { type: "reset" };
@@ -72,21 +76,19 @@ export function flowReducer(state: FlowState, action: FlowAction): FlowState {
         : state;
     case "detailed": {
       const quantity = action.quantity ?? state.quantity;
+      const parts = action.food.planParts ?? action.food.parts;
       const detailed: DetailedSelection = {};
-      action.food.parts.forEach((part) => {
-        const initialQuantity = action.initialQuantities?.[part.id];
-        if (initialQuantity) detailed[part.id] = initialQuantity;
-        else if (part.initialAmount != null)
-          detailed[part.id] = {
-            unitId: "gram",
-            amount: part.initialAmount,
-          };
-      });
+      for (const part of parts) {
+        const grams = part.plannedGrams ?? part.initialAmount;
+        if (typeof grams === "number" && Number.isFinite(grams) && grams >= 0) {
+          detailed[part.id] = { unitId: "gram", amount: grams };
+        }
+      }
       return {
         ...state,
         detailed,
         quantity,
-        activePartId: action.food.parts[0]?.id ?? null,
+        activePartId: parts[0]?.id ?? null,
       };
     }
     case "back":
