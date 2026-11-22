@@ -2,6 +2,7 @@ import {
   type ReactNode,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useState,
 } from "react";
@@ -29,6 +30,7 @@ type SliderProps<T> = {
   slides?: KeenSliderOptions["slides"];
   slideClassName?: string;
   selectedIndex?: number;
+  equalSlideWidths?: boolean;
 };
 
 const createAutoplayPlugin = ({
@@ -102,6 +104,7 @@ const Slider = <T,>({
   },
   slideClassName = "",
   selectedIndex,
+  equalSlideWidths = false,
 }: SliderProps<T>) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -145,6 +148,37 @@ const Slider = <T,>({
     [instanceRef],
   );
 
+  useLayoutEffect(() => {
+    const slider = instanceRef.current;
+    if (!equalSlideWidths || !slider) return;
+    const container = slider.container;
+    let disposed = false;
+    const measure = () => {
+      if (disposed) return;
+      const width = Math.ceil(Math.max(0, ...slider.slides.map((slide) => {
+        const content = slide.firstElementChild as HTMLElement | null;
+        if (!content) return 0;
+        const previousWidth = content.style.width;
+        content.style.width = "max-content";
+        const measured = content.offsetWidth;
+        content.style.width = previousWidth;
+        return measured;
+      })));
+      const value = `${width}px`;
+      if (container.style.getPropertyValue("--slider-equal-width") === value) return;
+      container.style.setProperty("--slider-equal-width", value);
+      slider.update();
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(container);
+    void document.fonts.ready.then(measure);
+    return () => {
+      disposed = true;
+      observer.disconnect();
+    };
+  }, [equalSlideWidths, items, instanceRef]);
+
   if (!items.length) return null;
 
   return (
@@ -157,7 +191,7 @@ const Slider = <T,>({
         {items.map((item) => (
           <div
             key={getKey(item)}
-            className={`keen-slider__slide ${slideClassName}`}
+            className={`keen-slider__slide ${equalSlideWidths ? "!min-w-(--slider-equal-width) !max-w-(--slider-equal-width)" : ""} ${slideClassName}`}
           >
             {renderItem(item)}
           </div>

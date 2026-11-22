@@ -2,6 +2,10 @@ import { PiArrowsClockwise, PiBowlSteam, PiFadersFill } from "react-icons/pi";
 import type { DietMealDto } from "@/features/dashboard/api/dto/diet-day.dto";
 import Button from "@/shared/base-components/button";
 import ImageWithSkeleton from "@/shared/base-components/image-with-skeleton";
+import { useEffect, useState } from "react";
+import QuickAddMeal from "@/features/dashboard/components/quick-add-meal/quick-add-meal";
+import type { DetailedSelection, FlowState } from "@/features/dashboard/api/types/quick-add-meal.types";
+import { getPlanIngredientQuantities } from "@/features/dashboard/lib/quick-add-meal/ingredient-grams";
 
 const number = (value?: number) =>
   typeof value === "number" && Number.isFinite(value)
@@ -20,6 +24,22 @@ export default function WeeklyMealCard({
   onReplace: () => void;
 }) {
   const food = meal?.main;
+  const [details, setDetails] = useState<Pick<
+    FlowState,
+    "mealId" | "selectedFoodId" | "selectedFoodType" | "quantity"
+  > & { ingredients: DetailedSelection } | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  useEffect(() => {
+    if (!details) return;
+    // Paint the closed Drawer before toggling open so BaseDrawer can transition.
+    let frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(() => setDetailsOpen(true));
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [details]);
+  const foodId = food?.foodId ?? food?.food_id;
+  const canOpenDetails = food != null && foodId != null &&
+    Number.isFinite(foodId) && foodId > 0;
   const companions = (meal?.companions ?? []).filter(
     (item, index, items) =>
       item &&
@@ -167,13 +187,35 @@ export default function WeeklyMealCard({
         />
         <button
           type="button"
-          aria-disabled="true"
+          disabled={!canOpenDetails}
+          onClick={() => {
+            if (!canOpenDetails) return;
+            setDetails({
+              mealId: null,
+              selectedFoodId: foodId,
+              selectedFoodType: food.type,
+              quantity: { amount: food.quantity.grams, unitId: "gram" },
+              ingredients: getPlanIngredientQuantities(food.ingredients),
+            });
+          }}
           aria-label={`تنظیمات وعده ${day}`}
           className="flex shrink-0 items-center justify-center rounded-[0.714em] bg-[#304B54] px-[0.857em] text-[#70D9F3]"
         >
           <PiFadersFill aria-hidden="true" className="size-[1.714em]" />
         </button>
       </div>
+      {details && (
+        <QuickAddMeal
+          confirmationLabel="تایید"
+          theme="dark"
+          open={detailsOpen}
+          onClose={() => setDetailsOpen(false)}
+          onClosed={() => setDetails(null)}
+          initialDetails={details}
+          initialIngredientQuantities={details.ingredients}
+          isSubmitting={false}
+        />
+      )}
     </article>
   );
 }

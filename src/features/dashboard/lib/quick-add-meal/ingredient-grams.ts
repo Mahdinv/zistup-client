@@ -1,3 +1,21 @@
+import type { DietIngredient } from "../../api/types/diet-day.types";
+import type { DetailedSelection } from "../../api/types/quick-add-meal.types";
+
+export function getPlanIngredientQuantities(
+  ingredients?: (DietIngredient | string)[] | null,
+): DetailedSelection {
+  return Object.fromEntries(
+    (ingredients ?? []).flatMap((ingredient) =>
+      typeof ingredient !== "string" &&
+      ingredient.ingredient_id != null &&
+      typeof ingredient.grams === "number" &&
+      Number.isFinite(ingredient.grams) && ingredient.grams >= 0
+        ? [[String(ingredient.ingredient_id), { unitId: "gram", amount: ingredient.grams }]]
+        : [],
+    ),
+  );
+}
+
 export const GRAM_STEP = 5;
 export const INGREDIENT_UNITS = [
   { id: "gram", label: "گرم", grams: 1 },

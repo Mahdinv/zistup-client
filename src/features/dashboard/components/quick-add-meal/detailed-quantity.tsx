@@ -55,7 +55,8 @@ export default function DetailedQuantity({
           selectedIndex={food.parts.findIndex((item) => item.id === part?.id)}
           getKey={(item) => item.id}
           slides={{ perView: "auto", spacing: 8 }}
-          slideClassName="!min-w-[120px] !max-w-[120px] py-0.5"
+          equalSlideWidths
+          slideClassName="py-0.5"
           renderItem={(item) => (
             <button
               type="button"
@@ -67,7 +68,7 @@ export default function DetailedQuantity({
               className={`flex h-[60px] w-full flex-col rounded-xs border p-2 text-right ${part?.id === item.id ? "border-blue-800 bg-blue-100 ring-1 ring-inset ring-blue-800 dark:border-blue-400 dark:bg-darker-blue-200 dark:ring-blue-400" : "border-blue-500 bg-blue-100 dark:border-dark dark:bg-darker-blue-300"} ${focus}`}
             >
               <span className="flex min-h-[18px] min-w-0 items-center justify-between gap-2">
-                <span className="min-w-0 truncate font-bold text-base">
+                <span className="shrink-0 whitespace-nowrap font-bold text-base">
                   {item.title}
                 </span>
                 <span dir="ltr" className="flex shrink-0 items-baseline gap-1">

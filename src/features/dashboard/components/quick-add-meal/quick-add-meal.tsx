@@ -7,9 +7,9 @@ import type { AddMealPayload } from "../../api/types/add-meal.types";
 import useFoodInfoQuery from "../../hooks/use-food-info-query.hook";
 import FoodDetailsResource from "./food-details-resource";
 import useDebouncedValue from "@/shared/hooks/use-debounced-value.hook";
-import { useMemo, useReducer, useRef } from "react";
+import { useContext, useMemo, useReducer, useRef } from "react";
 import BaseDrawer from "@/shared/base-components/base-drawer";
-import { useDashboardTheme } from "../../hooks/use-dashboard-theme.hook";
+import { DashboardThemeContext, type DashboardTheme } from "../../context/dashboard-theme-context";
 import useMealSearchQuery from "../../hooks/use-meal-search-query.hook";
 import {
   getFoodSearchState,
@@ -22,26 +22,32 @@ import {
 } from "../../lib/quick-add-meal/quick-add-meal.state";
 import MealSelection from "./meal-selection";
 import FoodSearch from "./food-search";
-import type { FlowState } from "../../api/types/quick-add-meal.types";
+import type { DetailedSelection, FlowState } from "../../api/types/quick-add-meal.types";
 
 type Props = {
+  confirmationLabel?: string;
+  theme?: DashboardTheme;
   open: boolean;
   onClose: () => void;
-  onSubmit: (submission: AddMealPayload) => Promise<boolean>;
+  onSubmit?: (submission: AddMealPayload) => Promise<boolean>;
   isSubmitting: boolean;
   initialDetails?: Pick<
     FlowState,
     "mealId" | "selectedFoodId" | "selectedFoodType" | "quantity"
   >;
   onClosed?: () => void;
+  initialIngredientQuantities?: DetailedSelection;
 };
 export default function QuickAddMeal({
+  confirmationLabel = "ثبت غذا",
+  theme: themeOverride,
   open,
   onClose,
   onSubmit,
   isSubmitting,
   initialDetails,
   onClosed,
+  initialIngredientQuantities,
 }: Props) {
   const [state, dispatch] = useReducer(
     flowReducer,
@@ -62,10 +68,10 @@ export default function QuickAddMeal({
     state.selectedFoodType,
     open && (state.step === "details" || state.nextStep === "details"),
   );
-  // Initialize once from the same ingredient defaults as the normal detailed flow.
+  // Apply session quantities once, keeping API amounts as nutrition baselines.
   // A render-time adjustment prevents briefly showing the general quantity picker.
   if (initialDetails && foodInfoQuery.data && !state.detailed && open) {
-    dispatch({ type: "detailed", food: foodInfoQuery.data });
+    dispatch({ type: "detailed", food: foodInfoQuery.data, initialQuantities: initialIngredientQuantities });
   }
   const quantity = useMemo(
     () => ({
@@ -81,7 +87,8 @@ export default function QuickAddMeal({
     [state.quantity, foodInfoQuery.data?.defaultUnitId],
   );
   const resolvedState = { ...state, quantity };
-  const { theme } = useDashboardTheme();
+  const dashboardTheme = useContext(DashboardThemeContext);
+  const theme = themeOverride ?? dashboardTheme?.theme;
   const meal = MEALS.find((item) => item.id === state.mealId);
   const title =
     state.step === "meal"
@@ -93,6 +100,7 @@ export default function QuickAddMeal({
     if (!submitted.current) onClose();
   };
   const submit = async () => {
+    if (!onSubmit) return;
     if (!foodInfoQuery.isSuccess || submitted.current || isSubmitting) return;
     const submission = createSubmission(resolvedState, foodInfoQuery.data);
     if (!submission) {
@@ -194,7 +202,7 @@ export default function QuickAddMeal({
                 onClick={submit}
                 className="cursor-pointer h-10.5 flex-1 rounded-2xl bg-green-400 font-bold text-xl leading-[1.45] shadow-[0_4px_4px_0_#0000000a] dark:shadow-none text-darker-green-200 hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-blue-400"
               >
-                {isSubmitting ? "در حال ثبت..." : "ثبت غذا"}
+                {isSubmitting ? "در حال ثبت..." : confirmationLabel}
               </button>
             )}
           </div>

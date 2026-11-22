@@ -1,6 +1,7 @@
 import DetailedLoggingButton from "../../quick-add-meal/detailed-logging-button";
 import QuickAddMeal from "../../quick-add-meal/quick-add-meal";
-import type { FlowState } from "../../../api/types/quick-add-meal.types";
+import type { DetailedSelection, FlowState } from "../../../api/types/quick-add-meal.types";
+import { getPlanIngredientQuantities } from "../../../lib/quick-add-meal/ingredient-grams";
 import type { DietFood, DietMeal } from "../../../api/types/diet-day.types";
 import {
   MealType,
@@ -53,6 +54,7 @@ const SuggestedMealsCard = ({
       "mealId" | "selectedFoodId" | "selectedFoodType" | "quantity"
     >;
     date: string;
+    ingredients: DetailedSelection;
   } | null>(null);
   const [detailedOpen, setDetailedOpen] = useState(false);
   const detailedSubmitted = useRef(false);
@@ -100,6 +102,7 @@ const SuggestedMealsCard = ({
     detailedSubmitted.current = false;
     setDetailedSession({
       date,
+      ingredients: getPlanIngredientQuantities(selection.food.ingredients),
       details: {
         mealId: selection.meal,
         selectedFoodId: selection.food.foodId,
@@ -367,7 +370,9 @@ const SuggestedMealsCard = ({
                             </li>
                           ))}
                         </ul>
-                        <DetailedLoggingButton onClick={openDetailed} />
+                        {food.type === "recipe" && (
+                          <DetailedLoggingButton onClick={openDetailed} />
+                        )}
                       </section>
                       {food.companions.length > 0 && (
                         <section className="rounded-2xl min-h-17.25 border border-blue-500 dark:border-green-900 bg-blue-200 dark:bg-darker-blue-400 p-3 shadow-[0_4px_4px_#0000000a] dark:shadow-none">
@@ -407,6 +412,7 @@ const SuggestedMealsCard = ({
         <QuickAddMeal
           open={detailedOpen}
           initialDetails={detailedSession.details}
+          initialIngredientQuantities={detailedSession.ingredients}
           isSubmitting={isPending}
           onClose={() => setDetailedOpen(false)}
           onClosed={() => {

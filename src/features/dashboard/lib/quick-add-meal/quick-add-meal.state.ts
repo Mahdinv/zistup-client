@@ -24,7 +24,7 @@ export type FlowAction =
   | { type: "quantity"; quantity: QuantitySelection }
   | { type: "detail"; partId: string; quantity: QuantitySelection }
   | { type: "part"; partId: string }
-  | { type: "detailed"; food: Food; quantity?: QuantitySelection }
+  | { type: "detailed"; food: Food; quantity?: QuantitySelection; initialQuantities?: DetailedSelection }
   | { type: "back" }
   | { type: "transition-complete" }
   | { type: "reset" };
@@ -74,7 +74,9 @@ export function flowReducer(state: FlowState, action: FlowAction): FlowState {
       const quantity = action.quantity ?? state.quantity;
       const detailed: DetailedSelection = {};
       action.food.parts.forEach((part) => {
-        if (part.initialAmount != null)
+        const initialQuantity = action.initialQuantities?.[part.id];
+        if (initialQuantity) detailed[part.id] = initialQuantity;
+        else if (part.initialAmount != null)
           detailed[part.id] = {
             unitId: "gram",
             amount: part.initialAmount,
