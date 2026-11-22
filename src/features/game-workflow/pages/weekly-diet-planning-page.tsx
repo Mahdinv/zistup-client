@@ -197,6 +197,7 @@ const WeeklyDietPlanningPage = () => {
         open={replacementOpen}
         onOpenChange={setReplacementOpen}
         meal={activeMeal}
+        dayNumber={replacementDay}
         day={
           [
             "شنبه",

@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { PiCircleNotch } from "react-icons/pi";
 
 type ButtonProps = {
   classes: string;
@@ -12,6 +13,7 @@ type ButtonProps = {
   name?: string;
   value?: string;
   disable?: boolean;
+  loading?: boolean;
   onClick?: () => void;
 };
 
@@ -27,6 +29,7 @@ const Button = ({
   name,
   value,
   disable,
+  loading = false,
   onClick,
 }: ButtonProps) => {
   return (
@@ -38,7 +41,8 @@ const Button = ({
         title ? "px-4" : "px-2"
       } outline-none select-none laptop:cursor-pointer`}
       onClick={onClick}
-      disabled={disable}
+      disabled={disable || loading}
+      aria-busy={loading}
       name={name}
       value={value}
     >
@@ -64,15 +68,24 @@ const Button = ({
       >
         {title && (
           <div
-            className={`mt-1 ${!icon ? "grow" : "grow-0"} whitespace-nowrap`}
+            className={`mt-1 ${!icon ? "grow" : "grow-0"} whitespace-nowrap ${
+              loading ? "invisible" : ""
+            }`}
           >
             {title}
           </div>
         )}
 
-        {icon && (
+        {loading ? (
+          <span
+            className="absolute inset-0 flex items-center justify-center"
+            aria-hidden="true"
+          >
+            <PiCircleNotch className="animate-spin" />
+          </span>
+        ) : icon ? (
           <span className={`${iconClasses ?? ""} self-center`}>{icon}</span>
-        )}
+        ) : null}
       </div>
     </button>
   );

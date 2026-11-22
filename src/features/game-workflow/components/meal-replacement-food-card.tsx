@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { PiBowlSteam, PiCheck } from "react-icons/pi";
+import { PiBowlSteam, PiCheckBold } from "react-icons/pi";
 import ImageWithSkeleton from "@/shared/base-components/image-with-skeleton";
 import Button from "@/shared/base-components/button";
 import type { DietFoodDto } from "@/features/dashboard/api/dto/diet-day.dto";
@@ -7,9 +7,13 @@ import type { DietFoodDto } from "@/features/dashboard/api/dto/diet-day.dto";
 const MealReplacementFoodCard = memo(function MealReplacementFoodCard({
   food,
   selected,
+  onSelect,
+  loading = false,
 }: {
   food: Partial<DietFoodDto>;
   selected: boolean;
+  onSelect: () => void;
+  loading?: boolean;
 }) {
   return (
     <article
@@ -42,13 +46,19 @@ const MealReplacementFoodCard = memo(function MealReplacementFoodCard({
       </div>
       {selected ? (
         <span className="flex shrink-0 items-center justify-center gap-1 rounded-[10px] border border-[#2CE57F] bg-[#12663F]/40 px-[1em] py-[0.429em] text-[0.857em] leading-[1.4] font-bold text-[#2CE57F]">
-          <PiCheck aria-hidden="true" className="size-[1.333em]" />
-          فعال
+          <PiCheckBold
+            aria-hidden="true"
+            className="compact:text-xl fold:text-2xl laptop:text-3xl"
+          />
+          <label className="mt-1">فعال</label>
         </span>
       ) : (
         <Button
           type="button"
           title="انتخاب"
+          loading={loading}
+          disable={loading}
+          onClick={onSelect}
           classes="btn btn-outline-green w-auto! shrink-0 rounded-[10px]! border! border-[#2CE57F]! px-[1em]! py-[0.429em]! text-[0.857em]! leading-[1.4] text-[#2CE57F]! transition-colors duration-200! hover:bg-[#12663F]/30 motion-reduce:transition-none [&>div>div]:mt-1"
         />
       )}

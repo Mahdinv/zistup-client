@@ -5,6 +5,10 @@ import type { DietFoodDto } from "@/features/dashboard/api/dto/diet-day.dto";
 import MealReplacementFoodCard from "./meal-replacement-food-card";
 import MealReplacementSkeleton from "./meal-replacement-skeleton";
 import { PiXCircle } from "react-icons/pi";
+import useSelectMealAlternativeMutation from "../hooks/use-select-meal-alternative-mutation.hook";
+import type { MealSelection } from "../api/meal-alternatives.api";
+import { normalizeApiError } from "@/shared/api";
+import { toast } from "sonner";
 
 export default function MealReplacement({
   open,
@@ -12,12 +16,14 @@ export default function MealReplacement({
   meal,
   day,
   currentFood,
+  dayNumber,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   meal: MealType;
   day: string;
   currentFood?: DietFoodDto | null;
+  dayNumber: number;
 }) {
   const { data, isPending, isError, isFetching, refetch } =
     useMealAlternativesQuery(meal, open);
@@ -27,6 +33,31 @@ export default function MealReplacement({
   const mealLabel = { breakfast: "صبحانه", lunch: "ناهار", dinner: "شام" }[
     meal
   ];
+  const selection = useSelectMealAlternativeMutation();
+  const selectedFoodId = selection.variables?.meals[0]?.id;
+
+  const handleSelect = (food: Partial<DietFoodDto>) => {
+    if (selection.isPending) return;
+
+    const id = food.food_id ?? food.foodId;
+    const value = food.quantity?.grams;
+    if (id == null || food.type == null || value == null) return;
+
+    const payload: MealSelection = {
+      diet: "zistpa",
+      meals: [{
+        day: dayNumber,
+        meal,
+        id,
+        type: food.type,
+        value,
+      }],
+    };
+    selection.mutate(payload, {
+      onSuccess: () => onOpenChange(false),
+      onError: (error) => toast.error(normalizeApiError(error).message),
+    });
+  };
 
   return (
     <BaseDrawer
@@ -80,6 +111,8 @@ export default function MealReplacement({
                       key={food.id ?? foodId ?? index}
                       food={food}
                       selected={selected}
+                      loading={selection.isPending && selectedFoodId === (food.food_id ?? food.foodId)}
+                      onSelect={() => handleSelect(food)}
                     />
                   );
                 })}
