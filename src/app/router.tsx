@@ -347,7 +347,7 @@ const createAppRouter = () =>
             className={`mx-auto compact:w-full tablet:w-3/5 ${
               /^\/(auth|onboarding)(\/|$)/.test(window.location.pathname)
                 ? "laptop:w-2/5 desktop:w-1/3"
-                : "desktop:w-2/5"
+                : "desktop:w-4/12"
             }`}
           >
             <AppLoader fullScreen theme={readDashboardTheme()} />

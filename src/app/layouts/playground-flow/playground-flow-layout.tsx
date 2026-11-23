@@ -105,7 +105,7 @@ const PlaygroundFlowLayout = () => {
       className="
         compact:w-full
         tablet:w-3/5 
-        desktop:w-2/5
+        desktop:w-4/12
         mx-auto
         flex
         h-dvh
