@@ -3,7 +3,9 @@ import { Navigate, useLocation } from "react-router-dom";
 import { PiFireFill } from "react-icons/pi";
 import PlaygroundFlowContainer from "@/app/layouts/playground-flow/playground-flow-container";
 import ScrollFade from "@/shared/base-components/scroll-fade";
+import Button from "@/shared/base-components/button";
 import useWeeklyDietPlanQuery from "../hooks/use-weekly-diet-plan-query.hook";
+import useConfirmDietPlanMutation from "../hooks/use-confirm-diet-plan-mutation.hook";
 import WeeklyMealCard from "../components/weekly-meal-card";
 import MealReplacement from "../components/meal-replacement";
 import type { MealType } from "../api/meal-alternatives.api";
@@ -18,6 +20,7 @@ const WeeklyDietPlanningPage = () => {
   const [activeMeal, setActiveMeal] = useState<MealType>("breakfast");
   const [replacementOpen, setReplacementOpen] = useState(false);
   const [replacementDay, setReplacementDay] = useState(0);
+  const confirmation = useConfirmDietPlanMutation();
   const { data, isPending, isError, isFetching, isSuccess, refetch } =
     useWeeklyDietPlanQuery({
       staleTime: (query) => (query.state.data?.status === true ? Infinity : 0),
@@ -50,7 +53,7 @@ const WeeklyDietPlanningPage = () => {
 
   return (
     <PlaygroundFlowContainer>
-      <div className="flex h-full min-h-0 flex-col overflow-hidden mt-2">
+      <div className="flex h-full min-h-0 flex-col overflow-hidden pt-2">
         <section
           dir="rtl"
           aria-label="خلاصه کالری و مواد مغذی"
@@ -205,6 +208,20 @@ const WeeklyDietPlanningPage = () => {
             ))}
           </div>
         </ScrollFade>
+        <div className="w-full shrink-0 pt-3">
+          <Button
+            type="button"
+            classes="btn btn-primary-green"
+            title={confirmation.isPending ? "در حال تایید..." : "تایید برنامه"}
+            disable={
+              !isSuccess ||
+              data?.status !== true ||
+              isFetching ||
+              confirmation.isSuccess
+            }
+            onClick={confirmation.submit}
+          />
+        </div>
       </div>
       <MealReplacement
         open={replacementOpen}

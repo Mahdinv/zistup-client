@@ -76,16 +76,22 @@ const Button = ({
           </div>
         )}
 
-        {loading ? (
+        {icon && (
+          <span
+            className={`${iconClasses ?? ""} self-center ${loading ? "invisible" : ""}`}
+          >
+            {icon}
+          </span>
+        )}
+
+        {loading && (
           <span
             className="absolute inset-0 flex items-center justify-center"
             aria-hidden="true"
           >
             <PiCircleNotch className="animate-spin" />
           </span>
-        ) : icon ? (
-          <span className={`${iconClasses ?? ""} self-center`}>{icon}</span>
-        ) : null}
+        )}
       </div>
     </button>
   );
