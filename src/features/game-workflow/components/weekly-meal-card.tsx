@@ -1,5 +1,8 @@
 import { PiArrowsClockwise, PiBowlSteam, PiFadersFill } from "react-icons/pi";
-import type { DietFoodDto, DietMealDto } from "@/features/dashboard/api/dto/diet-day.dto";
+import type {
+  DietFoodDto,
+  DietMealDto,
+} from "@/features/dashboard/api/dto/diet-day.dto";
 import Button from "@/shared/base-components/button";
 import ImageWithSkeleton from "@/shared/base-components/image-with-skeleton";
 import { useEffect, useState } from "react";
@@ -50,8 +53,13 @@ export default function WeeklyMealCard({
   const foodId = food?.food_id ?? food?.foodId;
   const grams = food?.quantity?.grams;
   const canOpenDetails =
-    food != null && foodId != null && Number.isSafeInteger(foodId) &&
-    foodId > 0 && grams != null && Number.isFinite(grams) && grams > 0;
+    food != null &&
+    foodId != null &&
+    Number.isSafeInteger(foodId) &&
+    foodId > 0 &&
+    grams != null &&
+    Number.isFinite(grams) &&
+    grams > 0;
   const companions = (meal?.companions ?? []).filter(
     (item, index, items) =>
       item &&
@@ -65,7 +73,7 @@ export default function WeeklyMealCard({
   return (
     <article
       dir="rtl"
-      className="flex w-full min-w-0 flex-col gap-3 rounded-[20px] border border-[#292F37] bg-[#1C2026] p-4 font-peyda text-[13px] font-bold text-white mobile:text-[14px] fold:text-[16px] laptop:text-[18px]"
+      className="flex w-full min-w-0 flex-col gap-3 rounded-2xl border border-[#292F37] bg-[#1C2026] p-4 font-peyda text-[13px] font-bold text-white mobile:text-[14px] fold:text-[16px] laptop:text-[18px]"
     >
       <header className="flex items-center justify-between gap-2 border-b border-[#292F37] pb-[0.857em]">
         <h3 className="flex flex-wrap items-baseline gap-[0.571em] text-[1.143em]">
@@ -94,7 +102,7 @@ export default function WeeklyMealCard({
           )}
         </div>
         <div className="min-w-0">
-          <h4 className="text-[1.143em] leading-[1.5] break-words">
+          <h4 className="text-[1.143em] leading-normal wrap-break-word">
             {food?.title ?? "غذایی ثبت نشده"}
           </h4>
           <p className="text-[0.786em] text-[#527B88]">
@@ -230,14 +238,16 @@ export default function WeeklyMealCard({
             try {
               await mutateAsync({
                 diet: "zistpa",
-                meals: [{
-                  day: dayNumber,
-                  meal: details.mealId,
-                  id: details.selectedFoodId,
-                  type: details.selectedFoodType,
-                  value: details.quantity.amount,
-                  separatedItems,
-                }],
+                meals: [
+                  {
+                    day: dayNumber,
+                    meal: details.mealId,
+                    id: details.selectedFoodId,
+                    type: details.selectedFoodType,
+                    value: details.quantity.amount,
+                    separatedItems,
+                  },
+                ],
               });
               return true;
             } catch (error) {

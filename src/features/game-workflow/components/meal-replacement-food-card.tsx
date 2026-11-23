@@ -18,7 +18,7 @@ const MealReplacementFoodCard = memo(function MealReplacementFoodCard({
   return (
     <article
       dir="rtl"
-      className="flex min-w-0 items-center gap-[0.714em] rounded-[20px] border border-[#292F37] bg-[#0D0E12] px-3 py-[9px] font-yekan text-[13px] mobile:text-[14px] fold:text-[16px] laptop:text-[18px]"
+      className="flex min-w-0 items-center gap-[0.714em] rounded-2xl border border-[#292F37] bg-[#0D0E12] px-3 py-2.25 font-yekan text-[13px] mobile:text-[14px] fold:text-[16px] laptop:text-[18px]"
     >
       {food.image_url ? (
         <ImageWithSkeleton
@@ -45,7 +45,7 @@ const MealReplacementFoodCard = memo(function MealReplacementFoodCard({
         </p>
       </div>
       {selected ? (
-        <span className="flex shrink-0 items-center justify-center gap-1 rounded-[10px] border border-[#2CE57F] bg-[#12663F]/40 px-[1em] py-[0.429em] text-[0.857em] leading-[1.4] font-bold text-[#2CE57F]">
+        <span className="flex shrink-0 items-center justify-center gap-1 rounded-xs border border-[#2CE57F] bg-[#12663F]/40 px-[1em] py-[0.429em] text-[0.857em] leading-[1.4] font-bold text-[#2CE57F]">
           <PiCheckBold
             aria-hidden="true"
             className="compact:text-xl fold:text-2xl laptop:text-3xl"

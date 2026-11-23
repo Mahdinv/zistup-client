@@ -45,13 +45,15 @@ export default function MealReplacement({
 
     const payload: MealSelection = {
       diet: "zistpa",
-      meals: [{
-        day: dayNumber,
-        meal,
-        id,
-        type: food.type,
-        value,
-      }],
+      meals: [
+        {
+          day: dayNumber,
+          meal,
+          id,
+          type: food.type,
+          value,
+        },
+      ],
     };
     selection.mutate(payload, {
       onSuccess: () => onOpenChange(false),
@@ -66,7 +68,7 @@ export default function MealReplacement({
       title={`انتخاب جایگزین برای ${mealLabel} ${day}`}
       theme="dark"
       closeIcon={<PiXCircle aria-hidden="true" className="size-6" />}
-      className="dark:bg-[#21262D] dark:text-[#DEE2E0] [--scroll-fade-color:#21262D] dark:[--scroll-fade-color:#21262D] [&>div>header]:border-[#314951] [&>div>header]:px-4 [&>div>header]:pb-4 [&_[data-slot=drawer-title]]:text-[16px] mobile:[&_[data-slot=drawer-title]]:text-[18px] fold:[&_[data-slot=drawer-title]]:text-[20px] laptop:[&_[data-slot=drawer-title]]:text-[22px] [&_[data-slot=drawer-title]]:leading-[1.2] [&_[data-slot=drawer-close]]:size-6 [&_[data-slot=drawer-close]]:text-[#3F5E68] [&_[data-slot=base-drawer-body]]:p-4"
+      className="dark:bg-[#21262D] dark:text-[#DEE2E0] [--scroll-fade-color:#21262D] dark:[--scroll-fade-color:#21262D] [&>div>header]:border-darker-blue-100 [&>div>header]:px-4 [&>div>header]:pb-4 **:data-[slot=drawer-title]:text-[16px] mobile:**:data-[slot=drawer-title]:text-[18px] fold:**:data-[slot=drawer-title]:text-[20px] laptop:**:data-[slot=drawer-title]:text-[22px] **:data-[slot=drawer-title]:leading-[1.2] **:data-[slot=drawer-close]:size-6 **:data-[slot=drawer-close]:text-[#3F5E68] **:data-[slot=base-drawer-body]:p-4"
     >
       <div className="font-peyda text-[13px] mobile:text-[14px] fold:text-[16px] laptop:text-[18px]">
         {!isError && data?.success !== false && (
@@ -111,7 +113,10 @@ export default function MealReplacement({
                       key={food.id ?? foodId ?? index}
                       food={food}
                       selected={selected}
-                      loading={selection.isPending && selectedFoodId === (food.food_id ?? food.foodId)}
+                      loading={
+                        selection.isPending &&
+                        selectedFoodId === (food.food_id ?? food.foodId)
+                      }
                       onSelect={() => handleSelect(food)}
                     />
                   );

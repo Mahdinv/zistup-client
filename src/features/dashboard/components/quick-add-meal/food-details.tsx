@@ -190,7 +190,7 @@ const NutritionSummary = memo(function NutritionSummary({
       }
       className="rounded-2xl bg-blue-300 p-3 shadow-[0_4px_4px_0_#0000000a] dark:shadow-none dark:bg-darker-blue-400"
     >
-      <div className="mb-2 flex h-[39px] items-center justify-between gap-2">
+      <div className="mb-2 flex h-9.75 items-center justify-between gap-2">
         <h3 className="flex items-center gap-1 font-bold">
           <MealIcon name="flame" />
           کالری دریافتی
@@ -213,10 +213,10 @@ const NutritionSummary = memo(function NutritionSummary({
           slides={nutrientSlides}
           slideClassName="!min-w-44 !max-w-44"
           renderItem={(item) => (
-            <div className="flex h-[62px] flex-col justify-center rounded-xs bg-darker-blue-200 px-1.5 py-2 text-center text-white dark:bg-darker-blue-500">
+            <div className="flex h-15.5 flex-col justify-center rounded-xs bg-darker-blue-200 px-1.5 py-2 text-center text-white dark:bg-darker-blue-500">
               <p
                 title={item.label}
-                className="flex h-[13px] items-center justify-center gap-1 text-sm leading-4"
+                className="flex h-3.25 items-center justify-center gap-1 text-sm leading-4"
               >
                 <span
                   aria-hidden="true"

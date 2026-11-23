@@ -78,7 +78,7 @@ const BaseDrawer = ({
           height === "half" && "h-[50dvh]",
           height === "content" && "h-auto",
           quickMeal &&
-            "border-0 data-[swipe-direction=down]:border-0 bg-[#c3e6f3] text-darker-green-200 dark:text-gray-200 [--scroll-fade-color:#c3e6f3] [&>div>header]:pb-4 [&>div>header]:border-blue-500 dark:[&>div>header]:border-darker-blue-100 [&_[data-slot=drawer-close]]:h-8 [&_[data-slot=drawer-close]]:w-6 [&_[data-slot=drawer-swipe-handle]]:h-6 [&_[data-slot=drawer-swipe-handle]]:items-start [&_[data-slot=drawer-swipe-handle]]:pt-[7px] [&_[data-slot=drawer-swipe-handle]]:after:h-[5px] [&_[data-slot=drawer-swipe-handle]]:after:w-[57px] [&_[data-slot=drawer-title]]:text-[20px] [&_[data-slot=drawer-title]]:leading-[1.2] [&_[data-slot=base-drawer-body]]:p-4 [&_[data-slot=base-drawer-footer]]:pb-[max(18px,env(safe-area-inset-bottom))]",
+            "border-0 data-[swipe-direction=down]:border-0 bg-[#c3e6f3] text-darker-green-200 dark:text-gray-200 [--scroll-fade-color:#c3e6f3] [&>div>header]:pb-4 [&>div>header]:border-blue-500 dark:[&>div>header]:border-darker-blue-100 **:data-[slot=drawer-close]:h-8 **:data-[slot=drawer-close]:w-6 **:data-[slot=drawer-swipe-handle]:h-6 **:data-[slot=drawer-swipe-handle]:items-start **:data-[slot=drawer-swipe-handle]:pt-1.75 **:data-[slot=drawer-swipe-handle]:after:h-1.25 **:data-[slot=drawer-swipe-handle]:after:w-14.25 **:data-[slot=drawer-title]:text-[20px] **:data-[slot=drawer-title]:leading-[1.2] **:data-[slot=base-drawer-body]:p-4 **:data-[slot=base-drawer-footer]:pb-[max(18px,env(safe-area-inset-bottom))]",
           className,
         )}
       >
