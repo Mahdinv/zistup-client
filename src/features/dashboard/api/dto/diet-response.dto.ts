@@ -10,4 +10,5 @@ export type DietResponseDto = {
   diet: { key: string; title: string };
   shopping: ShoppingDto;
   diet_goals_summary?: DietGoalsSummary | null;
+  isConfirm?: boolean;
 };

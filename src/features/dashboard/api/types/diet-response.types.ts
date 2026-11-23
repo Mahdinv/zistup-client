@@ -23,4 +23,5 @@ export type DietResponse = {
   diet: { key: string; title: string };
   shopping: Shopping;
   dietGoalsSummary?: DietGoalsSummary | null;
+  isConfirm: boolean;
 };

@@ -17,6 +17,7 @@ import NotFoundPage from "./layouts/not-found-page";
 // Keep Dashboard and Profile ready before navigation, including after generation.
 import DashboardPage from "@/features/dashboard/pages/dashboard-page";
 import ProfilePage from "@/features/dashboard/pages/profile-page";
+import { redirectUnconfirmedDiet } from "@/features/dashboard/loaders/redirect-unconfirmed-diet";
 // Render the weekly plan shell immediately; its query loads data inside the page.
 import WeeklyDietPlanningPage from "@/features/game-workflow/pages/weekly-diet-planning-page";
 import { withErrorBoundaries } from "./route-error-boundary";
@@ -305,10 +306,12 @@ const routes: RouteObject[] = [
           },
           {
             path: "dashboard",
+            loader: redirectUnconfirmedDiet,
             element: <DashboardPage />,
           },
           {
             path: "diets",
+            loader: redirectUnconfirmedDiet,
             element: <DietsPage />,
           },
           {

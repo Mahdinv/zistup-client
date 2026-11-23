@@ -1,12 +1,19 @@
-import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
+import { queryOptions, useQuery } from "@tanstack/react-query";
 import { getOptimizedDietary } from "../api/optimized-dietary.api";
 import {
   latestDietCacheOptions,
   latestDietQueryKey,
 } from "@/features/dashboard/constants/latest-diet-query.constants";
 
+export const optimizedDietaryQueryOptions = queryOptions({
+  queryKey: latestDietQueryKey,
+  ...latestDietCacheOptions,
+  queryFn: ({ signal }) => getOptimizedDietary(signal),
+  retry: false,
+});
+
 type QueryOptions = Pick<
-  UseQueryOptions<Awaited<ReturnType<typeof getOptimizedDietary>>>,
+  typeof optimizedDietaryQueryOptions,
   "staleTime" | "gcTime" | "refetchOnMount"
 >;
 
@@ -15,9 +22,7 @@ const useOptimizedDietaryQuery = (
   options: QueryOptions = {},
 ) => {
   return useQuery({
-    queryKey: latestDietQueryKey,
-    ...latestDietCacheOptions,
-    queryFn: ({ signal }) => getOptimizedDietary(signal),
+    ...optimizedDietaryQueryOptions,
     enabled,
     refetchInterval: (query) => {
       const isReady =
@@ -26,7 +31,6 @@ const useOptimizedDietaryQuery = (
         !!query.state.data.data;
       return isReady ? false : 5_000;
     },
-    retry: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchIntervalInBackground: true,
