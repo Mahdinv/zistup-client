@@ -4,6 +4,7 @@ import ScrollFade from "@/shared/base-components/scroll-fade";
 import PlaygroundFlowContainer from "@/app/layouts/playground-flow/playground-flow-container";
 import { getPlaygroundFlowOrigin } from "@/app/layouts/playground-flow/playground-flow-navigation";
 import AppLoader from "@/shared/base-components/app-loader";
+import { mapShopping } from "@/features/dashboard/api/mappers/sopping.mapper";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -21,7 +22,7 @@ import LoaderStep from "../components/optimized-dietary/loader-step";
 
 import type { LoaderStepType } from "../api/optimized-dietary.types";
 import useDietLoader from "../hooks/use-diet-loader.hook";
-import useOptimizedDietaryQuery from "../hooks/use-optimized-dietary-query.hook";
+import useWeeklyDietPlanQuery from "../hooks/use-weekly-diet-plan-query.hook";
 import FoodGroupsCategoryAccordion from "../components/food-groups-category-accordion";
 import FoodGroupItemSelection from "@/shared/base-components/food-group-item-selection";
 
@@ -148,16 +149,22 @@ const OptimizedDietaryPage = () => {
     return () => window.clearTimeout(timeoutId);
   }, [isExistingDiet]);
 
-  const optimizedDietQuery = useOptimizedDietaryQuery(
-    isExistingDiet || canStartPolling,
-    isExistingDiet ? {} : { staleTime: 0, refetchOnMount: "always" },
-  );
+  const weeklyDietPlanQuery = useWeeklyDietPlanQuery({
+    enabled: isExistingDiet || canStartPolling,
+    staleTime: isExistingDiet ? Infinity : 0,
+    refetchInterval: (query) =>
+      query.state.status === "success" && query.state.data?.status === true
+        ? false
+        : 5_000,
+    refetchIntervalInBackground: true,
+  });
   const isRequestDone =
     canStartPolling &&
-    optimizedDietQuery.isFetchedAfterMount &&
-    optimizedDietQuery.isSuccess &&
-    optimizedDietQuery.data?.success === true &&
-    !!optimizedDietQuery.data.data;
+    weeklyDietPlanQuery.isFetchedAfterMount &&
+    weeklyDietPlanQuery.isSuccess &&
+    weeklyDietPlanQuery.data?.status === true;
+  const shopping = weeklyDietPlanQuery.data?.data?.shopping;
+  const shoppingGroups = shopping ? mapShopping(shopping).groups : [];
 
   const { loaderSteps, isLoaderCompleted } = useDietLoader({
     steps: initialLoaderSteps,
@@ -176,7 +183,7 @@ const OptimizedDietaryPage = () => {
     return () => window.clearTimeout(timeoutId);
   }, [isLoaderCompleted, isExistingDiet]);
 
-  if (isExistingDiet && !optimizedDietQuery.data?.success) {
+  if (isExistingDiet && weeklyDietPlanQuery.data?.status !== true) {
     return <AppLoader label="در حال دریافت برنامه..." />;
   }
 
@@ -280,34 +287,31 @@ const OptimizedDietaryPage = () => {
             variants={resultItemVariants}
             className="w-full flex flex-col items-center gap-3 mt-2 px-6"
           >
-            {(optimizedDietQuery.data?.data?.shopping.groups ?? []).map(
-              (group) => {
-                if (!group.items || group.items.length === 0) return;
-                return (
-                  <FoodGroupsCategoryAccordion
-                    name="optimized-dietary"
-                    key={group.id}
-                    title={group.title}
-                    color={
-                      groupsColor.find(
-                        (groupColor) => groupColor.id === group.id,
-                      )?.color
-                    }
-                    selectedItemCount={group.itemCount}
-                    open={accordionOpen === group.id}
-                    onToggle={() =>
-                      setAccordionOpen((prev) =>
-                        prev === group.id ? null : group.id,
-                      )
-                    }
-                  >
-                    {(group.items || []).map((item) => (
-                      <FoodGroupItemSelection key={item.id} item={item} />
-                    ))}
-                  </FoodGroupsCategoryAccordion>
-                );
-              },
-            )}
+            {shoppingGroups.map((group) => {
+              if (!group.items || group.items.length === 0) return;
+              return (
+                <FoodGroupsCategoryAccordion
+                  name="optimized-dietary"
+                  key={group.id}
+                  title={group.title}
+                  color={
+                    groupsColor.find((groupColor) => groupColor.id === group.id)
+                      ?.color
+                  }
+                  selectedItemCount={group.itemCount}
+                  open={accordionOpen === group.id}
+                  onToggle={() =>
+                    setAccordionOpen((prev) =>
+                      prev === group.id ? null : group.id,
+                    )
+                  }
+                >
+                  {(group.items || []).map((item) => (
+                    <FoodGroupItemSelection key={item.id} item={item} />
+                  ))}
+                </FoodGroupsCategoryAccordion>
+              );
+            })}
           </motion.div>
         </div>
       </ScrollFade>

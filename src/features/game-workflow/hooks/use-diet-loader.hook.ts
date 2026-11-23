@@ -14,13 +14,15 @@ const useDietLoader = ({
   isRequestDone,
   enabled = true,
 }: UseDietLoaderProps) => {
-  const [activeStepIndex, setActiveStepIndex] = useState(0);
+  const [stepIndex, setStepIndex] = useState(0);
   const lastStepIndex = steps.length - 1;
+  // A ready response completes the loader even if background timers ran late.
+  const activeStepIndex = isRequestDone ? lastStepIndex : stepIndex;
 
   useEffect(() => {
     if (!enabled || activeStepIndex >= lastStepIndex) return;
     const timeoutId = window.setTimeout(() => {
-      setActiveStepIndex((prev) => Math.min(prev + 1, lastStepIndex));
+      setStepIndex((prev) => Math.min(prev + 1, lastStepIndex));
     }, durations[activeStepIndex]);
     return () => window.clearTimeout(timeoutId);
   }, [activeStepIndex, durations, lastStepIndex, enabled]);

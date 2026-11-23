@@ -1,7 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 import { getWeeklyDietPlan } from "../api/weekly-diet-plan.api";
 
-export default function useWeeklyDietPlanQuery() {
+type QueryOptions = Pick<
+  UseQueryOptions<Awaited<ReturnType<typeof getWeeklyDietPlan>>>,
+  "enabled" | "staleTime" | "refetchInterval" | "refetchIntervalInBackground"
+>;
+
+export default function useWeeklyDietPlanQuery(options: QueryOptions = {}) {
   return useQuery({
     queryKey: ["weekly-diet-plan", "zistpa"],
     queryFn: async () => {
@@ -20,5 +25,6 @@ export default function useWeeklyDietPlanQuery() {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     retry: false,
+    ...options,
   });
 }
