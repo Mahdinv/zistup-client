@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Navigate, useLocation } from "react-router-dom";
 import { PiFireFill } from "react-icons/pi";
 import PlaygroundFlowContainer from "@/app/layouts/playground-flow/playground-flow-container";
 import ScrollFade from "@/shared/base-components/scroll-fade";
@@ -13,12 +14,22 @@ const formatValue = (value?: number) =>
     : "—";
 
 const WeeklyDietPlanningPage = () => {
+  const { state } = useLocation();
   const [activeMeal, setActiveMeal] = useState<MealType>("breakfast");
   const [replacementOpen, setReplacementOpen] = useState(false);
   const [replacementDay, setReplacementDay] = useState(0);
-  const { data, isPending, isError, isFetching, refetch } =
-    useWeeklyDietPlanQuery();
-  const summary = data?.success ? data.data.summary : undefined;
+  const { data, isPending, isError, isFetching, isSuccess, refetch } =
+    useWeeklyDietPlanQuery({
+      staleTime: (query) => (query.state.data?.status === true ? Infinity : 0),
+      refetchOnMount: true,
+    });
+
+  if (isSuccess && !isFetching && data?.status === false && !data.data) {
+    return (
+      <Navigate to="/game-workflow/optimized-dietary" replace state={state} />
+    );
+  }
+  const summary = data?.success ? data.data?.summary : undefined;
   const nutrients = [
     {
       label: "پروتئین",
@@ -133,7 +144,7 @@ const WeeklyDietPlanningPage = () => {
           ))}
         </div>
         <ScrollFade wrapperClassName="mt-3 h-auto min-h-0 flex-1">
-          {isPending && (
+          {(isPending || (isFetching && !data?.data)) && (
             <p
               role="status"
               className="pb-3 text-center font-peyda text-[13px] text-white mobile:text-[14px] fold:text-[16px] laptop:text-[18px]"
@@ -185,7 +196,7 @@ const WeeklyDietPlanningPage = () => {
                 }
                 meal={
                   data?.success
-                    ? data.data.days
+                    ? data.data?.days
                         ?.find((item) => item.day === index + 1)
                         ?.meals?.find((meal) => meal.key === activeMeal)
                     : undefined
@@ -213,7 +224,7 @@ const WeeklyDietPlanningPage = () => {
         }
         currentFood={
           data?.success
-            ? data.data.days
+            ? data.data?.days
                 ?.find((day) => day.day === replacementDay)
                 ?.meals?.find((meal) => meal.key === activeMeal)?.main
             : undefined

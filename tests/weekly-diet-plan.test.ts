@@ -34,6 +34,8 @@ test("weekly plan normalizes response readiness without confusing review status"
       [{ success: true, data: plan }, true],
       [{ success: true, status: true, data: plan }, true],
       [{ success: true, status: false, data: plan }, false],
+      [{ success: false, status: false, data: null }, false],
+      [{ success: true, status: false }, false],
       [{ success: true, data: null }, false],
       [{ success: true, data: { status: "needs_review" } }, false],
     ] as const) {
@@ -50,6 +52,22 @@ test("weekly plan normalizes response readiness without confusing review status"
         "Preserve plan fields and review status",
       );
       assert.equal(result.success, payload.success);
+    }
+    for (const payload of [
+      {
+        success: false,
+        status: false,
+        error: { code: 42, message: "Plan failed" },
+      },
+      { success: false, data: null },
+    ]) {
+      httpClient.defaults.adapter = async (config) => ({
+        data: payload,
+        status: 200,
+        config,
+        headers: {},
+      });
+      await assert.rejects(getWeeklyDietPlan(), { type: "api" });
     }
   } finally {
     await server.close();

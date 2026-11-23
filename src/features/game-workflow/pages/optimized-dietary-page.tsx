@@ -7,6 +7,7 @@ import AppLoader from "@/shared/base-components/app-loader";
 import { mapShopping } from "@/features/dashboard/api/mappers/sopping.mapper";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   PiAlarm,
@@ -22,7 +23,9 @@ import LoaderStep from "../components/optimized-dietary/loader-step";
 
 import type { LoaderStepType } from "../api/optimized-dietary.types";
 import useDietLoader from "../hooks/use-diet-loader.hook";
-import useWeeklyDietPlanQuery from "../hooks/use-weekly-diet-plan-query.hook";
+import useWeeklyDietPlanQuery, {
+  weeklyDietPlanQueryOptions,
+} from "../hooks/use-weekly-diet-plan-query.hook";
 import FoodGroupsCategoryAccordion from "../components/food-groups-category-accordion";
 import FoodGroupItemSelection from "@/shared/base-components/food-group-item-selection";
 
@@ -135,23 +138,33 @@ const resultItemVariants = {
 const OptimizedDietaryPage = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
-  const isExistingDiet = getPlaygroundFlowOrigin(state) === "/app/diets";
+  const queryClient = useQueryClient();
+  const [cachedDiet] = useState(() =>
+    queryClient.getQueryData(weeklyDietPlanQueryOptions.queryKey),
+  );
+  const hasCachedDiet =
+    cachedDiet?.status === true &&
+    Array.isArray(cachedDiet.data?.shopping?.groups);
+  const isExistingDiet =
+    getPlaygroundFlowOrigin(state) === "/app/diets" &&
+    cachedDiet?.status !== false;
   const [canStartPolling, setCanStartPolling] = useState(false);
-  const [showResult, setShowResult] = useState(false);
+  const [showResult, setShowResult] = useState(hasCachedDiet);
   const [accordionOpen, setAccordionOpen] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isExistingDiet) return;
+    if (isExistingDiet || hasCachedDiet) return;
     const timeoutId = window.setTimeout(() => {
       setCanStartPolling(true);
     }, 30_000);
 
     return () => window.clearTimeout(timeoutId);
-  }, [isExistingDiet]);
+  }, [isExistingDiet, hasCachedDiet]);
 
   const weeklyDietPlanQuery = useWeeklyDietPlanQuery({
-    enabled: isExistingDiet || canStartPolling,
-    staleTime: isExistingDiet ? Infinity : 0,
+    enabled: isExistingDiet || hasCachedDiet || canStartPolling,
+    staleTime: isExistingDiet || hasCachedDiet ? Infinity : 0,
+    refetchOnMount: hasCachedDiet ? false : "always",
     refetchInterval: (query) =>
       query.state.status === "success" && query.state.data?.status === true
         ? false
@@ -170,7 +183,7 @@ const OptimizedDietaryPage = () => {
     steps: initialLoaderSteps,
     durations: loaderStepDurations,
     isRequestDone,
-    enabled: !isExistingDiet,
+    enabled: !isExistingDiet && !hasCachedDiet,
   });
 
   useEffect(() => {
@@ -320,8 +333,13 @@ const OptimizedDietaryPage = () => {
         <Button
           type="button"
           classes="btn btn-primary-green"
-          title="شروع و پیگیری وعده ها در داشبورد"
-          onClick={() => void navigate("/app/dashboard", { replace: true })}
+          title="مشاهده و بررسی رژیم غذایی شما"
+          onClick={() =>
+            void navigate(
+              "/game-workflow/optimized-dietary/weekly-diet-planning",
+              { replace: true },
+            )
+          }
         />
       </motion.div>
     </motion.div>

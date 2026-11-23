@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
+import { MemoryRouter } from "react-router-dom";
 import QuickAddMeal from "../../src/features/dashboard/components/quick-add-meal/quick-add-meal";
 import SuggestedMealsCard from "../../src/features/dashboard/components/dashboard/diet-goal-meal-suggestions/suggested-meals-card";
 import { mapDietDay } from "../../src/features/dashboard/api/mappers/diet-day.mapper";
@@ -58,7 +59,9 @@ createRoot(document.getElementById("root")!).render(
       {flow === "suggested" ? (
         <SuggestedHarness />
       ) : flow === "weekly" ? (
-        <WeeklyDietPlanningPage />
+        <MemoryRouter>
+          <WeeklyDietPlanningPage />
+        </MemoryRouter>
       ) : (
         <QuickAddHarness />
       )}
