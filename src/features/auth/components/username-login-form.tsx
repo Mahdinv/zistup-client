@@ -1,10 +1,9 @@
-import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PiEyeBold, PiEyeClosedBold } from "react-icons/pi";
 import { toast } from "sonner";
 import Button from "@/shared/base-components/button";
 import TextBox from "@/shared/base-components/text-box";
+import PasswordTextBox from "./password-text-box";
 import {
   UsernameLoginSchema,
   type UsernameLogin,
@@ -12,10 +11,13 @@ import {
 
 type UsernameLoginFormProps = {
   onPhoneLogin: () => void;
+  onRegister: () => void;
 };
 
-const UsernameLoginForm = ({ onPhoneLogin }: UsernameLoginFormProps) => {
-  const [passwordVisible, setPasswordVisible] = useState(false);
+const UsernameLoginForm = ({
+  onPhoneLogin,
+  onRegister,
+}: UsernameLoginFormProps) => {
   const {
     register,
     handleSubmit,
@@ -49,33 +51,14 @@ const UsernameLoginForm = ({ onPhoneLogin }: UsernameLoginFormProps) => {
         error={errors.username?.message}
         aria-invalid={!!errors.username}
       />
-      <TextBox
+      <PasswordTextBox
         label="رمز عبور"
-        type={passwordVisible ? "text" : "password"}
         placeHolder="رمز عبورت رو اینجا وارد کن"
         autoComplete="current-password"
         classes="login-text-box"
         {...register("password")}
         error={errors.password?.message}
         aria-invalid={!!errors.password}
-        icon={
-          <button
-            type="button"
-            aria-label={
-              passwordVisible ? "پنهان کردن رمز عبور" : "نمایش رمز عبور"
-            }
-            aria-pressed={passwordVisible}
-            aria-controls="password"
-            className="flex size-6 cursor-pointer items-center justify-center rounded-sm text-4xl text-blue-900"
-            onClick={() => setPasswordVisible((visible) => !visible)}
-          >
-            {passwordVisible ? (
-              <PiEyeClosedBold aria-hidden="true" />
-            ) : (
-              <PiEyeBold aria-hidden="true" />
-            )}
-          </button>
-        }
       />
       <a
         href="#mobile-login-panel"
@@ -97,7 +80,7 @@ const UsernameLoginForm = ({ onPhoneLogin }: UsernameLoginFormProps) => {
         <Button
           classes="btn btn-outline-green login-action"
           title="ساخت حساب جدید"
-          onClick={onPhoneLogin}
+          onClick={onRegister}
         />
       </div>
     </form>

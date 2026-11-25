@@ -23,4 +23,5 @@ export type AccountFlowNavigationState<T = unknown> = {
 
 export type AccountFlowOutletContext = {
   setBackHandler: (handler: (() => void) | null) => void;
+  setHeader: (header: AccountFlowHeaderConfig | null) => void;
 };

@@ -27,9 +27,10 @@ const appVersionPlugin = (version: string): Plugin => ({
   },
 });
 
-export default defineConfig({
-  // Keep app optimization separate from middleware/SSR test servers.
-  cacheDir: "node_modules/.vite-client",
+export default defineConfig(({ command }) => ({
+  // A build must not replace dependency bundles used by a running dev server.
+  cacheDir:
+    command === "serve" ? "node_modules/.vite-dev" : "node_modules/.vite-build",
   plugins: [
     react(),
     tailwindcss(),
@@ -117,8 +118,14 @@ export default defineConfig({
   },
 
   optimizeDeps: {
-    // Pre-bundle icon packs before lazy routes request them to avoid stale dep URLs.
+    // Keep the React runtime and router ready before lazy onboarding routes load.
     include: [
+      "react",
+      "react/jsx-runtime",
+      "react/jsx-dev-runtime",
+      "react-dom",
+      "react-dom/client",
+      "react-router-dom",
       "react-icons/cg",
       "react-icons/fa6",
       "react-icons/fc",
@@ -133,8 +140,9 @@ export default defineConfig({
   },
 
   resolve: {
+    dedupe: ["react", "react-dom", "react-router", "react-router-dom"],
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
-});
+}));

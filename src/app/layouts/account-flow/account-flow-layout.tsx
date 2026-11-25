@@ -1,7 +1,10 @@
 import { Suspense, useCallback, useState } from "react";
 import { Outlet, useLocation, useMatches, useNavigate } from "react-router-dom";
 import AccountFlowHeader from "./account-flow-header";
-import type { AccountFlowNavigationState } from "./account-flow.types";
+import type {
+  AccountFlowHeaderConfig,
+  AccountFlowNavigationState,
+} from "./account-flow.types";
 import {
   DEFAULT_ACCOUNT_FLOW_HEADER,
   hasAccountFlowHeaderSetting,
@@ -12,6 +15,9 @@ const AccountFlowLayout = () => {
   const matches = useMatches();
   const navigate = useNavigate();
   const location = useLocation();
+  const [stepHeader, setHeader] = useState<AccountFlowHeaderConfig | null>(
+    null,
+  );
 
   const [backHandlerState, setBackHandlerState] = useState<(() => void) | null>(
     null,
@@ -28,7 +34,7 @@ const AccountFlowLayout = () => {
 
   const dynamicHeader = navigationState?.accountFlowHeader;
 
-  const finalHeaderSetting = dynamicHeader ?? handleHeaderSetting;
+  const finalHeaderSetting = stepHeader ?? dynamicHeader ?? handleHeaderSetting;
 
   const showHeader = finalHeaderSetting !== false;
 
@@ -65,6 +71,7 @@ const AccountFlowLayout = () => {
           <Outlet
             context={{
               setBackHandler,
+              setHeader,
             }}
           />
         </Suspense>

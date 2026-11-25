@@ -22,20 +22,9 @@ export const PhoneLoginSchema = z.object({
   invitationCode: z.string().trim().optional(),
 });
 
-export const PasswordSchema = z
-  .string()
-  .min(1, "رمز عبور را وارد کنید")
-  .min(8, "رمز عبور باید حداقل ۸ کاراکتر داشته باشد")
-  .regex(/\p{Lu}[\s\S]*\p{Lu}/u, "رمز عبور باید حداقل ۲ حرف بزرگ داشته باشد")
-  .regex(/\p{Nd}[\s\S]*\p{Nd}/u, "رمز عبور باید حداقل ۲ رقم داشته باشد")
-  .regex(
-    /[\p{P}\p{S}][\s\S]*[\p{P}\p{S}]/u,
-    "رمز عبور باید حداقل ۲ کاراکتر ویژه (مثل !@#) داشته باشد",
-  );
-
 export const UsernameLoginSchema = z.object({
   username: z.string().trim().min(1, "نام کاربری را وارد کنید"),
-  password: PasswordSchema,
+  password: z.string().min(1, "رمز عبور را وارد کنید"),
 });
 
 export const OtpSchema = z.object({

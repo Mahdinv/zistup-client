@@ -11,15 +11,21 @@ import { useNavigate } from "react-router-dom";
 import type { AuthIdentifierDTO } from "../api/auth.types";
 import { validateUser } from "../api/auth.api";
 import { getPostAuthPath } from "../loaders/get-post-auth-path";
+import { useRef } from "react";
 
 const VerifyOtpForm = ({
   identifier,
   refCode,
+  onVerify = validateUser,
+  successPath,
 }: {
   identifier: AuthIdentifierDTO;
   refCode?: string;
+  onVerify?: (data: Otp) => ReturnType<typeof validateUser>;
+  successPath?: string;
 }) => {
   const navigate = useNavigate();
+  const inFlight = useRef(false);
   const {
     control,
     handleSubmit,
@@ -34,26 +40,30 @@ const VerifyOtpForm = ({
   });
 
   const { mutate, isPending } = useMutation({
-    mutationFn: validateUser,
+    mutationFn: onVerify,
+    gcTime: 0,
     onSuccess: (data) => {
       toast.success("خوش آمدید");
       tokenStorage.set(data.token);
-      navigate(getPostAuthPath(data.user));
+      navigate(successPath ?? getPostAuthPath(data.user));
     },
     onError: (error) => {
+      inFlight.current = false;
       const apiError = normalizeApiError(error);
       toast.error(apiError.message);
     },
   });
 
   const onVerifyOtpHandler: SubmitHandler<Otp> = (data) => {
+    if (inFlight.current) return;
+    inFlight.current = true;
     mutate(data);
   };
 
   return (
     <form
       className="w-full min-h-0 flex-1 flex flex-col items-start gap-4"
-      onSubmit={handleSubmit(onVerifyOtpHandler)}
+      onSubmit={(event) => void handleSubmit(onVerifyOtpHandler)(event)}
     >
       <div className="w-full flex flex-col items-center gap-6">
         <Controller
@@ -77,6 +87,7 @@ const VerifyOtpForm = ({
         classes="w-full mt-auto! btn btn-primary-green"
         title="تایید"
         disable={isPending}
+        loading={isPending}
       />
     </form>
   );

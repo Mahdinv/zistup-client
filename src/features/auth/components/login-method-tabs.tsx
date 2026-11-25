@@ -4,17 +4,23 @@ import { Tabs } from "@base-ui/react/tabs";
 import PhoneLoginForm from "./phone-login-form";
 import UsernameLoginForm from "./username-login-form";
 import type { AuthIdentifierDTO } from "../api/auth.types";
-import "./login-method-tabs.css";
+
+export type LoginMethod = "mobile" | "username";
 
 type LoginMethodTabsProps = {
   onSuccess: (identifier: AuthIdentifierDTO, refCode?: string) => void;
+  onRegister: () => void;
+  defaultMethod?: LoginMethod;
 };
 
-const LoginMethodTabs = ({ onSuccess }: LoginMethodTabsProps) => {
-  const [method, setMethod] = useState("mobile");
+const LoginMethodTabs = ({
+  onSuccess,
+  onRegister,
+  defaultMethod = "mobile",
+}: LoginMethodTabsProps) => {
+  const [method, setMethod] = useState<LoginMethod>(defaultMethod);
   const mobileTabRef = useRef<HTMLButtonElement>(null);
 
-  // Registration and passwordless access already share the existing OTP flow.
   const openMobileLogin = () => {
     setMethod("mobile");
     mobileTabRef.current?.focus();
@@ -25,7 +31,7 @@ const LoginMethodTabs = ({ onSuccess }: LoginMethodTabsProps) => {
       <Tabs.Root
         value={method}
         onValueChange={setMethod}
-        className="login-method-tabs flex min-h-0 w-full flex-1 flex-col gap-8"
+        className="auth-form flex min-h-0 w-full flex-1 flex-col gap-8"
       >
         <Tabs.List
           aria-label="روش ورود"
@@ -61,7 +67,10 @@ const LoginMethodTabs = ({ onSuccess }: LoginMethodTabsProps) => {
           keepMounted
           className="flex flex-1 flex-col data-hidden:hidden"
         >
-          <UsernameLoginForm onPhoneLogin={openMobileLogin} />
+          <UsernameLoginForm
+            onPhoneLogin={openMobileLogin}
+            onRegister={onRegister}
+          />
         </Tabs.Panel>
       </Tabs.Root>
     </DirectionProvider>

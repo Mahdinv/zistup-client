@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
-  PasswordSchema,
   PhoneLoginSchema,
   UsernameLoginSchema,
 } from "../src/features/auth/schemas/login.schema.ts";
+import { PasswordSchema } from "../src/features/auth/schemas/register.schema.ts";
 
 test("password validation accepts the exact boundary and preserves passwords", () => {
   assert.equal(PasswordSchema.parse("AB12!!ab"), "AB12!!ab");
@@ -15,7 +15,7 @@ test("password validation accepts the exact boundary and preserves passwords", (
 for (const [password, message] of [
   ["", "رمز عبور را وارد کنید"],
   ["AB12!!a", "رمز عبور باید حداقل ۸ کاراکتر داشته باشد"],
-  ["Ab12!!ab", "رمز عبور باید حداقل ۲ حرف بزرگ داشته باشد"],
+  ["Ab12!!ab", "رمز عبور باید حداقل ۲ حرف بزرگ انگلیسی داشته باشد"],
   ["AB1a!!ab", "رمز عبور باید حداقل ۲ رقم داشته باشد"],
   ["AB12!abc", "رمز عبور باید حداقل ۲ کاراکتر ویژه (مثل !@#) داشته باشد"],
 ] as const) {
@@ -34,6 +34,15 @@ test("special characters exclude whitespace and letters in other scripts", () =>
 });
 
 test("username validation trims names while retaining the exact password", () => {
+  assert.equal(
+    UsernameLoginSchema.safeParse({ username: "demo", password: "short" })
+      .success,
+    true,
+  );
+  assert.equal(
+    UsernameLoginSchema.safeParse({ username: "demo", password: "" }).success,
+    false,
+  );
   assert.deepEqual(
     UsernameLoginSchema.parse({
       username: "  demo-user  ",
