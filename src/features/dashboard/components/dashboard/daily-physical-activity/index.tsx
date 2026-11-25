@@ -1,4 +1,5 @@
 import useRegisterActivityMutation from "../../../hooks/use-register-activity-mutation.hook";
+import useDeleteActivityMutation from "../../../hooks/use-delete-activity-mutation.hook";
 import { toast } from "sonner";
 import { getApiErrorMessage } from "@/shared/api/error.helpers";
 import useDailyActivitiesQuery from "../../../hooks/use-today-activities-query.hook";
@@ -20,6 +21,7 @@ const DailyPhysicalActivity = ({
   isToday: boolean;
 }) => {
   const registration = useRegisterActivityMutation();
+  const deletion = useDeleteActivityMutation();
   const submissionInFlight = useRef(false);
   const activitiesQuery = useDailyActivitiesQuery(isFuture ? null : date);
   const activities =
@@ -128,7 +130,15 @@ const DailyPhysicalActivity = ({
         >
           <ol className="w-full flex flex-col items-center gap-2">
             {activities.map((activity) => (
-              <PhysicalActivityCard key={activity.id} activity={activity} />
+              <PhysicalActivityCard
+                key={activity.id}
+                activity={activity}
+                deleteDisabled={isFuture || deletion.isPending}
+                isDeleting={
+                  deletion.isPending && deletion.variables === activity.id
+                }
+                onRemove={() => !isFuture && deletion.remove(activity.id)}
+              />
             ))}
           </ol>
         </ScrollFade>

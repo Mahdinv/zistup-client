@@ -31,6 +31,27 @@ type SliderProps<T> = {
   slideClassName?: string;
   selectedIndex?: number;
   equalSlideWidths?: boolean;
+  observeResize?: boolean;
+};
+
+const resizePlugin: KeenSliderPlugin = (slider) => {
+  let frame: number | undefined;
+  const observer = new ResizeObserver(() => {
+    if (frame !== undefined) cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(() => {
+      frame = undefined;
+      const size = slider.options.vertical
+        ? slider.container.clientHeight
+        : slider.container.clientWidth;
+      // Height changes and Keen's own updates must not restart the track.
+      if (size > 0 && Math.abs(size - slider.size) > 1) slider.update();
+    });
+  });
+  slider.on("created", () => observer.observe(slider.container));
+  slider.on("destroyed", () => {
+    observer.disconnect();
+    if (frame !== undefined) cancelAnimationFrame(frame);
+  });
 };
 
 const createAutoplayPlugin = ({
@@ -105,14 +126,16 @@ const Slider = <T,>({
   slideClassName = "",
   selectedIndex,
   equalSlideWidths = false,
+  observeResize = false,
 }: SliderProps<T>) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const plugins = useMemo<KeenSliderPlugin[]>(() => {
-    if (!autoplay) return [];
-
-    return [createAutoplayPlugin(autoplay)];
-  }, [autoplay]);
+    return [
+      ...(autoplay ? [createAutoplayPlugin(autoplay)] : []),
+      ...(observeResize ? [resizePlugin] : []),
+    ];
+  }, [autoplay, observeResize]);
 
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>(
     {

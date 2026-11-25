@@ -55,7 +55,7 @@ const DietGoalMealSuggestions = ({
   return (
     <div
       className="
-                    w-full
+                    w-full min-w-0
                     bg-blue-100 dark:bg-darker-blue-400
                     border border-gray-100 dark:border-dark
                     rounded-2xl p-5 shadow-[0_4px_4px_0_rgba(0,0,0,0.04)]
@@ -65,8 +65,8 @@ const DietGoalMealSuggestions = ({
       <h2 className="font-yekan font-extrabold leading-[135%] compact:text-lg fold:text-xl laptop:text-2xl">
         وعده‌های پیشنهادی هدف رژیمی شما
       </h2>
-      <div className="w-full min-w-0 flex flex-col items-start gap-3 [--meal-card-width:13rem] mobile:[--meal-card-width:14rem] fold:[--meal-card-width:15rem] laptop:[--meal-card-width:16rem] desktop:[--meal-card-width:17rem]">
-        <ol className="w-full flex flex-row justify-self-auto items-center gap-1">
+      <div className="w-full min-w-0 flex flex-col items-start gap-3">
+        <ol className="w-full flex flex-wrap items-center gap-1">
           {tabs.map((tab) => (
             <li
               key={tab.value}
@@ -83,11 +83,12 @@ const DietGoalMealSuggestions = ({
             </li>
           ))}
         </ol>
-        <div className="w-full min-w-0 max-w-[calc(var(--meal-card-width)*2.5+16px)] laptop:max-desktop:max-w-none">
+        <div className="w-full min-w-0">
           <Slider
             key={sliderKey}
-            slides={{ origin: "auto", perView: "auto", spacing: 8 }}
-            slideClassName="flex flex-col w-(--meal-card-width) min-w-(--meal-card-width) max-w-(--meal-card-width) shrink-0"
+            slides={{ origin: "auto", perView: 1.4, spacing: 8 }}
+            slideClassName="flex flex-col min-w-0"
+            observeResize
             getKey={(item) => item.mealId}
             items={displayDiets}
             renderItem={(item) => (

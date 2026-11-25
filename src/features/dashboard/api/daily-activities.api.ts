@@ -14,3 +14,7 @@ export async function getDailyActivities(
   );
   return response.data || null;
 }
+
+export async function deleteActivity(id: number): Promise<void> {
+  await httpClient.post("/dashboard/activities/delete", { id });
+}

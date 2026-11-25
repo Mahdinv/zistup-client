@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { PiCircleNotch } from "react-icons/pi";
 
 type ButtonProps = {
+  "aria-label"?: string;
   classes: string;
   icon?: ReactNode;
   iconClasses?: string;
@@ -18,6 +19,7 @@ type ButtonProps = {
 };
 
 const Button = ({
+  "aria-label": ariaLabel,
   classes,
   icon,
   iconClasses,
@@ -43,6 +45,7 @@ const Button = ({
       onClick={onClick}
       disabled={disable || loading}
       aria-busy={loading}
+      aria-label={ariaLabel}
       name={name}
       value={value}
     >
