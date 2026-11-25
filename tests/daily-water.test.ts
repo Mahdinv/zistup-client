@@ -10,10 +10,12 @@ Object.defineProperty(globalThis, "localStorage", {
 import {
   readDailyWater,
   writeDailyWater,
+  cleanupDailyWaterBeforePlan,
 } from "../src/features/dashboard/lib/daily-water.utils.ts";
 import {
   formatPlanDateForApi,
   getTehranCalendarDate,
+  getPlanDateRange,
 } from "../src/features/dashboard/lib/plan-date.utils.ts";
 
 test("water persists independently for each dashboard calendar date", (t) => {
@@ -40,6 +42,73 @@ test("water persists independently for each dashboard calendar date", (t) => {
     ),
     date,
   );
+});
+
+test("plan cleanup removes only older water records and undated legacy counts", (t) => {
+  const range = getPlanDateRange("2026-10-24 08:00:00");
+  assert.ok(range);
+  const start = formatPlanDateForApi(range.planStartDate);
+  const end = formatPlanDateForApi(range.planEndDate);
+  const entries = new Map<string, string>([
+    ["zistup:daily-water:v1:2026-09-01", "2"],
+    ["zistup:daily-water:v1:2026-10-23", "3"],
+    ["zistup:daily-water:2026-10-22", "4"],
+    ["zistup:daily-water:v0:2026-10-21", "5"],
+    ["zistup:daily-water", "6"],
+    ["zistup:daily-water:v0", "7"],
+    [`zistup:daily-water:v1:${start}`, "1"],
+    ["zistup:daily-water:v1:2026-10-25", "2"],
+    [`zistup:daily-water:v1:${end}`, "8"],
+    [`zistup:daily-water:${start}`, "3"],
+    [`zistup:daily-water:v0:${start}`, "4"],
+    ["zistup:daily-water:v1:2027-01-01", "5"],
+    ["zistup:daily-water:v1:2026-02-30", "6"],
+    ["zistup:daily-water:unknown", "{}"],
+    ["zistup:daily-water-settings", "dark"],
+    ["token", "untouched"],
+    ["zistup:daily-activity:2026-09-01", "untouched"],
+  ]);
+  const preserved = new Map([...entries].slice(6));
+  const removed: string[] = [];
+  t.mock.property(globalThis, "localStorage", {
+    get length() {
+      return entries.size;
+    },
+    key: (index: number) => [...entries.keys()][index] ?? null,
+    getItem: (key: string) => entries.get(key) ?? null,
+    removeItem: (key: string) => {
+      removed.push(key);
+      entries.delete(key);
+    },
+  });
+
+  cleanupDailyWaterBeforePlan(start);
+  assert.deepEqual(entries, preserved);
+  assert.equal(removed.length, 6);
+  cleanupDailyWaterBeforePlan(start);
+  assert.equal(
+    removed.length,
+    6,
+    "repeat cleanup must not mutate current data",
+  );
+
+  const nextStart = formatPlanDateForApi(range.planEndDate + 1);
+  cleanupDailyWaterBeforePlan(nextStart);
+  assert.equal(entries.has(`zistup:daily-water:v1:${start}`), false);
+  assert.equal(entries.has(`zistup:daily-water:v1:${end}`), false);
+  assert.equal(entries.get("zistup:daily-water:v1:2027-01-01"), "5");
+  assert.equal(entries.get("token"), "untouched");
+});
+
+test("cleanup ignores invalid plan starts and tolerates unavailable storage", (t) => {
+  t.mock.property(globalThis, "localStorage", {
+    get length() {
+      throw new Error("Storage blocked");
+    },
+  });
+  for (const start of ["", "invalid", "2026-02-30", "2026-10-24"]) {
+    assert.doesNotThrow(() => cleanupDailyWaterBeforePlan(start));
+  }
 });
 
 test("water storage rejects malformed values and bounds stored counts", (t) => {

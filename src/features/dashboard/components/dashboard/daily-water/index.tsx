@@ -1,9 +1,10 @@
 import { memo, useState } from "react";
-import { PiPlusBold } from "react-icons/pi";
+import { PiMinusBold, PiPlusBold } from "react-icons/pi";
 
 import AnimatedWaveCircle from "./animated-wave-circle";
 import {
   DAILY_WATER_GOAL,
+  DAILY_WATER_LABELS,
   readDailyWater,
   writeDailyWater,
 } from "../../../lib/daily-water.utils";
@@ -21,9 +22,10 @@ const DailyWater = ({ date, readOnly }: DailyWaterProps) => {
   const glasses = readOnly ? 0 : storedGlasses;
   const complete = glasses === DAILY_WATER_GOAL;
 
-  const addGlass = () => {
-    if (readOnly || complete) return;
-    const next = Math.min(glasses + 1, DAILY_WATER_GOAL);
+  const changeGlasses = (delta: number) => {
+    if (readOnly) return;
+    const next = Math.min(DAILY_WATER_GOAL, Math.max(0, glasses + delta));
+    if (next === glasses) return;
     setGlasses(next);
     writeDailyWater(date, next);
   };
@@ -69,36 +71,52 @@ const DailyWater = ({ date, readOnly }: DailyWaterProps) => {
 
       <AnimatedWaveCircle progress={glasses / DAILY_WATER_GOAL} />
 
-      <button
-        type="button"
-        onClick={addGlass}
-        disabled={readOnly || complete}
-        aria-label={complete ? "هدف آب روزانه تکمیل شد" : "افزودن یک لیوان آب"}
+      <div
+        dir="ltr"
+        role="group"
+        aria-label="تنظیم تعداد لیوان آب"
         className="
           mt-auto w-full
           compact:min-h-8 fold:min-h-10 laptop:min-h-12
-          bg-blue-200 dark:bg-darker-blue-300 hover:bg-blue-300 active:bg-blue-300 dark:hover:bg-darker-blue-400 dark:active:bg-darker-blue-400
-          text-blue-400 hover:text-blue-500 active:text-blue-500
+          bg-blue-200 dark:bg-darker-blue-300
+          text-blue-400
           border-[1.5px] border-blue-300 dark:border-dark
           rounded-[37px]
-          flex flex-row justify-center items-center gap-2 cursor-pointer
-          disabled:cursor-default disabled:bg-blue-300 disabled:text-blue-800
-          dark:disabled:bg-darker-blue-100 dark:disabled:text-blue-400
-          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500
+          grid grid-cols-[1fr_auto_1fr] items-stretch gap-1
         "
       >
-        {!complete && (
+        <button
+          type="button"
+          onClick={() => changeGlasses(-1)}
+          disabled={readOnly || glasses === 0}
+          aria-label="حذف یک لیوان آب"
+          className="flex items-center justify-center rounded-full p-1 cursor-pointer enabled:hover:bg-blue-300 dark:enabled:hover:bg-darker-blue-400 disabled:cursor-default disabled:opacity-35 focus-visible:ring-2 focus-visible:ring-blue-500"
+        >
+          <PiMinusBold
+            aria-hidden="true"
+            className="compact:text-2xl fold:text-3xl laptop:text-4xl"
+          />
+        </button>
+
+        <span
+          dir="rtl"
+          className="self-center font-peyda font-bold leading-none whitespace-nowrap tabular-nums compact:text-sm fold:text-base laptop:text-lg"
+        >
+          {DAILY_WATER_LABELS[glasses]}
+        </span>
+        <button
+          type="button"
+          onClick={() => changeGlasses(1)}
+          disabled={readOnly || complete}
+          aria-label="افزودن یک لیوان آب"
+          className="flex items-center justify-center rounded-full p-1 cursor-pointer enabled:hover:bg-blue-300 dark:enabled:hover:bg-darker-blue-400 disabled:cursor-default disabled:opacity-35 focus-visible:ring-2 focus-visible:ring-blue-500"
+        >
           <PiPlusBold
             aria-hidden="true"
             className="compact:text-2xl fold:text-3xl laptop:text-4xl"
-            strokeWidth={4}
           />
-        )}
-
-        <span className="font-peyda font-bold leading-none whitespace-nowrap compact:text-sm fold:text-base laptop:text-lg">
-          {complete ? "تکمیل شد" : "یک لیوان"}
-        </span>
-      </button>
+        </button>
+      </div>
     </div>
   );
 };

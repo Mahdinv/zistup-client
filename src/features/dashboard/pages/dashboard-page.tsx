@@ -19,7 +19,8 @@ import DetailedMonitoring from "../components/dashboard/detailed-monitoring";
 import ZistupRecommendation from "../components/dashboard/zistup-recommendation";
 import TodayLoggedMeals from "../components/dashboard/today-logged-meals";
 import { formatPlanDateForApi } from "../lib/plan-date.utils";
-import { useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
+import { cleanupDailyWaterBeforePlan } from "../lib/daily-water.utils";
 import { useQuickAddMealDrawer } from "../hooks/use-quick-add-meal-drawer.hook";
 import type { DietMeal } from "../api/types/diet-day.types";
 
@@ -29,6 +30,12 @@ const DashboardPage = () => {
   const planDates = usePlanDates(
     dietQuery.data?.success ? dietQuery.data.data : undefined,
   );
+  const planStartDate = planDates.range?.planStartDate;
+  useEffect(() => {
+    if (planStartDate !== undefined) {
+      cleanupDailyWaterBeforePlan(formatPlanDateForApi(planStartDate));
+    }
+  }, [planStartDate]);
 
   const selectedDate =
     planDates.selectedDate !== null
