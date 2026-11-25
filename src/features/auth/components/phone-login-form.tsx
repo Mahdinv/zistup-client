@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import Button from "@/shared/base-components/button";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginSchema, type Login } from "../schemas/login.schema";
+import { PhoneLoginSchema, type PhoneLogin } from "../schemas/login.schema";
 import { useMutation } from "@tanstack/react-query";
 import { normalizeApiError } from "../../../shared/api";
 import { toast } from "sonner";
@@ -14,7 +14,7 @@ import type { AuthIdentifierDTO } from "../api/auth.types";
 import { getGoogleLoginUrl, sendCode } from "../api/auth.api";
 import { mapLoginFormToIdentifierDto } from "../api/auth.mapper";
 
-const LoginForm = ({
+const PhoneLoginForm = ({
   onSuccess,
 }: {
   onSuccess: (identifier: AuthIdentifierDTO, refCode?: string) => void;
@@ -31,24 +31,33 @@ const LoginForm = ({
     return () => window.removeEventListener("pageshow", reset);
   }, []);
 
-  const googleLogin = async () => {
-    if (loginInFlight.current) return;
-    loginInFlight.current = true;
-    setGooglePending(true);
-    try {
-      window.location.assign(await getGoogleLoginUrl());
-    } catch {
+  const { mutate: requestGoogleLogin } = useMutation({
+    mutationFn: getGoogleLoginUrl,
+    onSuccess: (url) => {
+      window.location.assign(url);
+    },
+    onError: (error) => {
       loginInFlight.current = false;
       setGooglePending(false);
-      toast.error("ورود با گوگل انجام نشد. لطفاً دوباره تلاش کنید.");
-    }
+      const apiError = normalizeApiError(error);
+      toast.error(apiError.message);
+    },
+  });
+
+  const googleLogin = () => {
+    if (loginInFlight.current) return;
+    loginInFlight.current = true;
+    // Keep the redirect locked until navigation or a browser back/forward restore.
+    setGooglePending(true);
+    requestGoogleLogin();
   };
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Login>({
-    resolver: zodResolver(LoginSchema),
+  } = useForm<PhoneLogin>({
+    resolver: zodResolver(PhoneLoginSchema),
+    defaultValues: { identifier: "", invitationCode: "" },
   });
 
   const { mutate, isPending } = useMutation({
@@ -71,7 +80,7 @@ const LoginForm = ({
     },
   });
 
-  const onLoginFormHandler: SubmitHandler<Login> = (data) => {
+  const onLoginFormHandler: SubmitHandler<PhoneLogin> = (data) => {
     if (loginInFlight.current) return;
     loginInFlight.current = true;
     const identifier = mapLoginFormToIdentifierDto(data.identifier);
@@ -83,18 +92,20 @@ const LoginForm = ({
 
   return (
     <form
+      noValidate
       className="flex w-full min-h-0 flex-1 flex-col items-start gap-4"
       onSubmit={(event) => void handleSubmit(onLoginFormHandler)(event)}
     >
       <TextBox
-        label="شماره موبایل یا ایمیل"
-        subLabel="برای ورود، شماره موبایل یا ایمیلت رو وارد کن"
+        classes="login-text-box"
+        label="برای ورود شماره تماست رو وارد کن"
         type="text"
         inputMode="text"
-        placeHolder="مثال: 09123456789 یا example@gmail.com"
+        placeHolder="مثال: 09123456789"
         localizePhoneNumber
         {...register("identifier")}
         error={errors.identifier?.message}
+        aria-invalid={!!errors.identifier}
       />
 
       <div className="flex w-full shrink-0 flex-col items-center gap-4">
@@ -142,29 +153,35 @@ const LoginForm = ({
               className="w-full shrink-0"
             >
               <TextBox
+                classes="login-text-box"
                 placeHolder="مثال: 45Hgw88is"
                 {...register("invitationCode")}
                 error={errors.invitationCode?.message}
+                aria-invalid={!!errors.invitationCode}
               />
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
-      <div className="mt-auto flex w-full shrink-0 flex-col gap-2 pt-4 text-white">
+      <div className="mt-auto flex w-full shrink-0 flex-col gap-3 pt-4 text-white">
         <Button
           type="submit"
-          classes="w-full btn btn-primary-green"
+          classes="w-full btn btn-primary-green login-action"
           title="دریافت کد"
           disable={isPending || googlePending}
+          loading={isPending}
         />
 
         <Button
           type="button"
-          classes="w-full btn btn-outline-green"
-          title={googlePending ? "در حال اتصال به گوگل..." : "ورود با حساب گوگل"}
+          classes="w-full btn btn-outline-green login-action"
+          title={
+            googlePending ? "در حال اتصال به گوگل..." : "ورود با حساب گوگل"
+          }
           disable={isPending || googlePending}
-          onClick={() => void googleLogin()}
+          loading={googlePending}
+          onClick={googleLogin}
           icon={<FcGoogle />}
           iconClasses="text-4xl"
           itemsGap={10}
@@ -174,4 +191,4 @@ const LoginForm = ({
   );
 };
 
-export default LoginForm;
+export default PhoneLoginForm;

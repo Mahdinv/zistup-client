@@ -2,7 +2,7 @@ import z from "zod";
 
 const iranMobileRegex = /^09\d{9}$/;
 
-export const LoginSchema = z.object({
+export const PhoneLoginSchema = z.object({
   identifier: z
     .string()
     .trim()
@@ -22,6 +22,22 @@ export const LoginSchema = z.object({
   invitationCode: z.string().trim().optional(),
 });
 
+export const PasswordSchema = z
+  .string()
+  .min(1, "رمز عبور را وارد کنید")
+  .min(8, "رمز عبور باید حداقل ۸ کاراکتر داشته باشد")
+  .regex(/\p{Lu}[\s\S]*\p{Lu}/u, "رمز عبور باید حداقل ۲ حرف بزرگ داشته باشد")
+  .regex(/\p{Nd}[\s\S]*\p{Nd}/u, "رمز عبور باید حداقل ۲ رقم داشته باشد")
+  .regex(
+    /[\p{P}\p{S}][\s\S]*[\p{P}\p{S}]/u,
+    "رمز عبور باید حداقل ۲ کاراکتر ویژه (مثل !@#) داشته باشد",
+  );
+
+export const UsernameLoginSchema = z.object({
+  username: z.string().trim().min(1, "نام کاربری را وارد کنید"),
+  password: PasswordSchema,
+});
+
 export const OtpSchema = z.object({
   identifier: z.union([
     z.object({
@@ -38,5 +54,6 @@ export const OtpSchema = z.object({
     .length(4, "کد امنیتی را کامل وارد کنید"),
 });
 
-export type Login = z.infer<typeof LoginSchema>;
+export type PhoneLogin = z.infer<typeof PhoneLoginSchema>;
+export type UsernameLogin = z.infer<typeof UsernameLoginSchema>;
 export type Otp = z.infer<typeof OtpSchema>;

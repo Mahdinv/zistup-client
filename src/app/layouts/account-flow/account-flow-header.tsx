@@ -2,8 +2,10 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import ImageWithSkeleton from "@/shared/base-components/image-with-skeleton";
 
 import { PiCaretRight } from "react-icons/pi";
+import { cn } from "@/shared/lib/utils";
 
 type AccountFlowHeaderProps = {
+  variant?: "login";
   firstLineTitle: string;
 
   secondLineTitle?: string;
@@ -16,6 +18,7 @@ type AccountFlowHeaderProps = {
 };
 
 const AccountFlowHeader = ({
+  variant,
   firstLineTitle,
   secondLineTitle,
   subTitle,
@@ -32,7 +35,8 @@ const AccountFlowHeader = ({
 
   return (
     <header
-      className="
+      className={cn(
+        `
         relative
         flex
         h-[clamp(160px,27dvh,300px)]
@@ -43,7 +47,10 @@ const AccountFlowHeader = ({
         justify-around
         bg-[radial-gradient(ellipse_120%_90%_at_50%_130%,#75D5F6_0%,#C4ECF8_75%,#DBF0F8_100%)]
         px-6
-      "
+      `,
+        variant === "login" &&
+          "h-[clamp(10rem,26.5dvh,18.75rem)] justify-end gap-3 pb-8 text-[#0C1910]",
+      )}
     >
       <div className="h-9 self-start">
         <AnimatePresence mode="wait">
@@ -129,12 +136,15 @@ const AccountFlowHeader = ({
           "
         >
           <h1
-            className="
+            className={cn(
+              `
               space-y-1
               font-yekan
               text-8xl
               font-extrabold
-            "
+            `,
+              variant === "login" && "space-y-0 leading-[1.2]",
+            )}
           >
             <span className="block">{firstLineTitle}</span>
 

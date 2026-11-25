@@ -1,4 +1,5 @@
 export type AccountFlowHeaderConfig = {
+  variant?: "login";
   firstLineTitle: string;
   secondLineTitle?: string;
   subTitle?: string;

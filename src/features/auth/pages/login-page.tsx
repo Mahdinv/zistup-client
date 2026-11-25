@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import LoginForm from "../components/login-form";
+import LoginMethodTabs from "../components/login-method-tabs";
 import VerifyOtpForm from "../components/verify-otp-form";
 import type { AuthIdentifierDTO } from "../api/auth.types";
 import type { AccountFlowOutletContext } from "@/app/layouts/account-flow/account-flow.types";
@@ -43,9 +43,14 @@ const LoginPage = () => {
       isFirstStep={authFlow.step === 1}
       isLastStep={authFlow.step === 2}
       scrollMode="container"
+      contentClassName={
+        authFlow.step === 1
+          ? "px-4 pt-10 pb-[calc(0.75rem+env(safe-area-inset-bottom))]"
+          : undefined
+      }
     >
       {authFlow.step === 1 ? (
-        <LoginForm
+        <LoginMethodTabs
           onSuccess={(identifier, refCode) => {
             setAuthFlow({
               step: 2,

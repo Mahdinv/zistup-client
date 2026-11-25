@@ -1,12 +1,14 @@
 import { useState, type ReactNode } from "react";
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { cn } from "@/shared/lib/utils";
 
 type AccountFlowContainerProps = {
   stepKey: number;
   isFirstStep: boolean;
   isLastStep: boolean;
   scrollMode?: "container" | "child";
+  contentClassName?: string;
   children: ReactNode;
 };
 
@@ -20,6 +22,7 @@ const AccountFlowContainer = ({
   isFirstStep,
   isLastStep,
   scrollMode = "container",
+  contentClassName,
   children,
 }: AccountFlowContainerProps) => {
   const shouldReduceMotion = useReducedMotion();
@@ -152,7 +155,8 @@ const AccountFlowContainer = ({
 
               ease: [0.22, 1, 0.36, 1],
             }}
-            className={`
+            className={cn(
+              `
               flex
               w-full
               min-w-0
@@ -161,7 +165,9 @@ const AccountFlowContainer = ({
               px-6
               pb-[calc(1.75rem+env(safe-area-inset-bottom))]
               ${contentHeightClass}
-            `}
+            `,
+              contentClassName,
+            )}
           >
             {children}
           </motion.div>

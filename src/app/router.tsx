@@ -108,8 +108,9 @@ const routes: RouteObject[] = [
         element: <LoginPage />,
         handle: {
           accountFlowHeader: {
+            variant: "login",
             firstLineTitle: "ورود",
-            secondLineTitle: "زیـــــستاپ",
+            secondLineTitle: "به زیـــــستاپ",
           },
         } satisfies AccountFlowRouteHandle,
       },
