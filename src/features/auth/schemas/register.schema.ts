@@ -24,13 +24,8 @@ export const PasswordSchema = z
     "رمز عبور باید حداقل ۲ کاراکتر ویژه (مثل !@#) داشته باشد",
   );
 
-export const UsernameRegisterSchema = z
+export const PasswordConfirmationSchema = z
   .object({
-    mobile: z
-      .string()
-      .trim()
-      .regex(/^09\d{9}$/, "شماره موبایل معتبر وارد کنید"),
-    username: RegistrationUsernameSchema,
     password: PasswordSchema,
     confirmPassword: z.string().min(1, "تکرار رمز عبور را وارد کنید"),
   })
@@ -38,5 +33,15 @@ export const UsernameRegisterSchema = z
     path: ["confirmPassword"],
     message: "رمز عبور و تکرار آن یکسان نیستند",
   });
+
+export const UsernameRegisterSchema = PasswordConfirmationSchema.safeExtend({
+  mobile: z
+    .string()
+    .trim()
+    .regex(/^09\d{9}$/, "شماره موبایل معتبر وارد کنید"),
+  username: RegistrationUsernameSchema,
+});
+
+export type ResetPassword = z.infer<typeof PasswordConfirmationSchema>;
 
 export type UsernameRegister = z.infer<typeof UsernameRegisterSchema>;

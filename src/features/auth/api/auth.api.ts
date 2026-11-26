@@ -9,8 +9,97 @@ import type {
   AuthIdentifierDTO,
   UsernameAvailability,
   UsernameRegistrationVerifyDTO,
+  PasswordLoginDTO,
+  PasswordLoginResult,
+  ForgotPasswordDTO,
+  ForgotPasswordResult,
+  VerifyForgotPasswordDTO,
+  VerifyForgotPasswordResult,
+  ResetForgotPasswordDTO,
+  ResetForgotPasswordResult,
 } from "./auth.types";
 import z from "zod";
+
+async function postRecovery<T>(
+  path: string,
+  input: unknown,
+  schema: z.ZodType<T>,
+): Promise<T> {
+  const response = await httpClient.post<unknown>(path, input, {
+    skipAuth: true,
+  });
+  const result = z
+    .object({ success: z.literal(true), data: schema })
+    .safeParse(response.data);
+  if (!result.success)
+    throw new ApiError({
+      type: "api",
+      message: "پاسخ بازیابی رمز عبور معتبر نیست. دوباره تلاش کنید.",
+    });
+  return result.data.data;
+}
+
+export function forgotPassword(
+  input: ForgotPasswordDTO,
+): Promise<ForgotPasswordResult> {
+  return postRecovery(
+    "/users/password/forgot",
+    input,
+    z.object({ mobile: z.string().min(1), message: z.string() }),
+  );
+}
+
+export function verifyForgotPassword(
+  input: VerifyForgotPasswordDTO,
+): Promise<VerifyForgotPasswordResult> {
+  return postRecovery(
+    "/users/password/forgot/verify",
+    input,
+    z.object({
+      reset_token: z.string().min(1),
+      expires_in: z.number().int().positive(),
+    }),
+  );
+}
+
+export function resetForgotPassword(
+  input: ResetForgotPasswordDTO,
+): Promise<ResetForgotPasswordResult> {
+  return postRecovery(
+    "/users/password/forgot/reset",
+    input,
+    z.object({ message: z.string() }),
+  );
+}
+
+const passwordLoginResponseSchema = z.object({
+  success: z.literal(true),
+  data: z.object({
+    id: z.number(),
+    name: z.string(),
+    mobile: z.string(),
+    username: z.string(),
+    token: z.string().trim().min(1),
+  }),
+});
+
+export async function loginWithPassword(
+  input: PasswordLoginDTO,
+): Promise<PasswordLoginResult> {
+  const response = await httpClient.post<unknown>(
+    "/users/login/password",
+    input,
+    { skipAuth: true },
+  );
+  const result = passwordLoginResponseSchema.safeParse(response.data);
+  if (!result.success) {
+    throw new ApiError({
+      type: "api",
+      message: "پاسخ ورود معتبر نیست. دوباره تلاش کنید.",
+    });
+  }
+  return result.data.data;
+}
 
 const usernameCheckFields = {
   success: z.literal(true),

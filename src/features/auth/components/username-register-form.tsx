@@ -134,7 +134,8 @@ const UsernameRegisterForm = ({
           <TextBox
             label="نام کاربری"
             placeHolder="نام کاربری خودت انگلیسی وارد کن"
-            autoComplete="username"
+            autoComplete="off"
+            autoCorrect="off"
             autoCapitalize="none"
             spellCheck={false}
             classes={cn(

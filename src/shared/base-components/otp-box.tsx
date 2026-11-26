@@ -115,8 +115,8 @@ const OtpBox = ({
         </label>
 
         {phoneNumber && (
-          <p className="font-peyda compact:text-base laptop:text-lg text-blue-500">
-            کد تأیید را به شماره {phoneNumber} ارسال کردیم
+          <p className="w-full text-center break-words font-peyda compact:text-base laptop:text-lg text-blue-500">
+            کد تأیید را به شماره <bdi dir="ltr">{phoneNumber}</bdi> ارسال کردیم
           </p>
         )}
       </div>

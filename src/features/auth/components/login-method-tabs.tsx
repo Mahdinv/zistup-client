@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
+import type { UsernameLogin } from "../schemas/login.schema";
 import { DirectionProvider } from "@base-ui/react/direction-provider";
 import { Tabs } from "@base-ui/react/tabs";
 import PhoneLoginForm from "./phone-login-form";
@@ -10,21 +11,19 @@ export type LoginMethod = "mobile" | "username";
 type LoginMethodTabsProps = {
   onSuccess: (identifier: AuthIdentifierDTO, refCode?: string) => void;
   onRegister: () => void;
+  onForgotPassword: (values: UsernameLogin) => void;
+  usernameDefaultValues?: UsernameLogin;
   defaultMethod?: LoginMethod;
 };
 
 const LoginMethodTabs = ({
   onSuccess,
   onRegister,
+  onForgotPassword,
+  usernameDefaultValues,
   defaultMethod = "mobile",
 }: LoginMethodTabsProps) => {
   const [method, setMethod] = useState<LoginMethod>(defaultMethod);
-  const mobileTabRef = useRef<HTMLButtonElement>(null);
-
-  const openMobileLogin = () => {
-    setMethod("mobile");
-    mobileTabRef.current?.focus();
-  };
 
   return (
     <DirectionProvider direction="rtl">
@@ -39,7 +38,6 @@ const LoginMethodTabs = ({
           className="grid shrink-0 grid-cols-2 gap-1 rounded-2xl border border-dark bg-darker-blue-300 px-1.5 py-1.25 shadow-sm"
         >
           <Tabs.Tab
-            ref={mobileTabRef}
             value="mobile"
             className="min-h-9 cursor-pointer rounded-[10px] px-2 py-1 font-yekan text-lg font-extrabold text-white transition-colors data-active:bg-dark motion-reduce:transition-none"
           >
@@ -68,7 +66,8 @@ const LoginMethodTabs = ({
           className="flex flex-1 flex-col data-hidden:hidden"
         >
           <UsernameLoginForm
-            onPhoneLogin={openMobileLogin}
+            onForgotPassword={onForgotPassword}
+            defaultValues={usernameDefaultValues}
             onRegister={onRegister}
           />
         </Tabs.Panel>
