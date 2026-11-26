@@ -337,9 +337,14 @@ on an eligible screen. Any new screen/component requires another audit before al
 
 ### Safe lifecycle and consent
 
-Consent remains accessible through the shared Persian/RTL UI, with equally available
-accept/deny actions and keyboard focus management. The v2 storage key deliberately
-requires fresh consent because the old notice authorized only navigation analytics; previous denials remain respected.
+The shared Persian/RTL consent prompt offers equally available accept/deny actions.
+Acceptance persists in the existing v2 local storage key and hides the entire prompt
+without an expiry. Declining hides it immediately and stores a 24-hour reminder deadline;
+the prompt returns after that deadline, including in an already-open tab, without enabling
+tracking. Reloads, navigation and other tabs respect the stored decision. Legacy denials
+without a deadline can be prompted again but remain denied until explicit acceptance.
+The v2 storage key deliberately requires fresh consent for v1 acceptances because the old
+notice authorized only navigation analytics.
 Unknown/denied consent loads no SDK; accepted consent sends `analytics_Storage: granted`
 and `ad_Storage: denied`. Storage failures use a denial-only session fallback.
 

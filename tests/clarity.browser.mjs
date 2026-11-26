@@ -112,23 +112,90 @@ const waitFor = async (condition, label) => {
   });
   assert.fail(label);
 };
-const privacy = () =>
-  page.getByRole("button", { name: "حریم خصوصی", exact: true });
+const prompt = () =>
+  page.getByRole("complementary", { name: "حریم خصوصی و آمار استفاده" });
+const withdraw = () => page.evaluate(() => window.testSetConsent("denied"));
 const accept = () =>
   page.getByRole("button", { name: "می‌پذیرم", exact: true }).click();
 const deny = () =>
   page.getByRole("button", { name: "نمی‌پذیرم", exact: true }).click();
 try {
   await page.goto(safe);
+  assert.equal(await prompt().count(), 1, "StrictMode shows one prompt");
+  assert.equal(tags, 0, "No SDK before consent");
+  await deny();
+  assert.equal(
+    await prompt().count(),
+    0,
+    "Decline removes the whole UI immediately",
+  );
+  const remaining = await page.evaluate(
+    () =>
+      Number(localStorage.getItem("zistup.analytics-consent-reminder-at")) -
+      Date.now(),
+  );
+  assert(
+    remaining > 86_390_000 && remaining <= 86_400_000,
+    "Decline is remembered for 24 hours",
+  );
+  await page.reload();
+  await page.waitForFunction(() => window.testNavigate);
+  assert.equal(
+    await prompt().count(),
+    0,
+    "Decline survives reload without a prompt",
+  );
+  const reminderTab = await context.newPage();
+  await reminderTab.goto(`${base}/app/profile`);
+  await reminderTab.waitForFunction(() => window.testNavigate);
+  assert.equal(
+    await reminderTab.getByRole("complementary").count(),
+    0,
+    "Decline survives a new tab session",
+  );
+  await reminderTab.evaluate(() => window.testNavigate("/app/diets"));
+  assert.equal(
+    await reminderTab.getByRole("complementary").count(),
+    0,
+    "SPA navigation does not repeat the prompt",
+  );
+  // Advance only the reminder deadline; exercise the real mounted-app timer.
+  await reminderTab.evaluate(() =>
+    localStorage.setItem(
+      "zistup.analytics-consent-reminder-at",
+      String(Date.now() + 1500),
+    ),
+  );
+  await prompt().waitFor({ state: "visible" });
+  assert.equal(
+    await prompt().count(),
+    1,
+    "Expiry shows exactly one prompt without a reload",
+  );
+  assert.equal(tags, 0, "Expiry never grants consent");
+  await page.reload();
+  await prompt().waitFor({ state: "visible" });
+  assert.equal(tags, 0, "Expired denial also remains untracked after reload");
+  await reminderTab.reload();
+  await reminderTab.getByRole("complementary").waitFor({ state: "visible" });
   await accept();
+  assert.equal(await prompt().count(), 0, "Acceptance removes the whole UI");
+  await reminderTab.getByRole("complementary").waitFor({ state: "hidden" });
+  await reminderTab.reload();
+  await reminderTab.waitForFunction(() => window.testNavigate);
+  assert.equal(
+    await reminderTab.getByRole("complementary").count(),
+    0,
+    "Acceptance persists across tabs and reloads",
+  );
+  await reminderTab.close();
   await waitFor(
     () => tags === 1 && records.length > 0,
     "SDK should capture the actual app DOM",
   );
   assert.equal(await page.locator("iframe").count(), 0);
   assert(eventTypes().has(5), "Real Discover recording event");
-  await privacy().click();
-  await privacy().click();
+  await page.locator("main").click({ position: { x: 10, y: 10 } });
   await page.mouse.move(200, 650);
   await page.mouse.wheel(0, 600);
   await page.evaluate(() => {
@@ -185,9 +252,13 @@ try {
     () => tags === 2,
     "Entering audited route gets a fresh recording document",
   );
-  await privacy().click();
+  assert.equal(
+    await prompt().count(),
+    0,
+    "Accepted consent survives navigation",
+  );
   const beforeWithdrawal = await page.evaluate(() => performance.timeOrigin);
-  await deny();
+  await withdraw();
   await page.waitForFunction(
     (old) => performance.timeOrigin !== old,
     beforeWithdrawal,
@@ -200,8 +271,7 @@ try {
   );
   assert.equal(tags, 2);
   const afterWithdrawal = records.length;
-  await privacy().click();
-  await privacy().click();
+  await page.locator("main").click({ position: { x: 10, y: 10 } });
   await pause(1200);
   assert.equal(
     records.length,
@@ -265,8 +335,8 @@ try {
   await waitFor(() => tags === 3, "Clean entry starts SDK");
   const other = await context.newPage();
   await other.goto(`${base}/app/profile`);
-  await other.getByRole("button", { name: "حریم خصوصی", exact: true }).click();
-  await other.getByRole("button", { name: "نمی‌پذیرم", exact: true }).click();
+  await other.waitForFunction(() => window.testSetConsent);
+  await other.evaluate(() => window.testSetConsent("denied"));
   await pause(1200);
   assert.equal(
     await page.locator("#clarity-script").count(),
@@ -274,12 +344,14 @@ try {
     "Cross-tab withdrawal destroys document",
   );
   await other.close();
-  await privacy().click();
+  await page.evaluate(() =>
+    localStorage.removeItem("zistup.analytics-consent-reminder-at"),
+  );
+  await page.reload();
   tagDelay = 1000;
   await accept();
   await waitFor(() => tags === 4, "Begin delayed SDK download");
-  await privacy().click();
-  await deny();
+  await withdraw();
   await pause(1500);
   assert.equal(
     await page.locator("#clarity-script").count(),
@@ -364,8 +436,7 @@ try {
       throw new Error("blocked");
     };
   });
-  await privacy().click();
-  await deny();
+  await withdraw();
   await page.waitForURL(`${safe}#analytics-off`);
   await pause(1200);
   assert.equal(
@@ -375,7 +446,7 @@ try {
   );
   assert.deepEqual(errors, []);
   console.log(
-    "PASS: real SDK recording/mutation/click/scroll payloads, masking, consent, StrictMode, all excluded routes, document boundaries, SPA revalidation, cross-tab withdrawal and script-load race",
+    "PASS: persistent acceptance, 24-hour decline reminder, cross-tab prompt sync, real SDK recording/mutation/click/scroll payloads, masking, StrictMode, all excluded routes, document boundaries, SPA revalidation, cross-tab withdrawal and script-load race",
   );
 } finally {
   await browser.close();

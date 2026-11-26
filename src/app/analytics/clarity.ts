@@ -9,6 +9,8 @@ export type AnalyticsConsent = "granted" | "denied" | null;
 type Clarity = typeof import("@microsoft/clarity").default;
 const storageKey = "zistup.analytics-consent.v2";
 const denialKey = "zistup.analytics-denied";
+const reminderKey = "zistup.analytics-consent-reminder-at";
+const reminderDelay = 24 * 60 * 60 * 1000;
 const projectId = import.meta.env.VITE_CLARITY_PROJECT_ID?.trim();
 export const clarityEnabled =
   import.meta.env.PROD && /^[a-z0-9]+$/i.test(projectId ?? "");
@@ -43,6 +45,62 @@ let leaving = false;
 let prepared = false;
 let guardsReady = false;
 let consent = readAnalyticsConsent();
+let reminderAt = readReminderAt();
+const consentListeners = new Set<() => void>();
+let reminderTimer: ReturnType<typeof setTimeout> | undefined;
+
+function readReminderAt() {
+  let storage: Storage;
+  try {
+    if (sessionStorage.getItem(denialKey) === "true") {
+      const value = Number(sessionStorage.getItem(reminderKey));
+      return Number.isFinite(value) && value > 0 ? value : 0;
+    }
+  } catch {
+    /* Local storage can still be available. */
+  }
+  try {
+    storage = localStorage;
+    const value = Number(storage.getItem(reminderKey));
+    return Number.isFinite(value) && value > 0 ? value : 0;
+  } catch {
+    return 0;
+  }
+}
+
+export function shouldShowAnalyticsConsent() {
+  // An expired reminder shows the prompt; it never grants tracking consent.
+  return (
+    clarityEnabled &&
+    consent !== "granted" &&
+    (consent !== "denied" || Date.now() >= reminderAt)
+  );
+}
+
+function notifyConsentListeners() {
+  clearTimeout(reminderTimer);
+  reminderTimer = undefined;
+  if (
+    consentListeners.size &&
+    consent === "denied" &&
+    reminderAt > Date.now()
+  ) {
+    reminderTimer = setTimeout(
+      notifyConsentListeners,
+      Math.min(reminderAt - Date.now(), reminderDelay),
+    );
+  }
+  consentListeners.forEach((listener) => listener());
+}
+
+export function subscribeAnalyticsConsent(listener: () => void) {
+  consentListeners.add(listener);
+  notifyConsentListeners();
+  return () => {
+    consentListeners.delete(listener);
+    if (!consentListeners.size) clearTimeout(reminderTimer);
+  };
+}
 
 export function readAnalyticsConsent(): AnalyticsConsent {
   try {
@@ -101,21 +159,25 @@ function leaveDocument(url: string, replace = false) {
 
 export function setAnalyticsConsent(value: Exclude<AnalyticsConsent, null>) {
   consent = value;
+  reminderAt = value === "denied" ? Date.now() + reminderDelay : 0;
   let persisted = false;
   try {
     localStorage.setItem(storageKey, value);
     persisted = true;
+    localStorage.setItem(reminderKey, String(reminderAt));
   } catch {
     /* Session fallback below. */
   }
   try {
-    if (value === "denied" && !persisted)
+    if (value === "denied" && !persisted) {
       sessionStorage.setItem(denialKey, "true");
-    else sessionStorage.removeItem(denialKey);
+      sessionStorage.setItem(reminderKey, String(reminderAt));
+    } else sessionStorage.removeItem(denialKey);
     if (value === "denied") persisted = true;
   } catch {
     /* Unknown consent never starts capture. */
   }
+  notifyConsentListeners();
   if (value === "denied" && attempted) {
     denyAndStop();
     // Consent V2 denial may restart cookieless tracking. Destroy this document.
@@ -276,8 +338,16 @@ export function setupClarity(appRouter: Router) {
     );
     router.subscribe(start);
     window.addEventListener("storage", (event) => {
-      if (event.key !== storageKey && event.key !== null) return;
+      if (
+        event.storageArea !== localStorage ||
+        (event.key !== storageKey &&
+          event.key !== reminderKey &&
+          event.key !== null)
+      )
+        return;
       consent = readAnalyticsConsent();
+      reminderAt = readReminderAt();
+      notifyConsentListeners();
       if (consent !== "granted" && attempted) {
         denyAndStop();
         leaveDocument(window.location.href, true);

@@ -11,6 +11,7 @@ import {
   prepareClarityDocument,
   setupClarity,
   clarityDataStrategy,
+  setAnalyticsConsent,
 } from "../../src/app/analytics/clarity";
 import ChoosePlanForm from "../../src/features/onboarding/components/choose-plan-form";
 import "../../src/index.css";
@@ -64,6 +65,7 @@ setupClarity(router);
 Object.assign(window, {
   testNavigate: router.navigate,
   testRevalidate: router.revalidate,
+  testSetConsent: setAnalyticsConsent,
 });
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
