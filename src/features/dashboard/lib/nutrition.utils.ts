@@ -1,28 +1,36 @@
 import type { Nutrient } from "../api/types/nutrition.types";
 
 const numberFormat = new Intl.NumberFormat("fa-IR", {
-  maximumFractionDigits: 2,
+  maximumFractionDigits: 1,
 });
 
+const integerFormat = new Intl.NumberFormat("fa-IR", {
+  maximumFractionDigits: 0,
+});
+
+// These API-key overrides always divide raw values by 1000, regardless of unit.
+const dividedDisplayUnits: Readonly<Partial<Record<string, "g" | "mg">>> = {
+  vitamin_c: "g",
+  calcium: "g",
+  iron: "g",
+  potassium: "g",
+  phosphorus: "g",
+  choline: "g",
+  magnesium: "g",
+  sodium: "g",
+  folate: "mg",
+};
+
 const nutrientDisplayUnits: Readonly<Partial<Record<string, "mg" | "µg">>> = {
-  vitamin_c: "mg",
-  calcium: "mg",
-  iron: "mg",
   zinc: "mg",
-  potassium: "mg",
   copper: "mg",
-  sodium: "mg",
-  phosphorus: "mg",
   thiamin: "mg",
   riboflavin: "mg",
   niacin: "mg",
   vitamin_b6: "mg",
-  choline: "mg",
-  magnesium: "mg",
   manganese: "mg",
   vitamin_e: "mg",
   vitamin_a: "µg",
-  folate: "µg",
   vitamin_b12: "µg",
   selenium: "µg",
   vitamin_d: "µg",
@@ -53,17 +61,23 @@ export function getNutrientComparison(nutrient: Nutrient) {
   return {
     current: plot(current),
     target: plot(target),
-    currentLabel: formatNutrientAmount(current, nutrient.unit, unit),
-    targetLabel: formatNutrientAmount(target, nutrient.unit, unit),
+    currentLabel: formatNutrientAmount(current, nutrient.key, nutrient.unit, unit),
+    targetLabel: formatNutrientAmount(target, nutrient.key, nutrient.unit, unit),
   };
 }
 
 function formatNutrientAmount(
   value: number | null,
+  key: string,
   unit: string,
   displayUnit = unit,
 ): string {
   if (value === null || !Number.isFinite(value)) return "داده‌ای موجود نیست";
+
+  const dividedUnit = dividedDisplayUnits[key];
+  if (dividedUnit) {
+    return `${numberFormat.format(value / 1000)} ${dividedUnit}`;
+  }
 
   const factor =
     unit === "g"
@@ -73,5 +87,6 @@ function formatNutrientAmount(
           ? 1e3
           : 1
       : 1;
-  return `${numberFormat.format(value * factor)} ${displayUnit}`;
+  const formatter = key === "calories" ? integerFormat : numberFormat;
+  return `${formatter.format(value * factor)} ${displayUnit}`;
 }
